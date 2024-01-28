@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import bcrypt from 'bcryptjs';
 import Modal from 'react-modal';
@@ -13,6 +13,7 @@ const SignUpPage = () => {
     const [otp, setOtp] = useState('');
     const [realOtp, setRealOtp] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
     const router = useRouter();
 
     const handleSignUp = async (e) => {
@@ -46,15 +47,26 @@ const SignUpPage = () => {
             });
             const data = await response.json();
             if (data.message === 'Sign Up Successful') {
-                router.push('/login');
+                setModalIsOpen(false);
             }
             else {
                 alert(data.message);
             }
         } else {
             alert('Incorrect OTP. Please try again.');
+            setOtp('');
         }
     }
+    const handleModalClose = () => {
+        if (otp === realOtp) {
+            setIsVerified(true);
+        }
+    }
+    useEffect(() => {
+        if (isVerified) {
+            router.replace('/login');
+        }
+    }, [isVerified]);
 
     return (
         <>
@@ -105,14 +117,9 @@ const SignUpPage = () => {
                     <p className="text-md text-center">© 2024 My Website. All rights reserved.</p>
                 </div>
             </div>
-            {/* <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
-                <h2>Verify OTP</h2>
-                <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} />
-                <button onClick={verifyOtp}>Verify</button>
-            </Modal> */}
             <Modal
                 isOpen={modalIsOpen}
-                onRequestClose={() => setModalIsOpen(false)}
+                onRequestClose={handleModalClose}
                 className="fixed inset-0 flex items-center justify-center z-50 outline-none focus:outline-none"
                 overlayClassName="fixed inset-0 bg-black opacity-90"
             >
