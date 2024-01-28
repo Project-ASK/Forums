@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 const dev = () => {
@@ -6,16 +6,32 @@ const dev = () => {
 }
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     if (!email.endsWith('@ceconline.edu')) {
       alert('Please use an email with domain @ceconline.edu');
       return;
     }
-    router.push('/login');
+    const response = await fetch('http://localhost:3001/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, username, password }),
+    });
+    const data = await response.json();
+    if (data.message === 'Login Successful') {
+      router.push('/login');
+    }
+    else {
+      alert(data.message);
+    }
   }
 
   const handleSignUp = (e) => {
@@ -41,12 +57,17 @@ const LoginPage = () => {
           <form>
             <div className="mb-4">
               <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Email</label>
-              <input type="email" id="email" name="email" className="w-full p-2 border border-gray-300 rounded" />
+              <input type="email" id="email" name="email" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
+              <input type="text" id="username" name="username" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} required />
             </div>
 
             <div className="mb-4">
               <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-              <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded" />
+              <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
               {/* //forgot password */}
               <a href="#" className="text-md text-blue-500 font-medium hover:text-blue-600 hover:underline block text-right mt-4" onClick={dev}>Forgot Password?</a>
             </div>

@@ -9,6 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.12.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.1",
+    "emailjs": "^4.0.3",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^11.0.3",
     "next": "14.1.0",
     "react": "^18",

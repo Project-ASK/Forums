@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import emailjs from '@emailjs/browser';
 
 const Sign = () => {
     const router = useRouter();
+    const [email, setEmail] = useState('');
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -16,7 +18,13 @@ const Sign = () => {
             alert('Please use an email with domain @ceconline.edu');
             return;
         }
-        router.push('/signup');
+        emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID, process.env.NEXT_PUBLIC_TEMPLATE_ID, { email }, process.env.NEXT_PUBLIC_PUBLIC_KEY)
+            .then((result) => {
+                console.log(result.text);
+            }, (error) => {
+                console.log(error.text);
+            });
+        router.push('/signInstr');
     }
 
     return (
@@ -37,7 +45,7 @@ const Sign = () => {
                     <form>
                         <div className="mb-4">
                             <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Enter the Email</label>
-                            <input type="email" id="email" name="email" className="w-full p-2 border border-gray-300 rounded" />
+                            <input type="email" id="email" name="email" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
 
                         <div className='flex justify-center mt-4 mb-4'>
