@@ -1,3 +1,5 @@
+//Entering email page
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import emailjs from '@emailjs/browser';

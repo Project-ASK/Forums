@@ -1,3 +1,4 @@
+//Page to show dialogue box to instruct user to check email for sign-up instructions    
 import React from 'react';
 
 const SignInstr = () => {

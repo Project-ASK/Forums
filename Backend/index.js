@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 const router = express.Router();
-app.use('/', router);
+app.use('/', router);ashwinr
 
 router.route('/login')
     .post(postLogin);

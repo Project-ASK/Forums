@@ -1,3 +1,4 @@
+//Page to login into the forum
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import bcrypt from 'bcryptjs';
@@ -21,6 +22,12 @@ const SignUpPage = () => {
         const email = document.getElementById('email').value;
         if (!email.endsWith('@ceconline.edu')) {
             alert('Please use an email with domain @ceconline.edu');
+            return;
+        }
+        const password = document.getElementById('password').value;
+        var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+        if(!password.match(passw)) {
+            alert('Password is invalid');
             return;
         }
         const otp = Math.floor(100000 + Math.random() * 900000);
