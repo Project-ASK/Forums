@@ -26,7 +26,7 @@ const SignUpPage = () => {
         }
         const password = document.getElementById('password').value;
         var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
-        if(!password.match(passw)) {
+        if (!password.match(passw)) {
             alert('Password is invalid');
             return;
         }

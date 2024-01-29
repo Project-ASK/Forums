@@ -38,8 +38,8 @@ router.route('/login')
     .post(postLogin);
 
 async function postLogin(req, res) {
-    const { email, username, password } = req.body;
-    const user = await User.findOne({ email, username });
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
     if (!user) {
         return res.status(401).send({ message: 'Incorrect Credentials' });
     }
@@ -48,7 +48,7 @@ async function postLogin(req, res) {
         if (!validPassword) {
             return res.status(401).send({ message: 'Incorrect Credentials' });
         }
-        return res.status(200).send({ message: 'Login Successful' });
+        return res.status(200).send({ message: 'Login Successful', email: user.email });
     }
 }
 

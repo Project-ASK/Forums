@@ -1,36 +1,61 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import Modal from 'react-modal';
+import emailjs from '@emailjs/browser';
 
 const dev = () => {
   alert("This feature is under development");
 }
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [realOtp, setRealOtp] = useState('');
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const email = document.getElementById('email').value;
-    if (!email.endsWith('@ceconline.edu')) {
-      alert('Please use an email with domain @ceconline.edu');
-      return;
-    }
     const response = await fetch('http://localhost:3001/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, username, password }),
+      body: JSON.stringify({ username, password }),
     });
     const data = await response.json();
     if (data.message === 'Login Successful') {
-      router.push('/login');
-    }
-    else {
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      setRealOtp(otp.toString());
+      const email = data.email;
+      emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
+        .then((response) => {
+          console.log('SUCCESS!', response.status, response.text);
+          setModalIsOpen(true);
+        }, (err) => {
+          console.log('FAILED...', err);
+        });
+    } else {
       alert(data.message);
+    }
+  }
+
+  const verifyOtp = async () => {
+    if (otp === realOtp) {
+      setIsVerified(true);
+      setModalIsOpen(false);
+      router.replace('/login');
+    } else {
+      alert('Incorrect OTP. Please try again.');
+    }
+    setOtp(''); // Clear the OTP input box
+  }
+
+  const handleModalClose = () => {
+    if (otp === realOtp) {
+      setIsVerified(true);
     }
   }
 
@@ -55,11 +80,6 @@ const LoginPage = () => {
 
           {/* Login Form */}
           <form>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Email</label>
-              <input type="email" id="email" name="email" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-            </div>
-
             <div className="mb-4">
               <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
               <input type="text" id="username" name="username" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -87,6 +107,39 @@ const LoginPage = () => {
           <p className="text-md text-center">© 2024 My Website. All rights reserved.</p>
         </div>
       </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={handleModalClose}
+        className="fixed inset-0 flex items-center justify-center z-50 outline-none focus:outline-none"
+        overlayClassName="fixed inset-0 bg-black opacity-90"
+      >
+        <div className="relative w-auto max-w-sm mx-auto my-6">
+          <div className="relative flex flex-col w-full bg-white outline-none focus:outline-none rounded-2xl shadow-lg">
+            <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
+              <h3 className="text-xl font-semibold">Enter the OTP</h3>
+            </div>
+            <div className="relative p-6 flex-auto">
+              <input
+                type="text"
+                maxLength='6'
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="w-full px-3 py-2 mb-4 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline"
+                placeholder="Enter OTP"
+                autoFocus
+              />
+            </div>
+            <div className="flex items-center justify-end p-2 border-t border-solid border-gray-300 rounded-b">
+              <button
+                onClick={verifyOtp}
+                className="px-6 py-2 mb-1 mr-1 text-sm font-bold text-white uppercase bg-blue-500 rounded shadow outline-none active:bg-blue-600 hover:shadow-lg focus:outline-none"
+              >
+                Verify
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };
