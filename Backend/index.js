@@ -3,19 +3,20 @@ const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser')
+const jwt = require('jsonwebtoken')
 const port = 3001;
 const cors = require('cors');
 
+const SECRET_KEY = 'super-secret-key';
+
 app.use(cors())
-app.use(express.json());
-app.use(express.static('public'));
+app.use(bodyParser.json())
+// app.use(express.static('public'));
 dotenv.config();
 
 // Connect to DB
-mongoose.connect(process.env.DB_CONNECT, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+mongoose.connect(process.env.DB_CONNECT);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
@@ -48,7 +49,8 @@ async function postLogin(req, res) {
         if (!validPassword) {
             return res.status(401).send({ message: 'Incorrect Credentials' });
         }
-        return res.status(200).send({ message: 'Login Successful', email: user.email });
+        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1hr' });
+        return res.status(200).send({ message: 'Login Successful', email: user.email, token });
     }
 }
 

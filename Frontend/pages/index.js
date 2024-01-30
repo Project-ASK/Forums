@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
+import Cookies from 'js-cookie';
 
 const dev = () => {
   alert("This feature is under development");
 }
 
 const LoginPage = () => {
+  const [data, setData] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
@@ -26,6 +28,7 @@ const LoginPage = () => {
       body: JSON.stringify({ username, password }),
     });
     const data = await response.json();
+    setData(data);
     if (data.message === 'Login Successful') {
       const otp = Math.floor(100000 + Math.random() * 900000);
       setRealOtp(otp.toString());
@@ -46,6 +49,8 @@ const LoginPage = () => {
     if (otp === realOtp) {
       setIsVerified(true);
       setModalIsOpen(false);
+      Cookies.set('username', username);
+      Cookies.set('token', data.token);
       router.replace('/login');
     } else {
       alert('Incorrect OTP. Please try again.');
