@@ -59,10 +59,26 @@ router.route('/signup')
 
 async function postSignUp(req, res) {
     const { name, email, username, password } = req.body;
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+        return res.status(400).send({ message: 'A user already exists' });
+    }
     const user = new User({ name, email, username, password });
     await user.save();
     res.status(200).send({ message: 'Signup Successful' });
 }
+
+router.route('/resetPassword')
+    .post(async (req, res) => {
+        const { email, newPassword } = req.body;
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        // Update the password in the database
+        await User.updateOne({ email }, { $set: { password: hashedPassword } });
+        res.status(200).send({ message: 'Password updated successfully' });
+    });
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
