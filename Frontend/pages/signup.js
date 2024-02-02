@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import bcrypt from 'bcryptjs';
 import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
-
+import balloon from 'balloon-css';
 
 const SignUpPage = () => {
     const [username, setUsername] = useState('');
@@ -24,12 +24,45 @@ const SignUpPage = () => {
             alert('Please use an email with domain @ceconline.edu');
             return;
         }
+
         const password = document.getElementById('password').value;
-        var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
-        if(!password.match(passw)) {
-            alert('Password is invalid');
-            return;
-        }
+const passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+
+if (!password.match(passw)) {
+  // Show general error message for invalid password format
+  const errorContainer = document.getElementById('div') || document.createElement('div');
+  errorContainer.id = 'password-error';
+  errorContainer.textContent = 'Password must be 6-20 characters long and contain at least one uppercase letter, one lowercase letter, and one number.';
+  document.getElementById('password').insertAdjacentElement('afterend', errorContainer);
+  return;
+}
+
+// Check password strength
+const strengthChecker = {
+  'weak': /[a-z0-9]{6,}/,
+  'medium': /[a-z0-9]{6,}[A-Z]{1,}/,
+  'strong': /[a-z0-9]{6,}[A-Z]{1,}[!@#$%^&*()_+}{:;?.]{1,}/
+};
+
+let strength = 'weak';
+for (const [level, pattern] of Object.entries(strengthChecker)) {
+  if (password.match(pattern)) {
+    strength = level;
+    break;
+  }
+}
+
+if (strength === 'weak') {
+  // Show specific error message for weak password
+  errorContainer.textContent = 'Password is too weak. It should include a mix of uppercase, lowercase, numbers, and symbols.';
+  document.getElementById('password').insertAdjacentElement('afterend', errorContainer);
+  return;
+} else {
+  // Password is valid and meets strength requirements
+  // Proceed with other code
+}
+
+
         const otp = Math.floor(100000 + Math.random() * 900000);
         setRealOtp(otp.toString());
         emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
