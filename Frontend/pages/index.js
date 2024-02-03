@@ -1,154 +1,89 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import Modal from 'react-modal';
-import emailjs from '@emailjs/browser';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
+import { Carousel } from 'react-responsive-carousel';
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
-const LoginPage = () => {
-  const [data, setData] = useState(null);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [otp, setOtp] = useState('');
-  const [realOtp, setRealOtp] = useState('');
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const router = useRouter();
+const Test = () => {
+  const [images, setImages] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const dev = () => {
-    router.push('/forgetPassword');
+  useEffect(() => {
+    fetch('http://localhost:3001/images')
+      .then(response => response.json())
+      .then(data => setImages(data));
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    // Cleanup event listener
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const localImages = [
+    { name: 'ieee.png', link: 'https://cecieee.org/' },
+    { name: 'iedc.jpg', link: 'https://www.iedcbootcampcec.in/' },
+    { name: 'gdsc.jpg', link: 'https://gdsc.community.dev/college-of-engineering-chengannur/' },
+    { name: 'tinkerhub.png', link: 'https://tinkerhub-cec-website.vercel.app/' },
+    { name: 'mulearn.jpg', link: 'https://mulearn.org/' },
+    { name: 'foces.jpg', link: 'http://foces.org/' },
+    { name: 'nss.png', link: 'https://ceconline.edu/organizations/nss/' },
+    { name: 'ncc.png', link: 'https://ceconline.edu/organizations/ncc_unit/' },
+    { name: 'proddec.jpg', link: 'https://cec-proddec.web.app/' }
+  ]
+
+  const handleImageClick = (url) => {
+    window.open(url, '_blank');
   }
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const response = await fetch('http://localhost:3001/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await response.json();
-    setData(data);
-    if (data.message === 'Login Successful') {
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      setRealOtp(otp.toString());
-      const email = data.email;
-      emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
-        .then((response) => {
-          console.log('SUCCESS!', response.status, response.text);
-          setModalIsOpen(true);
-        }, (err) => {
-          console.log('FAILED...', err);
-        });
-    } else {
-      alert(data.message);
-    }
-  }
-
-  const verifyOtp = async () => {
-    if (otp === realOtp) {
-      setIsVerified(true);
-      setModalIsOpen(false);
-      Cookies.set('username', username);
-      Cookies.set('token', data.token);
-      router.replace('/login');
-    } else {
-      alert('Incorrect OTP. Please try again.');
-    }
-    setOtp(''); // Clear the OTP input box
-  }
-
-  const handleModalClose = () => {
-    if (otp === realOtp) {
-      setIsVerified(true);
-    }
-  }
-
-  const handleSignUp = (e) => {
-    e.preventDefault();
-    router.push('/signup');
+  const Login = () => {
+    window.location.href = '/login';
   }
 
   return (
     <>
-      <div className="flex h-screen items-center justify-center lg:justify-start" style={{ backgroundImage: 'url("/assets/back.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2">
-          <h1 className="text-2xl font-semibold  text-left ml-8">Forum Management</h1>
-        </div>
-        {/* Left Part - Image covering the whole page */}
-        <div className="hidden lg:flex lg:flex-1">
-        </div>
-
-        {/* Right Part - Centered Login Form above the image */}
-        <div className="max-w-md bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:mr-32 lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
-          <h2 className="text-2xl font-semibold mb-4">Login</h2>
-
-          {/* Login Form */}
-          <form>
-            <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-              <input type="text" id="username" name="username" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} required />
+      <div className='pb-16'>
+        <div className="flex min-h-screen items-center justify-center lg:justify-start" >
+          <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
+            <h1 className="text-2xl font-semibold text-left ml-8">Forum Management</h1>
+            {!isMobile && <button className="mr-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded" onClick={Login}>Login</button>}
+          </div>
+          {isMobile &&
+            <div className="absolute top-4 right-2 flex items-center">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Login</button>
             </div>
-
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-              <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              {/* Forgot password */}
-              <div className='flex justify-end mt-2'>
-                <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
+          }
+          <div className="relative top-6">
+            <h2 className="text-2xl font-semibold text-center mb-4 relative top-6">Achievements</h2>
+            <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
+              {images.map((image, index) => (
+                <div key={index} className="w-11/12 md:w-1/2 lg:w-[70%] mx-auto relative top-6">
+                  <img src={`http://localhost:3001/uploads/guest/${image}`} alt="image" className="w-full h-64 md:h-96 lg:h-128 object-cover rounded-lg" style={{ objectFit: 'contain' }} />
+                </div>
+              ))}
+            </Carousel>
+            <h2 className="text-2xl font-semibold text-center relative top-8">Forums</h2>
+            <div className='flex justify-center relative top-6'>
+              <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-[85%] sm:w-[75%] md:w-[50%] mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {localImages.slice(0, 9).map((image, index) => (
+                  <div key={index} className="w-full flex justify-center">
+                    <img src={`/assets/forums/${image.name}`} alt="image" className="w-[50%] sm:w-[30%] h-auto object-cover rounded-lg cursor-pointer" onClick={() => handleImageClick(image.link)} />
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className='flex justify-center'>
-              <button type="submit" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onClick={handleLogin}>
-                Log In
-              </button>
-            </div>
-            <div className='flex justify-center mt-4'>
-              <span className='text-md text-black block text-right mt-4'>Not Registered Yet?&nbsp;</span><a href="#" className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4" onClick={handleSignUp}>Sign Up</a>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div className="flex items-center justify-center absolute bottom-2 left-4">
-        <div className="p-2 rounded-2xl shadow-md mx-4 sm:mx-auto sm:w-full sm:max-w-md lg:mx-0 lg:w-full">
-          <p className="text-md text-center">© 2024 My Website. All rights reserved.</p>
-        </div>
-      </div>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={handleModalClose}
-        className="fixed inset-0 flex items-center justify-center z-50 outline-none focus:outline-none"
-        overlayClassName="fixed inset-0 bg-black opacity-90"
-      >
-        <div className="relative w-auto max-w-sm mx-auto my-6">
-          <div className="relative flex flex-col w-full bg-white outline-none focus:outline-none rounded-2xl shadow-lg">
-            <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
-              <h3 className="text-xl font-semibold">Enter the OTP</h3>
-            </div>
-            <div className="relative p-6 flex-auto">
-              <input
-                type="text"
-                maxLength='6'
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="w-full px-3 py-2 mb-4 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline"
-                placeholder="Enter OTP"
-                autoFocus
-              />
-            </div>
-            <div className="flex items-center justify-end p-2 border-t border-solid border-gray-300 rounded-b">
-              <button
-                onClick={verifyOtp}
-                className="px-6 py-2 mb-1 mr-1 text-sm font-bold text-white uppercase bg-blue-500 rounded shadow outline-none active:bg-blue-600 hover:shadow-lg focus:outline-none"
-              >
-                Verify
-              </button>
             </div>
           </div>
         </div>
-      </Modal>
+        <div className="flex items-center justify-center bottom-2 left-4 fixed">
+          <div className="p-2 rounded-2xl shadow-md mx-4 sm:mx-auto sm:w-full sm:max-w-md lg:mx-0 lg:w-full">
+            <p className="text-md text-center">© 2024 My Website. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
     </>
   );
-};
+}
 
-export default LoginPage;
+export default Test;

@@ -7,13 +7,37 @@ const bodyParser = require('body-parser')
 const jwt = require('jsonwebtoken')
 const port = 3001;
 const cors = require('cors');
+const multer = require('multer'); // Add this
+const path = require('path'); // Add this
+const fs = require('fs');
 
 const SECRET_KEY = 'super-secret-key';
 
 app.use(cors())
 app.use(bodyParser.json())
 // app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 dotenv.config();
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const username = req.params.username;
+        const dir = `./uploads/${username}`;
+
+        fs.exists(dir, exist => {
+            if (!exist) {
+                return fs.mkdir(dir, error => cb(error, dir))
+            }
+            return cb(null, dir);
+        })
+    },
+    filename: function (req, file, cb) {
+        const originalName = path.basename(file.originalname, path.extname(file.originalname)); // Get the original filename without extension
+        cb(null, `${originalName}-${Date.now()}${path.extname(file.originalname)}`)
+    }
+})
+
+const upload = multer({ storage: storage })
 
 // Connect to DB
 mongoose.connect(process.env.DB_CONNECT);
@@ -28,6 +52,7 @@ const userSchema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
+    image: String,
 });
 
 const User = mongoose.model('User', userSchema);
@@ -78,6 +103,31 @@ router.route('/resetPassword')
         await User.updateOne({ email }, { $set: { password: hashedPassword } });
         res.status(200).send({ message: 'Password updated successfully' });
     });
+
+app.use(upload.none());
+router.route('/uploadImage/:username')
+    .post(upload.single('image'), async (req, res) => {
+        const { username } = req.params;
+        console.log('Request body:', req.params); // Retrieve the username from the request body
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        user.image = req.file.path;
+        await user.save();
+        res.status(200).send({ message: 'Image uploaded successfully' });
+    });
+
+router.get('/images', (req, res) => {
+    const directoryPath = path.join(__dirname, 'uploads/guest');
+    fs.readdir(directoryPath, function (err, files) {
+        if (err) {
+            return res.status(500).send({ message: 'Unable to scan directory: ' + err });
+        }
+        res.send(files);
+    });
+});
+
 
 
 app.listen(port, () => {

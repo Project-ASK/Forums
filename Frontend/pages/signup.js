@@ -83,7 +83,7 @@ const SignUpPage = () => {
     }
     useEffect(() => {
         if (isVerified) {
-            router.replace('/login');
+            router.replace('/test');
         }
     }, [isVerified]);
 
