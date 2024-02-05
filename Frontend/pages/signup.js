@@ -30,12 +30,12 @@ const SignUpPage = () => {
             alert('Password is invalid');
             return;
         }
-        const response = await fetch('http://localhost:3001/signup', {
+        const response = await fetch('http://localhost:3001/checkUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, email, username, password }),
+            body: JSON.stringify({email, username }),
         });
         const data = await response.json();
         if (data.message === 'A user already exists') {
@@ -66,6 +66,7 @@ const SignUpPage = () => {
             });
             const data = await response.json();
             if (data.message === 'Sign Up Successful') {
+                alert('Sign Up Successful');
                 setModalIsOpen(false);
             }
             else {
@@ -83,7 +84,7 @@ const SignUpPage = () => {
     }
     useEffect(() => {
         if (isVerified) {
-            router.replace('/test');
+            router.replace('/login');
         }
     }, [isVerified]);
 

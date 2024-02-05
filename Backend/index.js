@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    image: String,
+    forums: [String]
 });
 
 const User = mongoose.model('User', userSchema);
@@ -79,16 +79,25 @@ async function postLogin(req, res) {
     }
 }
 
+
+router.route('/checkUser')
+    .post(postCheckUser);
+
+async function postCheckUser(req, res) {
+    const { email, username } = req.body;
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+        return res.status(400).send({ message: 'A user already exists' });
+    }
+    res.status(200).send({ message: 'User does not exist' });
+}
+
 router.route('/signup')
     .post(postSignUp);
 
 async function postSignUp(req, res) {
     const { name, email, username, password } = req.body;
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-        return res.status(400).send({ message: 'A user already exists' });
-    }
-    const user = new User({ name, email, username, password });
+    const user = new User({ name, email, username, password, forums: ['iedc', 'gdsc'] });
     await user.save();
     res.status(200).send({ message: 'Signup Successful' });
 }
