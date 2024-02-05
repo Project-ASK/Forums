@@ -11,7 +11,7 @@ const SignUpPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [otp, setOtp] = useState('');
+    const [otp, setOtp] = useState(Array(6).fill(null));
     const [realOtp, setRealOtp] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
@@ -35,7 +35,7 @@ const SignUpPage = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({email, username }),
+            body: JSON.stringify({ email, username }),
         });
         const data = await response.json();
         if (data.message === 'A user already exists') {
@@ -54,7 +54,7 @@ const SignUpPage = () => {
     }
 
     const verifyOtp = async () => {
-        if (otp === realOtp) {
+        if (otp.join('') === realOtp) {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/signup`, {
@@ -74,11 +74,11 @@ const SignUpPage = () => {
             }
         } else {
             alert('Incorrect OTP. Please try again.');
-            setOtp('');
+            setOtp(Array(6).fill(null));
         }
     }
     const handleModalClose = () => {
-        if (otp === realOtp) {
+        if (otp.join('') === realOtp) {
             setIsVerified(true);
         }
     }
@@ -148,16 +148,39 @@ const SignUpPage = () => {
                         <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
                             <h3 className="text-xl font-semibold">Enter the OTP</h3>
                         </div>
-                        <div className="relative p-6 flex-auto">
-                            <input
-                                type="text"
-                                maxLength='6'
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                className="w-full px-3 py-2 mb-4 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline"
-                                placeholder="Enter OTP"
-                                autoFocus
-                            />
+                        <div className="relative p-6 flex-auto flex justify-between">
+                            {otp.map((digit, index) => (
+                                <input
+                                    type="text"
+                                    maxLength='1'
+                                    value={digit || ''}
+                                    onChange={(e) => {
+                                        if (e.target.value === '') {
+                                            // Allow deleting values
+                                            setOtp([...otp.slice(0, index), null, ...otp.slice(index + 1)]);
+                                        } else if (/^[0-9]$/.test(e.target.value)) {
+                                            // Change value and focus next input if the entered value is a digit
+                                            setOtp([...otp.slice(0, index), e.target.value, ...otp.slice(index + 1)]);
+                                            const nextSibling = document.querySelector(`input[name="${index + 2}"]`);
+                                            if (nextSibling !== null) {
+                                                nextSibling.focus();
+                                            }
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Backspace' && otp[index] === null) {
+                                            const previousSibling = document.querySelector(`input[name="${index}"]`);
+                                            if (previousSibling !== null) {
+                                                previousSibling.focus();
+                                            }
+                                        }
+                                    }}
+                                    name={index + 1}
+                                    className="w-10 px-3 py-2 mb-4 mr-2 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline"
+                                    autoFocus={index === 0}
+                                    autocomplete="off"
+                                />
+                            ))}
                         </div>
                         <div className="flex items-center justify-end p-2 border-t border-solid border-gray-300 rounded-b">
                             <button
