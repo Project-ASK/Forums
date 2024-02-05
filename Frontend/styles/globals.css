@@ -32,8 +32,3 @@ body {
   }
 }
 
-body {
-  background-image: url("/assets/back.jpg");
-  background-size: cover;
-  background-position: center;
-}
