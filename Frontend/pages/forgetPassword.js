@@ -62,7 +62,7 @@ const ForgotPassword = () => {
             alert('Passwords do not match. Please try again.');
             return;
         }
-        const response = await fetch('http://localhost:3001/resetPassword', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/resetPassword`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, newPassword }),

@@ -30,7 +30,7 @@ const SignUpPage = () => {
             alert('Password is invalid');
             return;
         }
-        const response = await fetch('http://localhost:3001/checkUser', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/checkUser`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ const SignUpPage = () => {
         if (otp === realOtp) {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
-            const response = await fetch('http://localhost:3001/signup', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

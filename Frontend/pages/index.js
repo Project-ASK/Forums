@@ -7,7 +7,7 @@ const Test = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:3001/images')
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/images`)
       .then(response => response.json())
       .then(data => setImages(data));
 
@@ -60,7 +60,7 @@ const Test = () => {
             <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
               {images.map((image, index) => (
                 <div key={index} className="w-11/12 md:w-1/2 lg:w-[70%] mx-auto relative top-6">
-                  <img src={`http://localhost:3001/uploads/guest/${image}`} alt="image" className="w-full h-64 md:h-96 lg:h-128 object-cover rounded-lg" style={{ objectFit: 'contain' }} />
+                  <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`} alt="image" className="w-full h-64 md:h-96 lg:h-128 object-cover rounded-lg" style={{ objectFit: 'contain' }} />
                 </div>
               ))}
             </Carousel>
