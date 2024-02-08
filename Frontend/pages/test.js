@@ -59,7 +59,7 @@ const LoginPage = ({ username }) => {
             )}
           </div>
         </div>
-        <div className="absolute top-24 left-14 flex justify-between items-center w-[93%]">
+        <div className="absolute top-28 left-14 flex justify-between items-center w-[93%]">
           <h2 className="text-2xl font-semibold">Your Organizations</h2>
           <button className="bg-blue-500 text-white px-4 py-2 rounded">+ Add Organization</button>
         </div>
