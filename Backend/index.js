@@ -97,7 +97,7 @@ router.route('/signup')
 
 async function postSignUp(req, res) {
     const { name, email, username, password } = req.body;
-    const user = new User({ name, email, username, password, forums: ['iedc', 'gdsc'] });
+    const user = new User({ name, email, username, password, forums: ['IEDC', 'GDSC'] });
     await user.save();
     res.status(200).send({ message: 'Signup Successful' });
 }
@@ -136,6 +136,18 @@ router.get('/images', (req, res) => {
         res.send(files);
     });
 });
+
+
+router.route('/getForums')
+    .post(async (req, res) => {
+        const { username } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        res.status(200).send({ forums: user.forums,name:user.name });
+    });
+
 
 
 
