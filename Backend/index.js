@@ -145,9 +145,26 @@ router.route('/getForums')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ forums: user.forums,name:user.name });
+        res.status(200).send({ forums: user.forums, name: user.name });
     });
 
+router.route('/addForum')
+    .post(async (req, res) => {
+        const { name, org, id } = req.body;
+        const user = await User.findOne({ name });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        const orgData = require(`./memberships/${org}.json`);
+        const member = orgData.find(member => member.name === name && member.id === id);
+        if (member) {
+            user.forums.push(org);
+            await user.save();
+            res.status(200).send({ success: true });
+        } else {
+            res.status(200).send({ success: false });
+        }
+    });
 
 
 

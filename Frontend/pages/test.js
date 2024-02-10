@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Modal from 'react-modal';
 import Cookies from 'js-cookie';
 
 const LoginPage = ({ username }) => {
   const [forums, setForums] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const router = useRouter();
   const [name, setName] = useState('');
+
+  const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
 
   useEffect(() => {
     const fetchForums = async () => {
@@ -31,6 +37,42 @@ const LoginPage = ({ username }) => {
     Cookies.remove('token');
     router.replace('/login');
   }
+
+  const handleModalOpen = () => {
+    setModalIsOpen(true);
+  }
+
+  const handleModalClose = () => {
+    setModalIsOpen(false);
+  }
+
+  const handleOrgSelect = (event) => {
+    setSelectedOrg(event.target.value);
+  }
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  }
+
+  const handleSubmit = () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/addForum`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, org: selectedOrg, id: inputValue }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Success');
+          handleModalClose();
+        } else {
+          alert('Failed');
+        }
+      });
+  }
+
 
   // If username is not available, don't render anything
   if (!username) {
@@ -61,7 +103,7 @@ const LoginPage = ({ username }) => {
         </div>
         <div className="absolute top-28 left-14 flex justify-between items-center w-[93%]">
           <h2 className="text-2xl font-semibold">Your Organizations</h2>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">+ Add Organization</button>
+          <button onClick={handleModalOpen} className="bg-blue-500 text-white px-4 py-2 rounded">+ Add Organization</button>
         </div>
         <div className="mb-48 mx-5 w-3/5 ml-auto mr-auto">
           <div className="flex flex-col items-center gap-4">
@@ -72,6 +114,41 @@ const LoginPage = ({ username }) => {
             ))}
           </div>
         </div>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={handleModalClose}
+          className="fixed inset-0 flex items-center justify-center z-50 outline-none focus:outline-none"
+          overlayClassName="fixed inset-0 bg-black opacity-90"
+        >
+          <div className="relative w-auto max-w-sm mx-auto my-6">
+            <div className="relative flex flex-col w-full bg-white outline-none focus:outline-none rounded-2xl shadow-lg">
+              <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
+                <h3 className="text-xl font-semibold">Add Organization</h3>
+              </div>
+              <div className="relative p-6 flex-auto">
+                <select value={selectedOrg} onChange={handleOrgSelect}>
+                  <option value="">Select</option> {/* Add this line */}
+                  {organizations.map((org, index) => (
+                    <option key={index} value={org}>{org}</option>
+                  ))}
+                </select>
+                {selectedOrg && (
+                  <div className='mt-3'>
+                    <input type="text" placeholder="Enter the ID here" style={{ border: '2px solid black' }} value={inputValue} onChange={handleInputChange} />
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-end p-2 border-t border-solid border-gray-300 rounded-b">
+                <button
+                  onClick={handleSubmit}
+                  className="px-6 py-2 mb-1 mr-1 text-sm font-bold text-white uppercase bg-blue-500 rounded shadow outline-none active:bg-blue-600 hover:shadow-lg focus:outline-none"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     </>
   );
