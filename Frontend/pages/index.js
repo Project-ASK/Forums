@@ -53,20 +53,30 @@ const Test = () => {
     window.location.href = '/login';
   }
 
+  const SignUp = () =>{
+    window.location.href = '/signup';
+  }
+
   return (
     <>
       <div className='pb-16' style={{ backgroundImage: 'url("/assets/back.jpg")', backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="flex min-h-screen items-center justify-center lg:justify-center" >
-          <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-left ml-8">Forum Management</h1>
-            {!isMobile && <button className="mr-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded" onClick={Login}>Login</button>}
+          <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between">
+
+            <img src="/assets/logo.png" height={100} width={130} className='p-3'/>
+            <div className="flex-row space-x-8 self-center mr-[30px]">
+            {!isMobile &&  <button onClick={SignUp} className="font-product-sans">Sign Up</button>}
+            {!isMobile && <button className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded" onClick={Login}>Login</button>}
+            </div>            
+            
           </div>
           {isMobile &&
             <div className="absolute top-4 right-2 flex items-center">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={Login}>Login</button>
+              <button>Sign Up</button>
             </div>
           }
-          <div className="relative top-6">
+          <div className="relative mt-[5rem]">
             <div>
               <h2 className="text-2xl font-semibold text-center mb-4 relative top-6">Achievements</h2>
               <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
@@ -84,12 +94,13 @@ const Test = () => {
               </Carousel>
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-center relative top-8">Forums</h2>
+              <h2 className="text-2xl text-center relative top-8 font-product-sans">Forums</h2>
               <div className='flex justify-center relative top-6'>
                 <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-[85%] sm:w-[75%] md:w-[50%] mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {localImages.slice(0, 9).map((image, index) => (
                     <div key={index} className="w-full flex justify-center">
                       <img src={`/assets/forums/${image.name}`} alt="image" className="w-[50%] sm:w-[30%] h-auto object-cover rounded-lg cursor-pointer" onClick={() => handleImageClick(image.link)} />
+                      
                     </div>
                   ))}
                 </div>
