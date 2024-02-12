@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Modal from 'react-modal';
 import Cookies from 'js-cookie';
+import Image from 'next/image';
+
 
 const LoginPage = ({ username }) => {
   const [forums, setForums] = useState([]);
@@ -10,6 +12,7 @@ const LoginPage = ({ username }) => {
   const [selectedOrg, setSelectedOrg] = useState('');
   const [inputValue, setInputValue] = useState('');
   const router = useRouter();
+  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
 
   const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
@@ -26,6 +29,7 @@ const LoginPage = ({ username }) => {
       const data = await response.json();
       setForums(data.forums);
       setName(data.name);
+      setEmail(data.email);
     };
 
     fetchForums();
@@ -93,6 +97,11 @@ const LoginPage = ({ username }) => {
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg">
                 <div className="py-1">
+                  <span className="block w-full text-center px-2 py-2 text-sm text-gray-700 ">
+                    {email}
+                  </span>
+                </div>
+                <div className="py-1">
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white">
                     Logout
                   </button>
@@ -101,15 +110,20 @@ const LoginPage = ({ username }) => {
             )}
           </div>
         </div>
-        <div className="absolute top-28 left-14 flex justify-between items-center w-[93%]">
+        <div className={`absolute ${dropdownOpen ? 'top-40' : 'top-28'} left-14 flex justify-between items-center w-[93%]`}>
           <h2 className="text-2xl font-semibold">Your Organizations</h2>
           <button onClick={handleModalOpen} className="bg-blue-500 text-white px-4 py-2 rounded">+ Add Organization</button>
         </div>
-        <div className="mb-48 mx-5 w-3/5 ml-auto mr-auto">
-          <div className="flex flex-col items-center gap-4">
+        <div className={`${dropdownOpen ? 'mb-44' : 'mb-48'} mx-5 w-3/5 ml-auto mr-auto`}>
+          <div className="flex flex-row items-center justify-center gap-4">
             {forums.map((forum, index) => (
-              <div key={index} className="border border-gray-200 p-4 rounded-2xl bg-white w-full">
-                {forum}
+              <div key={index} className="border border-gray-200 p-4 rounded-2xl bg-white w-[20%] flex justify-center">
+                <Image
+                  src={`/assets/forums/${forum}.jpg`} // Update the file extension if your images are not .jpg
+                  alt={forum}
+                  width={60} // Update these values as needed
+                  height={60}
+                />
               </div>
             ))}
           </div>

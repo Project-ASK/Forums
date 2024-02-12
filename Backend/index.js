@@ -145,7 +145,7 @@ router.route('/getForums')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ forums: user.forums, name: user.name });
+        res.status(200).send({ forums: user.forums, name: user.name, email:user.email });
     });
 
 router.route('/addForum')
