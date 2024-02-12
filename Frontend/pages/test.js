@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Modal from 'react-modal';
 import Cookies from 'js-cookie';
+import Image from 'next/image';
+
 
 const LoginPage = ({ username }) => {
   const [forums, setForums] = useState([]);
@@ -106,12 +108,18 @@ const LoginPage = ({ username }) => {
           <button onClick={handleModalOpen} className="bg-blue-500 text-white px-4 py-2 rounded">+ Add Organization</button>
         </div>
         <div className="mb-48 mx-5 w-3/5 ml-auto mr-auto">
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-row items-center justify-center gap-4">
             {forums.map((forum, index) => (
-              <div key={index} className="border border-gray-200 p-4 rounded-2xl bg-white w-full">
-                {forum}
+              <div key={index} className="border border-gray-200 p-4 rounded-2xl bg-white w-[20%] flex justify-center">
+                <Image
+                  src={`/assets/forums/${forum}.jpg`} // Update the file extension if your images are not .jpg
+                  alt={forum}
+                  width={60} // Update these values as needed
+                  height={60}
+                />
               </div>
             ))}
+
           </div>
         </div>
         <Modal
