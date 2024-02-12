@@ -34,15 +34,15 @@ const Test = () => {
   }, []);
 
   const localImages = [
-    { name: 'ieee.png', link: 'https://cecieee.org/' },
-    { name: 'iedc.jpg', link: 'https://www.iedcbootcampcec.in/' },
-    { name: 'gdsc.jpg', link: 'https://gdsc.community.dev/college-of-engineering-chengannur/' },
-    { name: 'tinkerhub.png', link: 'https://tinkerhub-cec-website.vercel.app/' },
-    { name: 'mulearn.jpg', link: 'https://mulearn.org/' },
-    { name: 'foces.jpg', link: 'http://foces.org/' },
-    { name: 'nss.png', link: 'https://ceconline.edu/organizations/nss/' },
-    { name: 'ncc.png', link: 'https://ceconline.edu/organizations/ncc_unit/' },
-    { name: 'proddec.jpg', link: 'https://cec-proddec.web.app/' }
+    { name: 'IEEE.JPG', link: 'https://cecieee.org/' },
+    { name: 'IEDC.JPG', link: 'https://www.iedcbootcampcec.in/' },
+    { name: 'GDSC.jpg', link: 'https://gdsc.community.dev/college-of-engineering-chengannur/' },
+    { name: 'TINKERHUB.JPG', link: 'https://tinkerhub-cec-website.vercel.app/' },
+    { name: 'MULEARN.jpg', link: 'https://mulearn.org/' },
+    { name: 'FOCES.jpg', link: 'http://foces.org/' },
+    { name: 'NSS.jpg', link: 'https://ceconline.edu/organizations/nss/' },
+    { name: 'NCC.jpg', link: 'https://ceconline.edu/organizations/ncc_unit/' },
+    { name: 'PRODDEC.jpg', link: 'https://cec-proddec.web.app/' }
   ]
 
   const handleImageClick = (url) => {
