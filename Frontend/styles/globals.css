@@ -32,3 +32,8 @@ body {
   }
 }
 
+@font-face {
+  font-family: "Inter";
+  src: url("../public/assets/fonts/font2.ttf");
+}
+
