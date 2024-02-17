@@ -66,7 +66,7 @@ const Test = () => {
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={Login}>Login</button>
             </div>
           }
-          <div className="relative top-8">
+          <div className="relative mt-[5rem]">
             <div>
               <h2 className="text-2xl font-semibold text-center mb-4 relative top-6">Achievements</h2>
               <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
