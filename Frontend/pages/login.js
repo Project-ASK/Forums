@@ -72,7 +72,7 @@ const LoginPage = () => {
     return (
         <>
             <div className="flex h-screen items-center justify-center lg:justify-start" style={{ backgroundImage: 'url("/assets/back.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2">
+                <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 rounded-2xl shadow-md w-full absolute top-2">
                     <h1 className="text-2xl font-semibold  text-left ml-8">Forum Management</h1>
                 </div>
                 {/* Left Part - Image covering the whole page */}
