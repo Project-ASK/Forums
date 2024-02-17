@@ -57,12 +57,12 @@ const Test = () => {
     <>
       <div className='pb-16' style={{ backgroundImage: 'url("/assets/back.jpg")', backgroundSize: "cover", backgroundPosition: "center" }}>
         <div className="flex min-h-screen items-center justify-center lg:justify-center" >
-          <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-left ml-8">Forum Management</h1>
+          <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
+            <img src="/assets/logo.png" width={100} />
             {!isMobile && <button className="mr-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded" onClick={Login}>Login</button>}
           </div>
           {isMobile &&
-            <div className="absolute top-[2.5%] right-2 flex items-center">
+            <div className="absolute top-[3.4%] right-2 flex items-center mr-2">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={Login}>Login</button>
             </div>
           }
