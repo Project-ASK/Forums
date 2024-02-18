@@ -153,7 +153,7 @@ const LoginPage = () => {
                                         }
                                     }}
                                     name={index + 1}
-                                    className="w-10 px-3 py-2 mb-4 mr-2 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline"
+                                    className="w-10 px-3 py-2 mb-4 mr-2 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline text-center"
                                     autoFocus={index === 0}
                                     autocomplete="off"
                                 />

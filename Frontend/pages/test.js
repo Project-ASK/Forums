@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 
 
-const LoginPage = ({ username }) => {
+const Dashboard = ({ username }) => {
   const [forums, setForums] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -86,8 +86,8 @@ const LoginPage = ({ username }) => {
   return (
     <>
       <div className="flex h-screen items-center justify-center lg:justify-start" style={{ backgroundImage: 'url("/assets/back.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-left ml-8">Forum Management</h1>
+        <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
+          <img src="/assets/logo.png" width={100} />
           <div className="relative">
             <div className='bg-blue-300 rounded-lg'>
               <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-black py-1 px-4 rounded">
@@ -110,14 +110,14 @@ const LoginPage = ({ username }) => {
             )}
           </div>
         </div>
-        <div className={`absolute ${dropdownOpen ? 'top-40' : 'top-28'} left-14 flex justify-between items-center w-[93%]`}>
-          <h2 className="text-2xl font-semibold">Your Organizations</h2>
-          <button onClick={handleModalOpen} className="bg-blue-500 text-white px-4 py-2 rounded">+ Add Organization</button>
+        <div className={`absolute ${dropdownOpen ? 'top-40' : 'top-28'} lg:left-14 flex justify-between items-center w-[93%]`}>
+          <h2 className="text-xl lg:text-2xl font-semibold">Your Organizations</h2>
+          <button onClick={handleModalOpen} className="bg-blue-500 text-white px-2 lg:px-4 py-1 lg:py-2 rounded">+ Add Organization</button>
         </div>
-        <div className={`${dropdownOpen ? 'mb-44' : 'mb-48'} mx-5 w-3/5 ml-auto mr-auto`}>
+        <div className={`${dropdownOpen ? 'mb-52 lg:mb-44' : 'mb-60 lg:mb-48'} mx-5 w-3/5 ml-auto mr-auto`}>
           <div className="flex flex-row items-center justify-center gap-4">
             {forums.map((forum, index) => (
-              <div key={index} className="border border-gray-200 p-4 rounded-2xl bg-white w-[20%] flex justify-center">
+              <div key={index} className="border border-gray-200 p-4 rounded-2xl bg-white w-[140%] lg:w-[20%] flex justify-center">
                 <Image
                   src={`/assets/forums/${forum}.jpg`} // Update the file extension if your images are not .jpg
                   alt={forum}
@@ -133,6 +133,9 @@ const LoginPage = ({ username }) => {
           onRequestClose={handleModalClose}
           className="fixed inset-0 flex items-center justify-center z-50 outline-none focus:outline-none"
           overlayClassName="fixed inset-0 bg-black opacity-90"
+          onAfterOpen={() => {
+            document.querySelector('.ReactModal__Overlay').addEventListener('click', handleModalClose);
+          }}
         >
           <div className="relative w-auto max-w-sm mx-auto my-6">
             <div className="relative flex flex-col w-full bg-white outline-none focus:outline-none rounded-2xl shadow-lg">
@@ -188,4 +191,4 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default LoginPage;
+export default Dashboard;
