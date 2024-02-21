@@ -86,7 +86,7 @@ const Test = () => {
             <div>
               <h2 className="text-2xl font-semibold text-center relative top-8">Forums</h2>
               <div className='flex justify-center relative top-6'>
-                <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-[85%] sm:w-[75%] md:w-[50%] mt-4 grid grid-cols-3 gap-4">
+                <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-[85%] sm:w-[75%] md:w-[40%] mt-4 grid grid-cols-3 gap-4">
                   {localImages.slice(0, 9).map((image, index) => (
                     <div key={index} className="w-full flex justify-center">
                       <img src={`/assets/forums/${image.name}`} alt="image" className="xs:w-[60%] lg:w-[40%] h-auto object-cover rounded-lg cursor-pointer" onClick={() => handleImageClick(image.link)} />
