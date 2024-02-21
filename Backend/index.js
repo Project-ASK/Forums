@@ -52,7 +52,10 @@ const userSchema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    forums: [String]
+    forums: [{
+        name: String,
+        description: String
+    }]
 });
 
 const User = mongoose.model('User', userSchema);
@@ -97,7 +100,11 @@ router.route('/signup')
 
 async function postSignUp(req, res) {
     const { name, email, username, password } = req.body;
-    const user = new User({ name, email, username, password, forums: ['IEDC', 'GDSC'] });
+    const forums = ['IEDC', 'GDSC'].map(forumName => ({
+        name: forumName,
+        description: organizationDescriptions[forumName]
+    }));
+    const user = new User({ name, email, username, password, forums });
     await user.save();
     res.status(200).send({ message: 'Signup Successful' });
 }
@@ -145,8 +152,19 @@ router.route('/getForums')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ forums: user.forums, name: user.name, email:user.email });
+        res.status(200).send({ forums: user.forums, name: user.name, email: user.email });
     });
+
+const organizationDescriptions = {
+    'PRODDEC': 'Description for PRODDEC',
+    'IEEE': 'Description for IEEE',
+    'NSS': 'Description for NSS',
+    'NCC': 'Description for NCC',
+    'TINKERHUB': 'Description for TINKERHUB',
+    'IEDC': 'Description for IEDC',
+    'GDSC': 'Description for GDSC',
+    'MULEARN': 'Description for MULEARN'
+};
 
 router.route('/addForum')
     .post(async (req, res) => {
@@ -155,10 +173,11 @@ router.route('/addForum')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
+        const description = organizationDescriptions[org];
         const orgData = require(`./memberships/${org}.json`);
         const member = orgData.find(member => member.name === name && member.id === id);
         if (member) {
-            user.forums.push(org);
+            user.forums.push({ name: org, description });
             await user.save();
             res.status(200).send({ success: true });
         } else {

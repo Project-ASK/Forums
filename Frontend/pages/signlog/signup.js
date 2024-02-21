@@ -55,6 +55,7 @@ const SignUpPage = () => {
 
     const verifyOtp = async () => {
         if (otp.join('') === realOtp) {
+            handleModalClose();
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/signup`, {
