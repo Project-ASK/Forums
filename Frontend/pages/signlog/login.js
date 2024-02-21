@@ -1,15 +1,12 @@
-//Page to login into the forum
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import bcrypt from 'bcryptjs';
 import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
+import Cookies from 'js-cookie';
 
-
-const SignUpPage = () => {
+const LoginPage = () => {
+    const [data, setData] = useState(null);
     const [username, setUsername] = useState('');
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [otp, setOtp] = useState(Array(6).fill(null));
     const [realOtp, setRealOtp] = useState('');
@@ -17,76 +14,60 @@ const SignUpPage = () => {
     const [isVerified, setIsVerified] = useState(false);
     const router = useRouter();
 
-    const handleSignUp = async (e) => {
+    const dev = () => {
+        router.push('/forgetPassword');
+    }
+
+    const handleLogin = async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
-        if (!email.endsWith('@ceconline.edu')) {
-            alert('Please use an email with domain @ceconline.edu');
-            return;
-        }
-        const password = document.getElementById('password').value;
-        var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
-        if (!password.match(passw)) {
-            alert('Password is invalid');
-            return;
-        }
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/checkUser`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, username }),
+            body: JSON.stringify({ username, password }),
         });
         const data = await response.json();
-        if (data.message === 'A user already exists') {
-            alert('A user with this email or username already exists');
-            return;
+        setData(data);
+        if (data.message === 'Login Successful') {
+            const otp = Math.floor(100000 + Math.random() * 900000);
+            setRealOtp(otp.toString());
+            const email = data.email;
+            emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
+                .then((response) => {
+                    console.log('SUCCESS!', response.status, response.text);
+                    setModalIsOpen(true);
+                }, (err) => {
+                    console.log('FAILED...', err);
+                });
+        } else {
+            alert(data.message);
         }
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        setRealOtp(otp.toString());
-        emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
-            .then((response) => {
-                console.log('SUCCESS!', response.status, response.text);
-                setModalIsOpen(true);
-            }, (err) => {
-                console.log('FAILED...', err);
-            });
     }
 
     const verifyOtp = async () => {
         if (otp.join('') === realOtp) {
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, username, password: hashedPassword }),
-            });
-            const data = await response.json();
-            if (data.message === 'Sign Up Successful') {
-                alert('Sign Up Successful');
-                setModalIsOpen(false);
-            }
-            else {
-                alert(data.message);
-            }
+            setIsVerified(true);
+            setModalIsOpen(false);
+            Cookies.set('username', username);
+            Cookies.set('token', data.token);
+            router.replace('/user/userDB');
         } else {
             alert('Incorrect OTP. Please try again.');
-            setOtp(Array(6).fill(null));
         }
+        setOtp(Array(6).fill(null)); // Clear the OTP input box
     }
+
     const handleModalClose = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
         }
     }
-    useEffect(() => {
-        if (isVerified) {
-            router.replace('/login');
-        }
-    }, [isVerified]);
+
+    const handleSignUp = (e) => {
+        e.preventDefault();
+        router.push('/signlog/signup');
+    }
 
     return (
         <>
@@ -100,34 +81,30 @@ const SignUpPage = () => {
 
                 {/* Right Part - Centered Login Form above the image */}
                 <div className="max-w-md bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:mr-32 lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
-                    <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
+                    <h2 className="text-2xl font-semibold mb-4">Login</h2>
 
-                    {/* Signup Form */}
+                    {/* Login Form */}
                     <form>
-
-                        <div className="mb-4">
-                            <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Name</label>
-                            <input type="text" id="name" name="name" placeholder="Enter name here" className="w-full p-2 border border-gray-300 rounded" value={name} onChange={(e) => setName(e.target.value)} />
-                        </div>
-
-                        <div className="mb-4">
-                            <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Email</label>
-                            <input type="email" id="email" name="email" placeholder="Enter email here" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} />
-                        </div>
-
                         <div className="mb-4">
                             <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                            <input type="text" id="username" name="username" placeholder="Enter username here" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} />
+                            <input type="text" id="username" name="username" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} required />
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-4">
                             <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                            <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            {/* Forgot password */}
+                            <div className='flex justify-end mt-2'>
+                                <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
+                            </div>
                         </div>
                         <div className='flex justify-center'>
-                            <button type="submit" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onClick={handleSignUp}>
-                                Sign Up
+                            <button type="submit" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onClick={handleLogin}>
+                                Log In
                             </button>
+                        </div>
+                        <div className='flex justify-center mt-4'>
+                            <span className='text-md text-black block text-right mt-4'>Not Registered Yet?&nbsp;</span><a href="#" className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4" onClick={handleSignUp}>Sign Up</a>
                         </div>
                     </form>
                 </div>
@@ -176,7 +153,7 @@ const SignUpPage = () => {
                                         }
                                     }}
                                     name={index + 1}
-                                    className="w-10 px-3 py-2 mb-4 mr-2 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline"
+                                    className="w-10 px-3 py-2 mb-4 mr-2 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline text-center"
                                     autoFocus={index === 0}
                                     autocomplete="off"
                                 />
@@ -193,9 +170,8 @@ const SignUpPage = () => {
                     </div>
                 </div>
             </Modal>
-
         </>
     );
 };
 
-export default SignUpPage;
+export default LoginPage;
