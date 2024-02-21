@@ -34,10 +34,10 @@ const Test = () => {
   }, []);
 
   const localImages = [
-    { name: 'IEEE.JPG', link: 'https://cecieee.org/' },
-    { name: 'IEDC.JPG', link: 'https://www.iedcbootcampcec.in/' },
+    { name: 'IEEE.jpg', link: 'https://cecieee.org/' },
+    { name: 'IEDC.jpg', link: 'https://www.iedcbootcampcec.in/' },
     { name: 'GDSC.jpg', link: 'https://gdsc.community.dev/college-of-engineering-chengannur/' },
-    { name: 'TINKERHUB.JPG', link: 'https://tinkerhub-cec-website.vercel.app/' },
+    { name: 'TINKERHUB.jpg', link: 'https://tinkerhub-cec-website.vercel.app/' },
     { name: 'MULEARN.jpg', link: 'https://mulearn.org/' },
     { name: 'FOCES.jpg', link: 'http://foces.org/' },
     { name: 'NSS.jpg', link: 'https://ceconline.edu/organizations/nss/' },
@@ -93,7 +93,6 @@ const Test = () => {
                     </div>
                   ))}
                 </div>
-
               </div>
             </div>
           </div>
