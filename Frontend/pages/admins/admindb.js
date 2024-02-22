@@ -43,7 +43,7 @@ import {Menu, X} from 'react-feather';
     // Clear the cookies and redirect the user to the login page
     Cookies.remove('username');
     Cookies.remove('token');
-    router.replace('/login');
+    router.replace('/signlog/login');
   }
 
   const handleModalOpen = () => {
@@ -135,7 +135,7 @@ export async function getServerSideProps(context) {
   if (!username) {
     return {
       redirect: {
-        destination: '/login',
+        destination: '/signlog/login',
         permanent: false,
       },
     }
