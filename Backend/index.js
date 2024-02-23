@@ -205,6 +205,17 @@ const organizationDescriptions = {
     'MULEARN': 'Description for MULEARN'
 };
 
+router.route('/admin/getOrganizationMembers')
+    .post(async (req, res) => {
+        const { org } = req.body;
+        const users = await User.find({ "forums.name": org });
+        if (!users) {
+            return res.status(400).send({ message: 'No users found for this organization' });
+        }
+        res.status(200).send({ users });
+    });
+
+
 router.route('/addForum')
     .post(async (req, res) => {
         const { name, org, id } = req.body;

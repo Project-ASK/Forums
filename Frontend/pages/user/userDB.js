@@ -87,8 +87,9 @@ const Dashboard = ({ username }) => {
 
   return (
     <>
-      <div className="flex bg-white w-full">
+      <div className="flex bg-white w-full justify-between items-center">
         <img src="/assets/logo.png" width={200} />
+        <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] w-[5%]">Logout</button>
       </div>
       <div className="w-full flex pb-[40px] justify-center" style={{ backgroundImage: 'url("/assets/bgprofile.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="flex-col  xs:w-3/4 md:w-1/2  flex items-center bg-[#FFFFFF] border-cyan-800 border-2 rounded-[40px] p-[70px] mt-[30px]">

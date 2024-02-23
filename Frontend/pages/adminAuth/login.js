@@ -8,7 +8,7 @@ const LoginPage = () => {
     const [data, setData] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [forum,setForum] = useState('');
+    const [forum, setForum] = useState('');
     const [otp, setOtp] = useState(Array(6).fill(null));
     const [realOtp, setRealOtp] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -46,7 +46,7 @@ const LoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
             setModalIsOpen(false);
-            Cookies.set('username', username);
+            Cookies.set('adminUsername', username);
             Cookies.set('token', data.token);
             Cookies.set('forum', forum);
             router.replace('/admins/admindb');
