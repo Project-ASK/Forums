@@ -60,8 +60,37 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+const adminSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    username: String,
+    password: String,
+    forum: String
+});
+
+const Admin = mongoose.model('Admin', adminSchema);
+
 const router = express.Router();
 app.use('/', router);
+
+router.route('/admin/login')
+    .post(postAdminLogin);
+
+async function postAdminLogin(req, res) {
+    const { username, password, forum } = req.body;
+    const admin = await Admin.findOne({ username, forum });
+    if (!admin) {
+        return res.status(401).send({ message: 'Incorrect Credentials' });
+    }
+    else {
+        const validPassword = await bcrypt.compare(password, admin.password);
+        if (!validPassword) {
+            return res.status(401).send({ message: 'Incorrect Credentials' });
+        }
+        const token = jwt.sign({ adminId: admin._id }, SECRET_KEY, { expiresIn: '1hr' });
+        return res.status(200).send({ message: 'Login Successful', forum: admin.forum, email: admin.email, token });
+    }
+}
 
 router.route('/login')
     .post(postLogin);
@@ -153,6 +182,16 @@ router.route('/getForums')
             return res.status(400).send({ message: 'User not found' });
         }
         res.status(200).send({ forums: user.forums, name: user.name, email: user.email });
+    });
+
+router.route('/admin/getForums')
+    .post(async (req, res) => {
+        const { username } = req.body;
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        res.status(200).send({ forum: admin.forum, name: admin.name, email: admin.email });
     });
 
 const organizationDescriptions = {

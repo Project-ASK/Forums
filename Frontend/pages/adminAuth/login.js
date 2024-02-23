@@ -8,24 +8,21 @@ const LoginPage = () => {
     const [data, setData] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [forum,setForum] = useState('');
     const [otp, setOtp] = useState(Array(6).fill(null));
     const [realOtp, setRealOtp] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
     const router = useRouter();
 
-    const dev = () => {
-        router.push('/auth/forgetPassword');
-    }
-
     const handleLogin = async (e) => {
         e.preventDefault();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password, forum }),
         });
         const data = await response.json();
         setData(data);
@@ -51,7 +48,8 @@ const LoginPage = () => {
             setModalIsOpen(false);
             Cookies.set('username', username);
             Cookies.set('token', data.token);
-            router.replace('/user/userDB');
+            Cookies.set('forum', forum);
+            router.replace('/admins/admindb');
         } else {
             alert('Incorrect OTP. Please try again.');
         }
@@ -62,16 +60,6 @@ const LoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
         }
-    }
-
-    const handleSignUp = (e) => {
-        e.preventDefault();
-        router.push('/auth/signup');
-    }
-
-    const handleAdminLogin = (e) => {
-        e.preventDefault();
-        router.push('/adminAuth/login');
     }
 
     return (
@@ -98,20 +86,18 @@ const LoginPage = () => {
                         <div className="mb-4">
                             <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
                             <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                            {/* Forgot password */}
-                            <div className='flex justify-between mt-2'>
-                                <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
-                                <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
-                            </div>
                         </div>
-                        <div className='flex justify-center'>
+
+                        <div className="mb-4">
+                            <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Forum Name</label>
+                            <input type="text" id="forum" name="forum" className="w-full p-2 border border-gray-300 rounded" value={forum} onChange={(e) => setForum(e.target.value)} required />
+                        </div>
+                        <div className='flex justify-center mt-[3rem]'>
                             <button type="submit" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onClick={handleLogin}>
                                 Log In
                             </button>
                         </div>
-                        <div className='flex justify-center mt-4'>
-                            <span className='text-md text-black block text-right mt-4'>Not Registered Yet?&nbsp;</span><a href="#" className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4" onClick={handleSignUp}>Sign Up</a>
-                        </div>
+
                     </form>
                 </div>
             </div>
