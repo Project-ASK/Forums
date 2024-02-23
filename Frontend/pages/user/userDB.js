@@ -40,7 +40,7 @@ const Dashboard = ({ username }) => {
     // Clear the cookies and redirect the user to the login page
     Cookies.remove('username');
     Cookies.remove('token');
-    router.replace('/signlog/login');
+    router.replace('/auth/login');
   }
 
   const handleModalOpen = () => {
@@ -200,7 +200,7 @@ export async function getServerSideProps(context) {
   if (!username) {
     return {
       redirect: {
-        destination: '/signlog/login',
+        destination: '/auth/login',
         permanent: false,
       },
     }

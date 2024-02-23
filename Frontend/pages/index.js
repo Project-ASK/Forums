@@ -50,7 +50,7 @@ const Test = () => {
   }
 
   const Login = () => {
-    window.location.href = '/signlog/login';
+    window.location.href = '/auth/login';
   }
 
   return (

@@ -15,7 +15,7 @@ const LoginPage = () => {
     const router = useRouter();
 
     const dev = () => {
-        router.push('/forgetPassword');
+        router.push('/auth/forgetPassword');
     }
 
     const handleLogin = async (e) => {
@@ -66,7 +66,7 @@ const LoginPage = () => {
 
     const handleSignUp = (e) => {
         e.preventDefault();
-        router.push('/signlog/signup');
+        router.push('/auth/signup');
     }
 
     return (
