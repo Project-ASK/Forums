@@ -16,28 +16,50 @@ const SECRET_KEY = 'super-secret-key';
 app.use(cors())
 app.use(bodyParser.json())
 // app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
+app.use('/events', express.static(path.join(__dirname, 'events')));
 dotenv.config();
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const username = req.params.username;
-        const dir = `./uploads/${username}`;
+        const eventName = req.body.eventName;
+        const forumName = req.query.forumName;
+        const dir = `./events/${forumName}/${eventName}`;
 
         fs.exists(dir, exist => {
             if (!exist) {
-                return fs.mkdir(dir, error => cb(error, dir))
+                return fs.mkdir(dir, { recursive: true }, error => cb(error, dir))
             }
             return cb(null, dir);
         })
     },
     filename: function (req, file, cb) {
-        const originalName = path.basename(file.originalname, path.extname(file.originalname)); // Get the original filename without extension
-        cb(null, `${originalName}-${Date.now()}${path.extname(file.originalname)}`)
+        cb(null, `${file.originalname}`)
     }
 })
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage })
+
+// const storages = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         const username = req.params.username;
+//         const dir = `./uploads/${username}`;
+
+//         fs.exists(dir, exist => {
+//             if (!exist) {
+//                 return fs.mkdir(dir, error => cb(error, dir))
+//             }
+//             return cb(null, dir);
+//         })
+//     },
+//     filename: function (req, file, cb) {
+//         const originalName = path.basename(file.originalname, path.extname(file.originalname)); // Get the original filename without extension
+//         cb(null, `${originalName}-${Date.now()}${path.extname(file.originalname)}`)
+//     }
+// })
+
+// const upload = multer({ storage: storages })
 
 // Connect to DB
 mongoose.connect(process.env.DB_CONNECT);
@@ -149,19 +171,19 @@ router.route('/resetPassword')
         res.status(200).send({ message: 'Password updated successfully' });
     });
 
-app.use(upload.none());
-router.route('/uploadImage/:username')
-    .post(upload.single('image'), async (req, res) => {
-        const { username } = req.params;
-        console.log('Request body:', req.params); // Retrieve the username from the request body
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(400).send({ message: 'User not found' });
-        }
-        user.image = req.file.path;
-        await user.save();
-        res.status(200).send({ message: 'Image uploaded successfully' });
-    });
+// app.use(upload.none());
+// router.route('/uploadImage/:username')
+//     .post(upload.single('image'), async (req, res) => {
+//         const { username } = req.params;
+//         console.log('Request body:', req.params); // Retrieve the username from the request body
+//         const user = await User.findOne({ username });
+//         if (!user) {
+//             return res.status(400).send({ message: 'User not found' });
+//         }
+//         user.image = req.file.path;
+//         await user.save();
+//         res.status(200).send({ message: 'Image uploaded successfully' });
+//     });
 
 router.get('/images', (req, res) => {
     const directoryPath = path.join(__dirname, 'uploads/guest');
@@ -235,7 +257,38 @@ router.route('/addForum')
         }
     });
 
+const EventSchema = new mongoose.Schema({
+    eventName: String,
+    date: String,
+    time: String,
+    location: String,
+    imagePath: String,
+    forumName: String
+});
 
+const Event = mongoose.model('Event', EventSchema);
+
+router.post('/admin/events', upload.single('image'), async (req, res) => {
+    const { eventName, date, time, location} = req.body;
+    const forumName = req.query.forumName;
+    const imagePath = req.file.path;
+
+    const event = new Event({ eventName, date, time, location, imagePath, forumName });
+    await event.save();
+
+    res.status(200).send({ message: 'Event created successfully' });
+});
+
+router.route('/admin/getEvents')
+    .post(async (req, res) => {
+        const { forum } = req.body;
+        const admin = await Admin.findOne({ forum });
+        if (!admin) {
+            return res.status(400).send({ message: 'Admin not found' });
+        }
+        const events = await Event.find({ forumName: admin.forum });
+        res.status(200).send({ events });
+    });
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
