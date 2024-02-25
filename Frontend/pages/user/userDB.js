@@ -253,7 +253,7 @@ const Dashboard = ({ username }) => {
                   className="mt-[20px]" />
                 <p className="font-product-sans font-bold p-3">{forum.name}</p>
                 <p className="font-product-sans-m text-sm p-3 text-justify">{forum.description}</p>
-                <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end">View Dashboard</button>
+                <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={()=>{router.push({pathname : '/user/userForum', query : {data : forum.name}},'/user/userForum')}}>View Dashboard</button>
               </div>
             ))}
           </div>
@@ -309,12 +309,9 @@ const Dashboard = ({ username }) => {
           </div>
         </>
       }
-
-
-
       {
         tabs === "Calendar" && <div>
-          <div className="antialiased sans-serif bg-gray-100 h-screen">
+          <div className="antialiased sans-serif bg-gray-100 h-full">
       <div className="container mx-auto px-4 py-2 md:py-12">
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="flex items-center justify-between py-2 px-6">
