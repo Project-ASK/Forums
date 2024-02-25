@@ -99,7 +99,7 @@ const LoginPage = () => {
                             <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
                             <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             {/* Forgot password */}
-                            <div className='flex justify-between mt-2'>
+                            <div className='flex justify-between mt-2 xs:flex-col'>
                                 <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
                                 <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
                             </div>
