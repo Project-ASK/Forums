@@ -7,12 +7,12 @@ import Image from 'next/image';
 
 const Dashboard = ({ username }) => {
   const [forums, setForums] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState('');
   const [inputValue, setInputValue] = useState('');
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [events, setEvents] = useState([]);
   const [name, setName] = useState('');
   const [tabs, setTabs] = useState('');
 
@@ -31,10 +31,28 @@ const Dashboard = ({ username }) => {
       setForums(data.forums);
       setName(data.name);
       setEmail(data.email);
+
+      // Call fetchEvents here after forums data is set
+      fetchEvents(data.forums);
     };
+
+    const fetchEvents = async (forums) => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getEvents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ forums: forums.map(forum => forum.name) }),
+      });
+
+      const data = await response.json();
+      setEvents(data.events)
+      console.log(data.events)
+    }
 
     fetchForums();
   }, [username]);
+
 
   const handleLogout = () => {
     // Clear the cookies and redirect the user to the login page
@@ -99,7 +117,7 @@ const Dashboard = ({ username }) => {
       </div>
       <div className="flex flex-row mt-[20px] ml-[30px] xs:justify-center md:justify-start">
         <div className="group transition-all duration-300 ease-in-out px-5">
-          <button onClick={() => { setTabs("Forums") }} className="bg-left-bottom font-product-sans py-3 bg-gradient-to-r from-blue-500 to-blue-500 bg-[length:0%_3px] bg-no-repeat group-hover:bg-[length:100%_3px] transition-all duration-500 ease-out">
+          <button onClick={() => { setTabs("Forums"); }} className="bg-left-bottom font-product-sans py-3 bg-gradient-to-r from-blue-500 to-blue-500 bg-[length:0%_3px] bg-no-repeat group-hover:bg-[length:100%_3px] transition-all duration-500 ease-out">
             My Forums
           </button>
         </div>
@@ -154,7 +172,7 @@ const Dashboard = ({ username }) => {
       </Modal>
       {
         tabs === "Forums" && <>
-          <div className="flex w-scren flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px]">
+          <div className="flex w-scren md:ml-[50px] flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px]">
             {forums.map((forum, index) => (
               <div key={index} className="flex-col border items-center border-gray-800 rounded-2xl bg-white w-[140%] lg:w-[20%] flex justify-center">
                 <Image
@@ -162,14 +180,14 @@ const Dashboard = ({ username }) => {
                   alt={forum.name}
                   width={60} // Update these values as needed
                   height={60}
-
-                />
-                <p className="font-product-sans text-lg">{forum.name}</p>
-                <p className="font-product-sans text-lg">{forum.description}</p>
+                  className="mt-[20px]" />
+                <p className="font-product-sans font-bold p-3">{forum.name}</p>
+                <p className="font-product-sans-m text-sm p-3 text-justify">{forum.description}</p>
+                <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end">View Dashboard</button>
               </div>
             ))}
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-[30px]">
             <button type="button" onClick={handleModalOpen} className="hire flex items-center p-3 border-gray-800 border-[1px] rounded-[50px]">
               <span className="font-product-sans xs:text-sm sm:text-base">Join a New Community</span>
               <svg className="rtl:rotate-180 xs:w-2.5 sm:w-3.5 xs:h-2.5 sm:h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
@@ -181,8 +199,30 @@ const Dashboard = ({ username }) => {
       }
 
       {
-        tabs === "Events" && <div>Events </div>
+        tabs === "Events" && <>
+          <div className="flex w-scren md:ml-[50px] flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px] pb-4">
+            {events && events.map((event, index) => (
+              <div key={index} className="flex-col border items-center border-gray-800 rounded-2xl bg-white w-[140%] lg:w-[20%] flex justify-center">
+                {/* Uncomment the following line if you're sure that the image paths are correct */}
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} // Update the file extension if your images are not .jpg
+                  alt={event.eventName}
+                  width={60} // Update these values as needed
+                  height={60}
+                  className="mt-[20px]" />
+                <p className="font-product-sans font-bold p-3">Event Name: {event.eventName}</p>
+                <p className="font-product-sans-m text-sm p-3 text-justify">Date: {event.date}</p>
+                <p className="font-product-sans-m text-sm p-3 text-justify">
+                  Time: {new Date(`1970-01-01T${event.time}:00`).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                </p>
+                <p className="font-product-sans-m text-sm p-3 text-justify">Venue: {event.location}</p>
+              </div>
+            ))}
+          </div>
+        </>
       }
+
+
 
       {
         tabs === "Calendar" && <div>Events </div>

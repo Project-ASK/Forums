@@ -217,15 +217,16 @@ router.route('/admin/getForums')
     });
 
 const organizationDescriptions = {
-    'PRODDEC': 'Description for PRODDEC',
-    'IEEE': 'Description for IEEE',
-    'NSS': 'Description for NSS',
-    'NCC': 'Description for NCC',
+    'PRODDEC': 'PRODDEC is a common platform for the Electronics and Computer students. It was formed in 1995 with the vision of integrating technical ideas from both the fields and to develop products of an engineering outlook. Understanding the industry needs, PRODDEC has contributed greatly to the overall development of the students as competent engineers.',
+    'IEEE': 'IEEE Student Branch of College of Engineering Chengannur formed on 16th of September, 1996 with the goal of keeping the students in touch with technological advances. What started as a small initiative for technical advancement of the students, is now one of the most vibrant Student Branches of the Asia Pacific Region (Region 10) and Kerala Section',
+    'NSS': 'The vision of the NSS Technical Cell, Kerala is to mould its volunteers as ‘Social Engineers’, who know the pulse of the community and would be able to act accordingly. The mission of the NSS Technical Cell is to make the campuses community-related and to reduce the distance between the social and technical communities. ',
+    'NCC': 'College of Engineering Chengannur has initiated its NCC unit under the NAVAL wing of the Armed Forces. The unit is commissioned on 16th October 2014 with a total strength of 50 cadets. There will be 33% seats reserved for lady cadets. Our NAVY NCC unit functions under 3(K) Navy Unit Kollam, of the Kollam group NCC headquarters.',
     'TINKERHUB': 'Description for TINKERHUB',
     'IEDC': 'Description for IEDC',
     'GDSC': 'Description for GDSC',
     'MULEARN': 'Description for MULEARN'
 };
+
 
 router.route('/admin/getOrganizationMembers')
     .post(async (req, res) => {
@@ -287,6 +288,13 @@ router.route('/admin/getEvents')
             return res.status(400).send({ message: 'Admin not found' });
         }
         const events = await Event.find({ forumName: admin.forum });
+        res.status(200).send({ events });
+    });
+
+router.route('/getEvents')
+    .post(async (req, res) => {
+        const { forums } = req.body;
+        const events = await Event.find({ forumName: { $in: forums } });
         res.status(200).send({ events });
     });
 
