@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import { Menu, X } from 'react-feather';
+import path from 'path'
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -139,7 +140,7 @@ const Dashboard = ({ username }) => {
               events.map((event, index) => (
                 <div key={index} className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex">
                   <div className="w-1/4 pr-2"> {/* Add some padding to the right of the image */}
-                    <Image src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt={event.eventName} width={100} height={100} />
+                    <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.imagePath)} alt={event.eventName} width={100} height={100} />
                   </div>
                   <div className="w-1/2"> {/* Add some padding to the left of the text */}
                     <h2 className="text-lg font-bold">Name: {event.eventName}</h2> {/* Make the event name larger and bold */}

@@ -272,7 +272,7 @@ const Event = mongoose.model('Event', EventSchema);
 router.post('/admin/events', upload.single('image'), async (req, res) => {
     const { eventName, date, time, location} = req.body;
     const forumName = req.query.forumName;
-    const imagePath = req.file.path;
+    const imagePath = req.file.path.replace(/\\/g, '/');
 
     const event = new Event({ eventName, date, time, location, imagePath, forumName });
     await event.save();
