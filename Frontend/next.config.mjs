@@ -2,7 +2,18 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost','14.139.189.219'], // replace 'localhost' with your backend domain
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        pathname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "14.139.189.219:3001",
+        pathname: "**",
+      },
+    ], 
   },
 };
 
