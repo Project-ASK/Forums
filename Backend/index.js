@@ -77,6 +77,11 @@ const userSchema = new mongoose.Schema({
     forums: [{
         name: String,
         description: String
+    }],
+    customEvents: [{
+        event_date: String,
+        event_title: String,
+        event_theme: String
     }]
 });
 
@@ -203,7 +208,7 @@ router.route('/getForums')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ forums: user.forums, name: user.name, email: user.email });
+        res.status(200).send({ forums: user.forums, name: user.name, email: user.email, customEvents: user.customEvents });
     });
 
 router.route('/admin/getForums')
@@ -296,6 +301,36 @@ router.route('/getEvents')
         const { forums } = req.body;
         const events = await Event.find({ forumName: { $in: forums } });
         res.status(200).send({ events });
+    });
+
+
+router.route('/addCustomEvent')
+    .post(async (req, res) => {
+        const { username, event } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        user.customEvents.push(event);
+        await user.save();
+        res.status(200).send({ success: true });
+    });
+
+router.route('/deleteCustomEvent')
+    .post(async (req, res) => {
+        const { username, event } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        const index = user.customEvents.findIndex(e => e.event_date === event.event_date && e.event_title === event.event_title);
+        if (index > -1) {
+            user.customEvents.splice(index, 1);
+            await user.save();
+            res.status(200).send({ success: true });
+        } else {
+            res.status(400).send({ message: 'Event not found' });
+        }
     });
 
 app.listen(port, () => {
