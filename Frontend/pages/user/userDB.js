@@ -138,7 +138,8 @@ const Dashboard = ({ username }) => {
       });
 
       const data = await response.json();
-      setEvents(data.events)
+      const currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
+      setEvents(currentEvents);
     }
 
     fetchForums();
