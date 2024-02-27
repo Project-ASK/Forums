@@ -109,7 +109,7 @@ const Dashboard = ({ username }) => {
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (
-          <div className="absolute top-0 left-0 w-1/6 h-full bg-white flex flex-col p-4 transition-transform duration-200 transform translate-x-0">
+          <div className="absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 transition-transform duration-200 transform translate-x-0">
             <button onClick={toggleMenu} className="mb-4 self-end">
               <X size={24} />
             </button>
