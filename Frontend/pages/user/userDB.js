@@ -22,9 +22,7 @@ const Dashboard = ({ username }) => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [no_of_days, setNo_of_days] = useState([]);
   const [blankdays, setBlankdays] = useState([]);
-  const [calevents, setCalEvents] = useState([
-    // Add your events here
-  ]);
+  const [calevents, setCalEvents] = useState([]);
   const [event_title, setEvent_title] = useState('');
   const [event_date, setEvent_date] = useState('');
   const [event_theme, setEvent_theme] = useState('blue');

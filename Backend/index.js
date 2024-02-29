@@ -267,19 +267,33 @@ const EventSchema = new mongoose.Schema({
     eventName: String,
     date: String,
     time: String,
+    description: String,
     location: String,
     imagePath: String,
-    forumName: String
+    forumName: String,
+    questions: [{
+        question: { type: String },
+        type: { type: String }
+    }],
+    tags: [String],
+    collabForums: [String],
+    amount: Number
 });
 
 const Event = mongoose.model('Event', EventSchema);
 
 router.post('/admin/events', upload.single('image'), async (req, res) => {
-    const { eventName, date, time, location} = req.body;
+    const { eventName, date, time, location, description, includesPayment, amount } = req.body;
     const forumName = req.query.forumName;
+    const questions = JSON.parse(req.body.questions);
+    const tags = JSON.parse(req.body.tags);
+    const collabForums = JSON.parse(req.body.collabForums);
     const imagePath = req.file.path.replace(/\\/g, '/');
-
-    const event = new Event({ eventName, date, time, location, imagePath, forumName });
+    const event = new Event({ eventName, date, time, location, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount });
+    //Used for testing
+    // questions.forEach(question => {
+    //     event.questions.push({ question: question.question, type: question.type });
+    // });
     await event.save();
 
     res.status(200).send({ message: 'Event created successfully' });
@@ -311,6 +325,7 @@ router.route('/addCustomEvent')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
+        console.log(event);
         user.customEvents.push(event);
         await user.save();
         res.status(200).send({ success: true });
