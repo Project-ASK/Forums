@@ -242,19 +242,27 @@ const Dashboard = ({ username }) => {
       </Modal>
       {
         tabs === "Forums" && <>
-          <div className="flex w-scren md:ml-[50px] flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px]">
+          <div id="no-scroll" className="flex w-scren md:ml-[50px] flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px] overflow-x-scroll">
             {forums.map((forum, index) => (
-              <div key={index} className="flex-col border items-center border-gray-800 rounded-2xl bg-white w-[140%] lg:w-[20%] flex justify-center">
-                <Image
-                  src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
-                  alt={forum.name}
-                  width={60} // Update these values as needed
-                  height={60}
-                  className="mt-[20px]" />
-                <p className="font-product-sans font-bold p-3">{forum.name}</p>
-                <p className="font-product-sans-m text-sm p-3 text-justify">{forum.description}</p>
-                <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={()=>{router.push({pathname : '/user/userForum', query : {data : forum.name}},'/user/userForum')}}>View Dashboard</button>
-              </div>
+             <a key={index}  onClick={()=>{router.push({pathname : '/user/userForum', query : {data : forum.name}},'/user/userForum')}} className="group pb-5 rounded-xl relative block bg-black">
+             <img
+               alt=""
+               src={`/assets/forums/${forum.name}.jpg`}
+               className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
+             />
+           
+             <div className="relative p-4 sm:p-6 lg:p-8">
+                        
+               <p className="text-xl font-bold text-white sm:text-2xl">{forum.name}</p>
+               <div className="mt-32 sm:mt-48 lg:mt-64">
+                 <div className="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+                   <p className="text-sm text-white text-justify w-[300px]">
+                     {forum.description}
+                   </p>
+                 </div>
+               </div>
+             </div>
+           </a>
             ))}
           </div>
           <div className="flex justify-center mt-[30px]">
