@@ -77,6 +77,11 @@ const userSchema = new mongoose.Schema({
     forums: [{
         name: String,
         description: String
+    }],
+    customEvents: [{
+        event_date: String,
+        event_title: String,
+        event_theme: String
     }]
 });
 
@@ -203,7 +208,7 @@ router.route('/getForums')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ forums: user.forums, name: user.name, email: user.email });
+        res.status(200).send({ forums: user.forums, name: user.name, email: user.email, customEvents: user.customEvents });
     });
 
 router.route('/admin/getForums')
@@ -262,19 +267,33 @@ const EventSchema = new mongoose.Schema({
     eventName: String,
     date: String,
     time: String,
+    description: String,
     location: String,
     imagePath: String,
-    forumName: String
+    forumName: String,
+    questions: [{
+        question: { type: String },
+        type: { type: String }
+    }],
+    tags: [String],
+    collabForums: [String],
+    amount: Number
 });
 
 const Event = mongoose.model('Event', EventSchema);
 
 router.post('/admin/events', upload.single('image'), async (req, res) => {
-    const { eventName, date, time, location} = req.body;
+    const { eventName, date, time, location, description, includesPayment, amount } = req.body;
     const forumName = req.query.forumName;
+    const questions = JSON.parse(req.body.questions);
+    const tags = JSON.parse(req.body.tags);
+    const collabForums = JSON.parse(req.body.collabForums);
     const imagePath = req.file.path.replace(/\\/g, '/');
-
-    const event = new Event({ eventName, date, time, location, imagePath, forumName });
+    const event = new Event({ eventName, date, time, location, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount });
+    //Used for testing
+    // questions.forEach(question => {
+    //     event.questions.push({ question: question.question, type: question.type });
+    // });
     await event.save();
 
     res.status(200).send({ message: 'Event created successfully' });
@@ -296,6 +315,37 @@ router.route('/getEvents')
         const { forums } = req.body;
         const events = await Event.find({ forumName: { $in: forums } });
         res.status(200).send({ events });
+    });
+
+
+router.route('/addCustomEvent')
+    .post(async (req, res) => {
+        const { username, event } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        console.log(event);
+        user.customEvents.push(event);
+        await user.save();
+        res.status(200).send({ success: true });
+    });
+
+router.route('/deleteCustomEvent')
+    .post(async (req, res) => {
+        const { username, event } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        const index = user.customEvents.findIndex(e => e.event_date === event.event_date && e.event_title === event.event_title);
+        if (index > -1) {
+            user.customEvents.splice(index, 1);
+            await user.save();
+            res.status(200).send({ success: true });
+        } else {
+            res.status(400).send({ message: 'Event not found' });
+        }
     });
 
 app.listen(port, () => {
