@@ -29,60 +29,62 @@ const Dashboard = ({ username }) => {
   const [openEventModal, setOpenEventModal] = useState(false);
   const [joinEventModal, setJoinEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [questions,setQuestions] = useState([]);
+  const [questions, setQuestions] = useState([]);
   const [responses, setResponses] = useState({});
+  const [joinedEvents, setJoinedEvents] = useState([]);
 
   useEffect(() => {
     getNoOfDays();
   }, [month, year]);
 
-function joinEvent() {
-  // console.log(responses);
-  fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/joinEvent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      username,
-      event: selectedEvent.eventName,
-      forumName: selectedEvent.forumName,
-      questions: selectedEvent.questions,
-      responses
-    }),
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Successfully joined the event');
-      setCalEvents([...calevents, {
-        event_date: selectedEvent.date,
-        event_title: selectedEvent.eventName,
-        event_theme: event_theme
-      }]);
-
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/addCustomEvent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          event: {
+  function joinEvent() {
+    // console.log(responses);
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/joinEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        event: selectedEvent.eventName,
+        forumName: selectedEvent.forumName,
+        questions: selectedEvent.questions,
+        responses
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Successfully joined the event');
+          setCalEvents([...calevents, {
             event_date: selectedEvent.date,
             event_title: selectedEvent.eventName,
             event_theme: event_theme
-          }
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {});
-    } else {
-      alert('Failed to join the event');
-    }
-  });
-  setJoinEventModal(false);
-}
+          }]);
+          setJoinedEvents([...joinedEvents, selectedEvent.eventName]);
+
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/addCustomEvent`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+              event: {
+                event_date: selectedEvent.date,
+                event_title: selectedEvent.eventName,
+                event_theme: event_theme
+              }
+            }),
+          })
+            .then(response => response.json())
+            .then(data => { });
+        } else {
+          alert('Failed to join the event');
+        }
+      });
+    setJoinEventModal(false);
+  }
 
   function getNoOfDays() {
     let daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -188,13 +190,28 @@ function joinEvent() {
       });
 
       const data = await response.json();
-      const currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
+      let currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
+      currentEvents = currentEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
       setEvents(currentEvents);
       const extractedQuestions = currentEvents.flatMap(event => event.questions);
       setQuestions(extractedQuestions);
     }
 
+    const fetchJoinedEvents = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getJoinedEvents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      const data = await response.json();
+      setJoinedEvents(data.joinedEvents);
+    }
+
     fetchForums();
+    fetchJoinedEvents();
   }, [username]);
 
 
@@ -394,11 +411,17 @@ function joinEvent() {
                   </div>
                 </div>
                 <div className="p-6 pt-0">
-                  <button
-                    className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
-                    type="button" onClick={() => {setSelectedEvent(event); setJoinEventModal(true);}}>
-                    Join Event
-                  </button>
+                  {joinedEvents.map(joinedEvent => joinedEvent.eventName.toLowerCase()).includes(event.eventName.toLowerCase()) ? (
+                    <p className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200">
+                      Already Joined
+                    </p>
+                  ) : (
+                    <button
+                      className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
+                      type="button" onClick={() => { setSelectedEvent(event); setJoinEventModal(true); }}>
+                      Join Event
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -408,7 +431,7 @@ function joinEvent() {
                   <div className="shadow  rounded-lg bg-white overflow-hidden w-full block p-8">
                     <h2 className="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">Join {selectedEvent?.eventName}</h2>
                     <div className="mb-4">
-                      {questions.length!=0 && <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>}
+                      {questions.length != 0 && <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>}
                       {questions.map((question, index) => (
                         <div key={index}>
                           <p>{question.question}</p>

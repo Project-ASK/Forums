@@ -10,6 +10,7 @@ const cors = require('cors');
 const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
+const { log } = require('console');
 
 const SECRET_KEY = 'super-secret-key';
 
@@ -369,6 +370,16 @@ router.route('/joinEvent')
         user.joinedEvents.push({ eventName: event, forumName, questions: questionResponsePairs });
         await user.save();
         res.status(200).send({ success: true });
+    });
+
+router.route('/getJoinedEvents')
+    .post(async (req, res) => {
+        const { username } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        res.status(200).send({ joinedEvents: user.joinedEvents });
     });
 
 app.listen(port, () => {
