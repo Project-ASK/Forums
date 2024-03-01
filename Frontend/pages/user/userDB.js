@@ -27,6 +27,8 @@ const Dashboard = ({ username }) => {
   const [event_date, setEvent_date] = useState('');
   const [event_theme, setEvent_theme] = useState('blue');
   const [openEventModal, setOpenEventModal] = useState(false);
+  const [joinEventModal, setJoinEventModal] = useState(false);
+  const [questions,setQuestions] = useState([]);
 
   useEffect(() => {
     getNoOfDays();
@@ -138,6 +140,8 @@ const Dashboard = ({ username }) => {
       const data = await response.json();
       const currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
       setEvents(currentEvents);
+      const extractedQuestions = currentEvents.flatMap(event => event.questions);
+      setQuestions(extractedQuestions);
     }
 
     fetchForums();
@@ -342,12 +346,63 @@ const Dashboard = ({ username }) => {
                 <div className="p-6 pt-0">
                   <button
                     className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
-                    type="button">
+                    type="button" onClick={() => setJoinEventModal(true)}>
                     Join Event
                   </button>
                 </div>
               </div>
             ))}
+            {joinEventModal &&
+              <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} className="fixed z-40 top-0 right-0 left-0 bottom-0 h-full w-full">
+                <div className="p-4 max-w-xl mx-auto relative left-0 right-0 overflow-hidden mt-24">
+                  <div className="shadow  rounded-lg bg-white overflow-hidden w-full block p-8">
+                    <h2 className="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">Add Event Details</h2>
+                    <div className="mb-4">
+                      <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Event title</label>
+                      <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" value={event_title} onChange={(e) => setEvent_title(e.target.value)} />
+                    </div>
+                    <div className="mb-4">
+                      <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Event date</label>
+                      <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" value={event_date} readOnly />
+                    </div>
+                    <div className="inline-block w-64 mb-4">
+                      <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Select a theme</label>
+                      <div className="relative">
+                        <select value={event_theme} onChange={(e) => setEvent_theme(e.target.value)} className="block appearance-none w-full bg-gray-200 border-2 border-gray-200 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-gray-700">
+                          <option value="blue">Blue Theme</option>
+                          <option value="red">Red Theme</option>
+                          <option value="yellow">Yellow Theme</option>
+                          <option value="green">Green Theme</option>
+                          <option value="purple">Purple Theme</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      {questions.length!=0 && <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>}
+                      {questions.map((question, index) => (
+                        <div key={index}>
+                          <p>{question.question}</p>
+                          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 mt-[0.8rem]" type={question.type} />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-8 text-right">
+                      <button type="button" className="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm mr-2" onClick={() => setJoinEventModal(false)}>
+                        Cancel
+                      </button>
+                      <button type="button" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" onClick={addEvent}>
+                        Save Event
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            {events.length == 0 &&
+              <div className="flex w-full justify-center">
+                <p className="font-product-sans font-semi-bold text-center text-xl">No events available</p>
+              </div>
+            }
           </div>
         </>
       }
