@@ -28,11 +28,61 @@ const Dashboard = ({ username }) => {
   const [event_theme, setEvent_theme] = useState('blue');
   const [openEventModal, setOpenEventModal] = useState(false);
   const [joinEventModal, setJoinEventModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [questions,setQuestions] = useState([]);
+  const [responses, setResponses] = useState({});
 
   useEffect(() => {
     getNoOfDays();
   }, [month, year]);
+
+function joinEvent() {
+  // console.log(responses);
+  fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/joinEvent`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username,
+      event: selectedEvent.eventName,
+      forumName: selectedEvent.forumName,
+      questions: selectedEvent.questions,
+      responses
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('Successfully joined the event');
+      setCalEvents([...calevents, {
+        event_date: selectedEvent.date,
+        event_title: selectedEvent.eventName,
+        event_theme: event_theme
+      }]);
+
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/addCustomEvent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          event: {
+            event_date: selectedEvent.date,
+            event_title: selectedEvent.eventName,
+            event_theme: event_theme
+          }
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {});
+    } else {
+      alert('Failed to join the event');
+    }
+  });
+  setJoinEventModal(false);
+}
 
   function getNoOfDays() {
     let daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -346,7 +396,7 @@ const Dashboard = ({ username }) => {
                 <div className="p-6 pt-0">
                   <button
                     className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
-                    type="button" onClick={() => setJoinEventModal(true)}>
+                    type="button" onClick={() => {setSelectedEvent(event); setJoinEventModal(true);}}>
                     Join Event
                   </button>
                 </div>
@@ -356,14 +406,15 @@ const Dashboard = ({ username }) => {
               <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} className="fixed z-40 top-0 right-0 left-0 bottom-0 h-full w-full">
                 <div className="p-4 max-w-xl mx-auto relative left-0 right-0 overflow-hidden mt-24">
                   <div className="shadow  rounded-lg bg-white overflow-hidden w-full block p-8">
-                    <h2 className="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">Add Event Details</h2>
+                    <h2 className="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">Join {selectedEvent?.eventName}</h2>
                     <div className="mb-4">
-                      <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Event title</label>
-                      <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" value={event_title} onChange={(e) => setEvent_title(e.target.value)} />
-                    </div>
-                    <div className="mb-4">
-                      <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Event date</label>
-                      <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" value={event_date} readOnly />
+                      {questions.length!=0 && <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>}
+                      {questions.map((question, index) => (
+                        <div key={index}>
+                          <p>{question.question}</p>
+                          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 mt-[0.8rem]" type={question.type} onChange={(e) => setResponses({ ...responses, [question.question]: e.target.value })} />
+                        </div>
+                      ))}
                     </div>
                     <div className="inline-block w-64 mb-4">
                       <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Select a theme</label>
@@ -377,21 +428,12 @@ const Dashboard = ({ username }) => {
                         </select>
                       </div>
                     </div>
-                    <div className="mb-4">
-                      {questions.length!=0 && <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>}
-                      {questions.map((question, index) => (
-                        <div key={index}>
-                          <p>{question.question}</p>
-                          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 mt-[0.8rem]" type={question.type} />
-                        </div>
-                      ))}
-                    </div>
                     <div className="mt-8 text-right">
                       <button type="button" className="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm mr-2" onClick={() => setJoinEventModal(false)}>
                         Cancel
                       </button>
-                      <button type="button" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" onClick={addEvent}>
-                        Save Event
+                      <button type="button" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" onClick={joinEvent}>
+                        Join Event
                       </button>
                     </div>
                   </div>
