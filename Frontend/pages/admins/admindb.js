@@ -167,7 +167,9 @@ const Dashboard = ({ username }) => {
                   <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{event.date}</p> {/* Make the date smaller and gray */}
                   <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{event.time}</p> {/* Make the time smaller and gray */}
                   <p className="text-md text-gray-500"><span className='font-bold'>Location: </span>{event.location}</p> {/* Make the location smaller and gray */}
-                  <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.join(', ')}</p>
+                  {event.collabForums.filter(forumName => forumName !== forum).length > 0 && (
+                    <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
+                  )}
                 </div>
               </div>
             ))
