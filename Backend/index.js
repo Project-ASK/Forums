@@ -200,6 +200,17 @@ router.get('/images', (req, res) => {
     });
 });
 
+router.get('/forums').post((req, res) => {
+    const forumPath = path.join(__dirname, 'forums/PRODDEC')
+    console.log(req.body)
+    fs.readdir(forumPath, function (err, files) {
+        if (err) {
+            return res.status(500).send({ message: 'Unable to scan directory: ' + err });
+        }
+        res.send(files);
+    });
+})
+
 
 router.route('/getForums')
     .post(async (req, res) => {
