@@ -10,6 +10,7 @@ const cors = require('cors');
 const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
+const { log } = require('console');
 
 const SECRET_KEY = 'super-secret-key';
 
@@ -82,6 +83,14 @@ const userSchema = new mongoose.Schema({
         event_date: String,
         event_title: String,
         event_theme: String
+    }],
+    joinedEvents: [{
+        eventName: String,
+        forumName: String,
+        questions: [{
+            question: { type: String },
+            response: { type: String }
+        }],
     }]
 });
 
@@ -336,7 +345,6 @@ router.route('/addCustomEvent')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        console.log(event);
         user.customEvents.push(event);
         await user.save();
         res.status(200).send({ success: true });
@@ -357,6 +365,32 @@ router.route('/deleteCustomEvent')
         } else {
             res.status(400).send({ message: 'Event not found' });
         }
+    });
+
+router.route('/joinEvent')
+    .post(async (req, res) => {
+        const { username, event, forumName, questions, responses } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        const questionResponsePairs = questions.map((question) => ({
+            question: question.question,
+            response: responses[question.question]
+        }));
+        user.joinedEvents.push({ eventName: event, forumName, questions: questionResponsePairs });
+        await user.save();
+        res.status(200).send({ success: true });
+    });
+
+router.route('/getJoinedEvents')
+    .post(async (req, res) => {
+        const { username } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        res.status(200).send({ joinedEvents: user.joinedEvents });
     });
 
 app.listen(port, () => {

@@ -202,4 +202,23 @@ const CreateEvent = () => {
     )
 }
 
+export async function getServerSideProps(context) {
+    // Get username from cookies
+    const username = context.req.cookies.adminUsername;
+
+    // If username is not available, redirect to login
+    if (!username) {
+        return {
+            redirect: {
+                destination: '/adminAuth/login',
+                permanent: false,
+            },
+        }
+    }
+
+    return {
+        props: {}
+    }
+}
+
 export default CreateEvent;
