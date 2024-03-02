@@ -390,6 +390,17 @@ router.route('/getQuestions')
         res.status(200).send({ questions: event.questions });
     });
 
+router.route('/admin/getCollabEvents')
+    .post(async (req, res) => {
+        const { forum } = req.body;
+        const admin = await Admin.findOne({ forum });
+        if (!admin) {
+            return res.status(400).send({ message: 'Admin not found' });
+        }
+        const events = await Event.find({ $or: [{ forumName: forum }, { collabForums: forum }] });
+        res.status(200).send({ events });
+    });
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });

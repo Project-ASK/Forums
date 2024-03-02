@@ -80,7 +80,7 @@ const CreateEvent = () => {
         formData.append('questions', JSON.stringify(questions));
         formData.append('description', description);
         formData.append('tags', JSON.stringify(tags)); // append tags
-        formData.append('collabForums', JSON.stringify(collabForums));
+        formData.append('collabForums', JSON.stringify([...collabForums, forumName]));
         formData.append('amount', amount);
 
         try {
