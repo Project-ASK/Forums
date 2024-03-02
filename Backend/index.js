@@ -10,7 +10,6 @@ const cors = require('cors');
 const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
-const { log } = require('console');
 
 const SECRET_KEY = 'super-secret-key';
 
@@ -209,18 +208,6 @@ router.get('/images', (req, res) => {
     });
 });
 
-router.get('/forums').post((req, res) => {
-    const forumPath = path.join(__dirname, 'forums/PRODDEC')
-    console.log(req.body)
-    fs.readdir(forumPath, function (err, files) {
-        if (err) {
-            return res.status(500).send({ message: 'Unable to scan directory: ' + err });
-        }
-        res.send(files);
-    });
-})
-
-
 router.route('/getForums')
     .post(async (req, res) => {
         const { username } = req.body;
@@ -391,6 +378,16 @@ router.route('/getJoinedEvents')
             return res.status(400).send({ message: 'User not found' });
         }
         res.status(200).send({ joinedEvents: user.joinedEvents });
+    });
+
+router.route('/getQuestions')
+    .post(async (req, res) => {
+        const { eventName, forumName } = req.body;
+        const event = await Event.findOne({ eventName, forumName });
+        if (!event) {
+            return res.status(400).send({ message: 'Event not found' });
+        }
+        res.status(200).send({ questions: event.questions });
     });
 
 app.listen(port, () => {
