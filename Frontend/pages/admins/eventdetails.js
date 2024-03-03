@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
@@ -12,33 +12,59 @@ const Dashboard = ({ username }) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [members, setMembers] = useState([]);
-  const [showMembers, setShowMembers] = useState(false);
+//   const [members, setMembers] = useState([]);
+  const [showMembers, setShowMembers] = useState(true);
   const [currentPage, setCurrentPage] = useState('home');
   const [events, setEvents] = useState([]);
-  const [ownEvents, setOwnEvents] = useState([]);
-  const node = useRef();
+  const [ownEvents,setOwnEvents] = useState([]);
 
-  const handleClickOutside = e => { // Add this function
-    if (node.current.contains(e.target)) {
-      // inside click
-      return;
-    }
-    // outside click 
-    setIsMenuOpen(false);
+
+  const [newMemberName, setNewMemberName] = useState('');
+  const [newMemberPhoneNumber, setNewMemberPhoneNumber] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+const eventId = router.query.id
+
+  const [members, setMembers] = useState([
+    { name: 'John Doe', phoneNumber: '123-456-7890' },
+    { name: 'Jane Smith', phoneNumber: '234-567-8901' },
+    // add more members as needed
+  ]);
+
+
+  const addMember = () => {
+    // Add the new member to the members array
+    setMembers([...members, { name: newMemberName, phoneNumber: newMemberPhoneNumber }]);
+  
+    // Clear the input fields
+    setNewMemberName('');
+    setNewMemberPhoneNumber('');
+  
+    // Close the form
+    setIsFormOpen(false);
+  };
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+  
+    reader.onload = (event) => {
+      const csvData = event.target.result;
+      const lines = csvData.split('\n');
+      const members = lines.map((line) => {
+        const [name, phoneNumber] = line.split(',');
+        return { name, phoneNumber };
+      });
+      setMembers(members);
+    };
+  
+    reader.readAsText(file);
   };
 
-  useEffect(() => { // Add this useEffect
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
+  const deleteMember = (index) => {
+    // Remove the member from the members array
+    const newMembers = [...members];
+    newMembers.splice(index, 1);
+    setMembers(newMembers);
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -139,6 +165,14 @@ const Dashboard = ({ username }) => {
     return null;
   }
 
+  const downloadMembers = () => {
+    // Convert the members array to CSV data
+    const csvData = members.map(member => `${member.name},${member.phoneNumber}`).join('\n');
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    return url;
+  };
+  
   return (
     <>
       <div className="App">
@@ -149,37 +183,14 @@ const Dashboard = ({ username }) => {
           <img src="/assets/logo.png" width={200} />
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
-        {isMenuOpen && (
-          <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 ${isMenuOpen ? 'animate-slide-in' : 'animate-slide-out'}`}>
-            <button onClick={toggleMenu} className="mb-4 self-end">
-              <X size={24} />
-            </button>
-            <ul>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleHomeClick}>Home</li>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Analytics</li>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
-            </ul>
-          </div>
-        )}
       </div>
 
-      {currentPage === 'memberList' ? (
-        // If showMembers is true, display the list of members
+
         <div className="w-full flex flex-col items-center mt-10">
-          <h2 className="text-2xl font-bold mb-5">Members of {forum}:</h2>
-          {members.map((member, index) => (
-            <div key={index} className="w-1/2 p-4 border rounded mb-4">
-              {member.name}
-            </div>
-          ))}
-        </div>
-      ) : currentPage === 'manageEvents' ? (
-        <div className="w-full flex flex-col items-center mt-10">
-          <button className="p-2.5 bg-blue-500 rounded-xl text-white mb-4" onClick={() => { router.push('createEvent') }}>Create Event</button>
           {events.length > 0 ? (
             events.map((event, index) => (
-                  <div key={index} className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex" onClick={() => router.push(`/admins/eventdetails/${event.id}`)}>                <div className="w-1/4 pr-2"> {/* Add some padding to the right of the image */}
+              <div key={index} className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex">
+                <div className="w-1/4 pr-2"> {/* Add some padding to the right of the image */}
                   <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.imagePath)} alt={event.eventName} width={100} height={100} />
                 </div>
                 <div className="w-1/2"> {/* Add some padding to the left of the text */}
@@ -190,8 +201,13 @@ const Dashboard = ({ username }) => {
                   {event.collabForums.filter(forumName => forumName !== forum).length > 0 && (
                     <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
                   )}
+                  <p className="text-md text-gray-500"><span className='font-bold'>Description: </span>{event.description}</p> {/* Make the description smaller and gray */}
+                  <p className="text-md text-gray-500"><span className='font-bold'>Number of Participants: </span>{members.length}</p>
+
                 </div>
+                
               </div>
+              
             ))
           ) : (
             <div className="w-1/2 p-4 border rounded mb-4 bg-gray-300">
@@ -200,19 +216,34 @@ const Dashboard = ({ username }) => {
           )}
 
         </div>
-      ) : (
-        // If showMembers is false, display the default content
-        <>
-          <div className="flex bg-white w-full">
-          </div>
-          <div className="w-full flex pb-[40px] justify-center" style={{ backgroundImage: 'url("/assets/bgprofile.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="flex-col  xs:w-3/4 md:w-1/2  flex items-center bg-[#FFFFFF] border-cyan-800 border-2 rounded-[40px] p-[70px] mt-[30px]">
-              <img src="/assets/profile.svg" width={150} className="self-center" />
-              <p className="font-product-sans font-bold text-center md:text-2xl xs:text-lg mt-[30px]">Welcome, {name}</p>
-            </div>
-          </div>
-        </>
+        <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
+      <h2 className="text-2xl font-bold mb-5">Participants List</h2>
+      <div className="w-full flex justify-center items-center mb-5">
+        <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add Members</button>
+        <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
+        <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] cursor-pointer">Import</label>
+        <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Download List</a>
+      </div>
+      {isFormOpen && (
+        <div className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
+          <input type="text" value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Name" />
+          <input type="text" value={newMemberPhoneNumber} onChange={(e) => setNewMemberPhoneNumber(e.target.value)} placeholder="Phone Number" />
+          <button onClick={addMember} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add</button>
+        </div>
       )}
+      {members.map((member, index) => (
+        <div key={index} className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
+          <div>
+            <span style={{ marginRight: '70px' }}>{member.name}</span>
+            <span>{member.phoneNumber}</span>
+          </div>
+           <div>
+            <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} />
+            <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-xl text-white ml-[1rem]">Delete</button>
+          </div>       
+           </div>
+      ))}
+    </div>
     </>
   );
 };
