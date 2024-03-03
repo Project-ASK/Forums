@@ -37,8 +37,25 @@ const Dashboard = ({ username }) => {
     getNoOfDays();
   }, [month, year]);
 
+  const fetchQuestions = (event) => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getQuestions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eventName: event.eventName,
+        forumName: event.forumName,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Set the questions state with the fetched questions
+        setQuestions(data.questions);
+      });
+  };
+
   function joinEvent() {
-    // console.log(responses);
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/joinEvent`, {
       method: 'POST',
       headers: {
@@ -84,6 +101,7 @@ const Dashboard = ({ username }) => {
         }
       });
     setJoinEventModal(false);
+    setQuestions([]);
   }
 
   function getNoOfDays() {
@@ -159,8 +177,6 @@ const Dashboard = ({ username }) => {
     setOpenEventModal(false);
   }
 
-  const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
-
   useEffect(() => {
     const fetchForums = async () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getForums`, {
@@ -193,8 +209,6 @@ const Dashboard = ({ username }) => {
       let currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
       currentEvents = currentEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
       setEvents(currentEvents);
-      const extractedQuestions = currentEvents.flatMap(event => event.questions);
-      setQuestions(extractedQuestions);
     }
 
     const fetchJoinedEvents = async () => {
@@ -214,13 +228,7 @@ const Dashboard = ({ username }) => {
     fetchJoinedEvents();
   }, [username]);
 
-
-  const handleLogout = () => {
-    // Clear the cookies and redirect the user to the login page
-    Cookies.remove('username');
-    Cookies.remove('token');
-    router.replace('/auth/login');
-  }
+  const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
 
   const handleModalOpen = () => {
     setModalIsOpen(true);
@@ -279,7 +287,12 @@ const Dashboard = ({ username }) => {
       });
   }
 
-
+  const handleLogout = () => {
+    // Clear the cookies and redirect the user to the login page
+    Cookies.remove('username');
+    Cookies.remove('token');
+    router.replace('/auth/login');
+  }
 
   // If username is not available, don't render anything
   if (!username) {
@@ -411,14 +424,14 @@ const Dashboard = ({ username }) => {
                   </div>
                 </div>
                 <div className="p-6 pt-0">
-                  {joinedEvents.map(joinedEvent => joinedEvent.eventName.toLowerCase()).includes(event.eventName.toLowerCase()) ? (
-                    <p className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200">
+                  {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
+                    <p className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
                       Already Joined
                     </p>
                   ) : (
                     <button
                       className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
-                      type="button" onClick={() => { setSelectedEvent(event); setJoinEventModal(true); }}>
+                      type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
                       Join Event
                     </button>
                   )}

@@ -16,6 +16,7 @@ const Dashboard = ({ username }) => {
   const [showMembers, setShowMembers] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [events, setEvents] = useState([]);
+  const [ownEvents,setOwnEvents] = useState([]);
 
 
   const toggleMenu = () => {
@@ -50,7 +51,26 @@ const Dashboard = ({ username }) => {
           body: JSON.stringify({ forum }),
         });
         const dataEvents = await responseEvents.json();
-        setEvents(dataEvents.events);
+        setOwnEvents(dataEvents.events);
+      }
+    };
+
+    fetchEvents();
+  }, [forum]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (forum) {
+        const responseEvents = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/getCollabEvents`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ forum }),
+        });
+        const dataCollabEvents = await responseEvents.json();
+        const collabEvents = dataCollabEvents.events;
+        setEvents([...ownEvents, ...collabEvents]);
       }
     };
 
@@ -147,6 +167,9 @@ const Dashboard = ({ username }) => {
                   <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{event.date}</p> {/* Make the date smaller and gray */}
                   <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{event.time}</p> {/* Make the time smaller and gray */}
                   <p className="text-md text-gray-500"><span className='font-bold'>Location: </span>{event.location}</p> {/* Make the location smaller and gray */}
+                  {event.collabForums.filter(forumName => forumName !== forum).length > 0 && (
+                    <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
+                  )}
                 </div>
               </div>
             ))
