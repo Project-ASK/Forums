@@ -139,7 +139,7 @@ const Dashboard = ({ username }) => {
     return null;
   }
   const handleback = () => {
-    router.back();
+    setCurrentPage('home');
 }
   return (
     <>
