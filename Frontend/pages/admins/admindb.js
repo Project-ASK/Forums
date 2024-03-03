@@ -138,7 +138,9 @@ const Dashboard = ({ username }) => {
   if (!username) {
     return null;
   }
-
+  const handleback = () => {
+    router.back();
+}
   return (
     <>
       <div className="App">
@@ -146,7 +148,7 @@ const Dashboard = ({ username }) => {
           <button onClick={toggleMenu} className="p-4">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <img src="/assets/logo.png" width={200} />
+          <img src="/assets/logo.png" width={200} onClick={handleHomeClick} />
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (

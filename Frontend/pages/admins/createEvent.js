@@ -46,6 +46,9 @@ const CreateEvent = () => {
     const handleHome = () => {
         router.push('/admins/admindb');
     }
+    const handleback = () => {
+        router.back();
+    }
 
     const handleImageUpload = (event) => {
         setImage(event.target.files[0]);
@@ -101,7 +104,7 @@ const CreateEvent = () => {
         <>
             <div className="App">
                 <div className="flex bg-white w-full justify-between items-center">
-                    <img src="/assets/logo.png" width={200} />
+                    <img src="/assets/logo.png" width={200} onClick={handleback} />
                     <button onClick={handleHome} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Dashboard</button>
                 </div>
             </div>
