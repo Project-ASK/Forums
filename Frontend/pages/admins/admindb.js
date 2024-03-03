@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
@@ -17,7 +17,28 @@ const Dashboard = ({ username }) => {
   const [currentPage, setCurrentPage] = useState('home');
   const [events, setEvents] = useState([]);
   const [ownEvents,setOwnEvents] = useState([]);
+  const node = useRef();
 
+  const handleClickOutside = e => { // Add this function
+    if (node.current.contains(e.target)) {
+      // inside click
+      return;
+    }
+    // outside click 
+    setIsMenuOpen(false);
+  };
+
+  useEffect(() => { // Add this useEffect
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -129,8 +150,8 @@ const Dashboard = ({ username }) => {
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (
-          <div className="absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 transition-transform duration-200 transform translate-x-0">
-            <button onClick={toggleMenu} className="mb-4 self-end">
+          <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 transition-transform ease-in-out duration-500 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>           
+           <button onClick={toggleMenu} className="mb-4 self-end">
               <X size={24} />
             </button>
             <ul>
