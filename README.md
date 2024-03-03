@@ -14,6 +14,8 @@ This is a project for managing multiple forums like IEEE, IEDC, TInkerhub, GDSC 
 
 #### For Documentation and Reports of the project, refer [here](https://github.com/Project-ASK/forum-mgnt-system-docs).
 
+Website is publically Available when the server is up at http://14.139.189.219:3000
+
 ### Creators:
 - [Karthik Vijay](https://github.com/karthikvijay5227)
 - [Sanjay Mathew](https://github.com/M#BIONIX)
