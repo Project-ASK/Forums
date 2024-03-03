@@ -80,7 +80,9 @@ const Dashboard = ({ username }) => {
 
     reader.readAsText(file);
   };
-
+  const handleHome = () => {
+    router.push('/admins/admindb');
+}
   const deleteMember = (index) => {
     // Remove the member from the members array
     const newMembers = [...members];
@@ -101,6 +103,7 @@ const Dashboard = ({ username }) => {
     return null;
   }
 
+
   const downloadMembers = () => {
     // Convert the members array to CSV data
     const csvData = members.map(member => `${member.name},${member.phoneNumber}`).join('\n');
@@ -114,7 +117,7 @@ const Dashboard = ({ username }) => {
       <div className="App">
         <div className="flex bg-white w-full justify-between items-center">
           <img src="/assets/logo.png" width={200} />
-          <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
+          <button onClick={handleHome} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Dashboard</button>
         </div>
       </div>
 
