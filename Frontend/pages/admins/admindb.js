@@ -16,7 +16,7 @@ const Dashboard = ({ username }) => {
   const [showMembers, setShowMembers] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [events, setEvents] = useState([]);
-  const [ownEvents,setOwnEvents] = useState([]);
+  const [ownEvents, setOwnEvents] = useState([]);
   const node = useRef();
 
   const handleClickOutside = e => { // Add this function
@@ -150,8 +150,8 @@ const Dashboard = ({ username }) => {
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (
-          <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 transition-transform ease-in-out duration-500 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>           
-           <button onClick={toggleMenu} className="mb-4 self-end">
+          <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 ${isMenuOpen ? 'animate-slide-in' : 'animate-slide-out'}`}>
+            <button onClick={toggleMenu} className="mb-4 self-end">
               <X size={24} />
             </button>
             <ul>
