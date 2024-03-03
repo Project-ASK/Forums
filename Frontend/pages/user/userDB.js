@@ -444,13 +444,17 @@ const Dashboard = ({ username }) => {
                   <div className="shadow  rounded-lg bg-white overflow-hidden w-full block p-8">
                     <h2 className="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">Join {selectedEvent?.eventName}</h2>
                     <div className="mb-4">
-                      {questions.length != 0 && <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>}
-                      {questions.map((question, index) => (
-                        <div key={index}>
-                          <p>{question.question}</p>
-                          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 mt-[0.8rem]" type={question.type} onChange={(e) => setResponses({ ...responses, [question.question]: e.target.value })} />
-                        </div>
-                      ))}
+                      {questions.length != 0 && (
+                        <>
+                          <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Questions</label>
+                          {questions.map((question, index) => (
+                            <div key={index}>
+                              <p>{question.question}</p>
+                              <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 mt-[0.8rem]" type={question.type} onChange={(e) => setResponses({ ...responses, [question.question]: e.target.value })} />
+                            </div>
+                          ))}
+                        </>
+                      )}
                     </div>
                     <div className="inline-block w-64 mb-4">
                       <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Select a theme</label>
@@ -465,7 +469,7 @@ const Dashboard = ({ username }) => {
                       </div>
                     </div>
                     <div className="mt-8 text-right">
-                      <button type="button" className="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm mr-2" onClick={() => setJoinEventModal(false)}>
+                      <button type="button" className="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm mr-2" onClick={() => { setJoinEventModal(false); setQuestions([]); }}>
                         Cancel
                       </button>
                       <button type="button" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" onClick={joinEvent}>
