@@ -177,12 +177,16 @@ const Dashboard = ({ username }) => {
       ) : currentPage === 'manageEvents' ? (
         <div className="w-full flex flex-col items-center mt-10">
           <button className="p-2.5 bg-blue-500 rounded-xl text-white mb-4" onClick={() => { router.push('createEvent') }}>Create Event</button>
-          {events.length > 0 ? (
+          {events && events.length > 0 ? (
             events.map((event, index) => (
-                  <div key={index} className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex" onClick={() => router.push(`/admins/eventdetails/${event.id}`)}>                <div className="w-1/4 pr-2"> {/* Add some padding to the right of the image */}
+              <div key={index} className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex" onClick={() => {
+                Cookies.set('eventId', event._id); // Set the event id as a cookie
+                router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
+              }}>
+                <div className="w-1/4 pr-2"> {/* Add some padding to the right of the image */}
                   <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.imagePath)} alt={event.eventName} width={100} height={100} />
                 </div>
-                <div className="w-1/2"> {/* Add some padding to the left of the text */}
+                <div className="w-1/2 cursor-pointer"> {/* Add some padding to the left of the text */}
                   <h2 className="text-lg font-bold">Name: {event.eventName}</h2> {/* Make the event name larger and bold */}
                   <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{event.date}</p> {/* Make the date smaller and gray */}
                   <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{event.time}</p> {/* Make the time smaller and gray */}

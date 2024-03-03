@@ -401,6 +401,27 @@ router.route('/admin/getCollabEvents')
         res.status(200).send({ events });
     });
 
+router.route('/admin/getEventDetails')
+    .post(async (req, res) => {
+        const { eventId } = req.body;
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(400).send({ message: 'Event not found' });
+        }
+        res.status(200).send({ event });
+    });
+
+router.route('/event/getUsers')
+    .post(async (req, res) => {
+        const { eventName } = req.body;
+        try {
+            const users = await User.find({ "joinedEvents.eventName": eventName });
+            res.status(200).send({ users });
+        } catch (error) {
+            res.status(500).send({ message: 'Error fetching users' });
+        }
+    });
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
