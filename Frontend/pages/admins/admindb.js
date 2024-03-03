@@ -148,7 +148,7 @@ const Dashboard = ({ username }) => {
           <button onClick={toggleMenu} className="p-4">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <img src="/assets/logo.png" width={200} onClick={handleHomeClick} />
+          <img src="/assets/logo.png" width={200} onClick={handleback} />
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (
@@ -161,6 +161,7 @@ const Dashboard = ({ username }) => {
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Analytics</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
+              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Event Report</li>
             </ul>
           </div>
         )}
