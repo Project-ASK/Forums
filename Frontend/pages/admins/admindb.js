@@ -19,6 +19,15 @@ const Dashboard = ({ username }) => {
   const [ownEvents, setOwnEvents] = useState([]);
   const node = useRef();
 
+  useEffect(() => {
+    const page = Cookies.get('currentPage'); // Get the currentPage from the cookie
+    if (page) {
+      setCurrentPage(page);
+      Cookies.remove('currentPage'); // Remove the cookie
+    }
+  }, []);
+
+
   const handleClickOutside = e => { // Add this function
     if (node.current.contains(e.target)) {
       // inside click
@@ -126,7 +135,10 @@ const Dashboard = ({ username }) => {
   };
 
   const handleHomeClick = () => {
-    toggleMenu();
+    if(isMenuOpen)
+    {
+      toggleMenu();
+    }
     setCurrentPage('home');
   };
 
@@ -138,9 +150,7 @@ const Dashboard = ({ username }) => {
   if (!username) {
     return null;
   }
-  const handleback = () => {
-    setCurrentPage('home');
-}
+
   return (
     <>
       <div className="App">
@@ -148,7 +158,7 @@ const Dashboard = ({ username }) => {
           <button onClick={toggleMenu} className="p-4">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <img src="/assets/logo.png" width={200} onClick={handleback} />
+          <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer' />
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (

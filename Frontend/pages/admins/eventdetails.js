@@ -80,9 +80,7 @@ const Dashboard = ({ username }) => {
 
     reader.readAsText(file);
   };
-  const handleHome = () => {
-    router.push('/admins/admindb');
-}
+
   const deleteMember = (index) => {
     // Remove the member from the members array
     const newMembers = [...members];
@@ -90,19 +88,25 @@ const Dashboard = ({ username }) => {
     setMembers(newMembers);
   };
 
-  const handleLogout = () => {
-    // Clear the cookies and redirect the user to the login page
-    Cookies.remove('adminUsername');
-    Cookies.remove('token');
-    Cookies.remove('eventId');
-    Cookies.remove('forum');
-    router.replace('/adminAuth/login');
-  }
+  useEffect(() => {
+    const handleBackButtonEvent = (e) => {
+      e.preventDefault();
+      Cookies.set('currentPage', 'manageEvents'); // Set the currentPage in a cookie
+      router.push('/admins/admindb');
+    };
+
+    window.addEventListener('popstate', handleBackButtonEvent);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButtonEvent);
+    };
+  }, []);
+
+
 
   if (!username) {
     return null;
   }
-
 
   const downloadMembers = () => {
     // Convert the members array to CSV data
@@ -111,15 +115,15 @@ const Dashboard = ({ username }) => {
     const url = URL.createObjectURL(blob);
     return url;
   };
+
   const handleback = () => {
     router.back();
-}
+  }
   return (
     <>
       <div className="App">
         <div className="flex bg-white w-full justify-between items-center">
-          <img src="/assets/logo.png" width={200} onClick={handleback} />
-          <button onClick={handleHome} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Dashboard</button>
+          <img src="/assets/logo.png" width={200} onClick={handleback} className='cursor-pointer'/>
         </div>
       </div>
 
