@@ -4,8 +4,8 @@ import Cookies from 'js-cookie';
 import Select from 'react-select';
 
 export default function forms() {
-    const router = useRouter()
-    const [About, setAbout] = useState('')
+    const router = useRouter();
+    const [about, setAbout] = useState('')
     const [branch, setBranch] = useState('')
     const [phone, setPhone] = useState('')
     const [reg, setReg] = useState('')
@@ -23,10 +23,60 @@ export default function forms() {
         { value: 'Personality', label: 'Personality' },
     ];
 
+    useEffect(() => {
+        const fetchDetails = async () => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getUser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userName }),
+            });
+            const data = await response.json();
+            setName(data.name);
+        };
+
+        if (userName) {
+            fetchDetails();
+        }
+    }, [userName]);
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateUser`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userName, name, reg, phone, year, branch, about, topics }),
+        });
+        const data = await response.json();
+        setIsLoading(false);
+        if (data.message === 'User Updated') {
+            alert('User Profile Updated');
+            //Clear all the values after update
+            setReg('');
+            setPhone('');
+            setYear('');
+            setBranch('');
+            setAbout('');
+            setTopics([]);
+            setName('');
+            router.back();
+        } else {
+            alert(data.message);
+        }
+    }
+
+    const handleHome = () => {
+        router.back();
+    }
+
     return (
         <>
             <div className="flex bg-white w-full justify-between shadow-md">
-                <img src="/assets/logo.png" width={160} />
+                <img src="/assets/logo.png" width={160} onClick={handleHome} className="cursor-pointer" />
             </div>
             <div className="flex flex-col items-center min-h-screen py-2 mt-[2rem] xs:w-[80%] xs:mx-auto">
                 <div className="flex flex-col items-center justify-center w-full text-center">
@@ -84,7 +134,7 @@ export default function forms() {
                         </div>
                         <div className="w-full px-3">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="year">
-                                Year
+                                Year of Join
                             </label>
                             <input
                                 id="year"
@@ -110,14 +160,14 @@ export default function forms() {
                             />
                         </div>
                         <div className="w-full px-3">
-                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="About">
+                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="about">
                                 About
                             </label>
                             <textarea
-                                id="About"
+                                id="about"
                                 required
                                 onChange={(e) => setAbout(e.target.value)}
-                                value={About}
+                                value={about}
                                 className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                             />
                         </div>
@@ -139,6 +189,7 @@ export default function forms() {
                     <button
                         className={`w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${isloading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         disabled={isloading}
+                        onClick={handleUpdate}
                     >
                         {isloading ? 'Updating...' : 'Update Profile'}
                     </button>

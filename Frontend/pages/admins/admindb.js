@@ -145,41 +145,45 @@ const Dashboard = ({ username }) => {
     toggleMenu();
     setCurrentPage('manageEvents');
   };
-  
-  
-// This would be in your React component
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  const reader = new FileReader();
 
-  reader.onload = async (event) => {
-    const csvData = event.target.result;
-    const lines = csvData.split('\n');
-    const members = lines.map((line) => {
-      const [name, id] = line.split(',');
-      return { name, id: id ? id.trim() : undefined  };
-    });
 
-    // Send a POST request to your server-side route with the new member data
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/appendMembers`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ forum, members }),
-    });
+  // This would be in your React component
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-    if (response.ok) {
-      console.log('Members appended successfully');
-    } else {
-      console.log('Failed to append members');
-    }
+    reader.onload = async (event) => {
+      const csvData = event.target.result;
+      const lines = csvData.split('\n');
+      const members = lines.map((line) => {
+        const [name, id] = line.split(',');
+        return { name, id: id ? id.trim() : undefined };
+      });
+
+      // Send a POST request to your server-side route with the new member data
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/appendMembers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ forum, members }),
+      });
+
+      if (response.ok) {
+        console.log('Members appended successfully');
+      } else {
+        console.log('Failed to append members');
+      }
+    };
+
+    reader.readAsText(file);
   };
 
-  reader.readAsText(file);
-};
+  const eventReport = () => {
+    router.push('/admins/eventReport');
+  }
 
-  
+
   if (!username) {
     return null;
   }
@@ -204,7 +208,7 @@ const handleFileUpload = (event) => {
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Analytics</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Event Report</li>
+              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={eventReport}>Event Report</li>
             </ul>
           </div>
         )}

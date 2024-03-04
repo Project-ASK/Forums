@@ -123,10 +123,9 @@ const Dashboard = ({ username }) => {
     <>
       <div className="App">
         <div className="flex bg-white w-full justify-between items-center">
-          <img src="/assets/logo.png" width={200} onClick={handleback} className='cursor-pointer'/>
+          <img src="/assets/logo.png" width={200} onClick={handleback} className='cursor-pointer' />
         </div>
       </div>
-
       <div className="w-full flex flex-col items-center mt-10">
         {eventDetails &&
           <div className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex">
