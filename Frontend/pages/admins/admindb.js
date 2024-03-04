@@ -135,8 +135,7 @@ const Dashboard = ({ username }) => {
   };
 
   const handleHomeClick = () => {
-    if(isMenuOpen)
-    {
+    if (isMenuOpen) {
       toggleMenu();
     }
     setCurrentPage('home');
@@ -146,7 +145,41 @@ const Dashboard = ({ username }) => {
     toggleMenu();
     setCurrentPage('manageEvents');
   };
+  
+  
+// This would be in your React component
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
 
+  reader.onload = async (event) => {
+    const csvData = event.target.result;
+    const lines = csvData.split('\n');
+    const members = lines.map((line) => {
+      const [name, id] = line.split(',');
+      return { name, id: id ? id.trim() : undefined  };
+    });
+
+    // Send a POST request to your server-side route with the new member data
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/appendMembers`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ forum, members }),
+    });
+
+    if (response.ok) {
+      console.log('Members appended successfully');
+    } else {
+      console.log('Failed to append members');
+    }
+  };
+
+  reader.readAsText(file);
+};
+
+  
   if (!username) {
     return null;
   }
@@ -180,6 +213,8 @@ const Dashboard = ({ username }) => {
       {currentPage === 'memberList' ? (
         // If showMembers is true, display the list of members
         <div className="w-full flex flex-col items-center mt-10">
+          <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
+          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] cursor-pointer">Import</label>
           <h2 className="text-2xl font-bold mb-5">Members of {forum}:</h2>
           {members.map((member, index) => (
             <div key={index} className="w-1/2 p-4 border rounded mb-4">

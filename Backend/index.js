@@ -410,6 +410,30 @@ router.route('/admin/getEventDetails')
         }
         res.status(200).send({ event });
     });
+    router.post('/admin/appendMembers', (req, res) => {
+        const { forum, members } = req.body;
+        console.log(forum);
+        const filePath = path.join(__dirname, `./memberships/${forum}.json`);
+      
+        fs.readFile(filePath, (err, data) => {
+          if (err) {
+            console.error(`Error reading file from disk: ${err}`);
+          } else {
+            const databases = JSON.parse(data);
+            databases.push(...members);
+      
+            fs.writeFile(filePath, JSON.stringify(databases, null, 4), (err) => {
+              if (err) {
+                console.error(`Error writing file to disk: ${err}`);
+              }
+            });
+          }
+        });
+      
+        res.status(200).send({ status: 'success' });
+      });
+      
+      module.exports = router;
 
 router.route('/event/getUsers')
     .post(async (req, res) => {
