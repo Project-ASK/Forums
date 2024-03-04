@@ -130,10 +130,10 @@ const Dashboard = ({ username }) => {
       <div className="w-full flex flex-col items-center mt-10">
         {eventDetails &&
           <div className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex">
-            <div className="w-1/4 pr-2">
-              <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, eventDetails.imagePath)} alt={eventDetails.eventName} width={100} height={100} />
+            <div className="w-1/6 pr-2">
+              <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, eventDetails.imagePath)} alt={eventDetails.eventName} width={100} height={100} layout="responsive" />
             </div>
-            <div className="w-1/2">
+            <div className="w-1/2 ml-[1rem]">
               <h2 className="text-lg font-bold">Name: {eventDetails.eventName}</h2>
               <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{eventDetails.date}</p>
               <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{eventDetails.time}</p>
