@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
+import Select from 'react-select';
 
 export default function forms() {
     const router = useRouter()
-    const [About, setAbout] = useState(' ')
-    const [branch, setBranch] = useState(' ')
-    const [phone,setPhone] = useState('')
-    const [reg, setReg] = useState(' ')
+    const [About, setAbout] = useState('')
+    const [branch, setBranch] = useState('')
+    const [phone, setPhone] = useState('')
+    const [reg, setReg] = useState('')
+    const [year, setYear] = useState('')
+    const [name, setName] = useState('')
     const [isloading, setIsLoading] = useState(false)
-    const [topics, setTopics] = useState([])
-
-    const topic = ['AI/ML', 'Cybersecurity', 'Web Development', 'Cloud', 'Android Development']; // Add your topics here
-
-    const handleTopicChange = (e) => {
-        if (e.target.checked) {
-            setTopics([...topics, e.target.value]);
-        } else {
-            setTopics(topics.filter(topic => topic !== e.target.value));
-        }
-    }
+    const userName = Cookies.get('username');
+    const [topics, setTopics] = useState([]);
+    const tags = [
+        { value: 'AI', label: 'AI' },
+        { value: 'Cybersecurity', label: 'Cybersecurity' },
+        { value: 'Cloud', label: 'Cloud' },
+        { value: 'Web Development', label: 'Web Development' },
+        { value: 'App Development', label: 'App Development' },
+        { value: 'Personality', label: 'Personality' },
+    ];
 
     return (
         <>
@@ -31,6 +34,19 @@ export default function forms() {
                 </div>
                 <form className='w-full max-w-md mt-5'>
                     <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="w-full px-3">
+                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="name">
+                                Name
+                            </label>
+                            <input
+                                id="name"
+                                required
+                                type='text'
+                                onChange={(e) => setName(e.target.value)}
+                                value={name}
+                                className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                            />
+                        </div>
                         <div className="w-full px-3">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="reg">
                                 Reg No
@@ -67,6 +83,20 @@ export default function forms() {
                             />
                         </div>
                         <div className="w-full px-3">
+                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="year">
+                                Year
+                            </label>
+                            <input
+                                id="year"
+                                required
+                                type='number'
+                                maxLength={4}
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                                className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                            />
+                        </div>
+                        <div className="w-full px-3">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="branch">
                                 Branch
                             </label>
@@ -93,16 +123,17 @@ export default function forms() {
                         </div>
                         <div className="w-full px-3">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="topic">
-                                Topic of Interests
+                                Topics of Interest
                             </label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
-                                {topic.map((topic, index) => (
-                                    <div key={index} className="flex items-center">
-                                        <input type="checkbox" id={topic} name={topic} value={topic} className="scale-100" onChange={handleTopicChange} />
-                                        <label htmlFor={topic} className="ml-1 text-sm">{topic}</label>
-                                    </div>
-                                ))}
-                            </div>
+                            <Select
+                                isMulti
+                                name="forums"
+                                options={tags}
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                                onChange={(selectedOptions) => setTopics(selectedOptions.map(tags => tags.value))}
+                                value={topics ? topics.map(topic => ({ label: topic, value: topic })) : []}
+                            />
                         </div>
                     </div>
                     <button

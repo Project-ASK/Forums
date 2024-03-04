@@ -104,8 +104,7 @@ const CreateEvent = () => {
         <>
             <div className="App">
                 <div className="flex bg-white w-full justify-between items-center">
-                    <img src="/assets/logo.png" width={200} onClick={handleback} />
-                    <button onClick={handleHome} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Dashboard</button>
+                    <img src="/assets/logo.png" width={200} onClick={handleHome} />
                 </div>
             </div>
             <div className="w-full flex flex-col items-center mt-10">

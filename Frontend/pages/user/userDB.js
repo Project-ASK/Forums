@@ -32,6 +32,7 @@ const Dashboard = ({ username }) => {
   const [questions, setQuestions] = useState([]);
   const [responses, setResponses] = useState({});
   const [joinedEvents, setJoinedEvents] = useState([]);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   useEffect(() => {
     getNoOfDays();
@@ -294,6 +295,11 @@ const Dashboard = ({ username }) => {
     router.replace('/auth/login');
   }
 
+  const handleProfileEdit = () => {
+    // Add your profile editing logic here
+    router.push('/user/editProfile');
+  }
+
   // If username is not available, don't render anything
   if (!username) {
     return null;
@@ -303,7 +309,29 @@ const Dashboard = ({ username }) => {
     <>
       <div className="flex bg-white w-full justify-between items-center">
         <img src="/assets/logo.png" width={200} />
-        <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] w-[5%]">Logout</button>
+        <div className="relative">
+          <img
+            src="/assets/profile.svg"
+            className="w-6 md:w-8 lg:w-10 xl:w-12 2xl:w-14 self-center mr-4 cursor-pointer" 
+            onClick={() => setDropdownVisible(!dropdownVisible)} // Toggle the dropdown when the image is clicked
+          />
+          {dropdownVisible && ( // Only show the dropdown if dropdownVisible is true
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded py-2 shadow-xl">
+              <button
+                onClick={handleProfileEdit}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left"
+              >
+                Edit Profile
+              </button>
+              <button
+                onClick={handleLogout}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="w-full flex pb-[40px] justify-center" style={{ backgroundImage: 'url("/assets/bgprofile.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="flex-col  xs:w-3/4 md:w-1/2  flex items-center bg-[#FFFFFF] border-cyan-800 border-2 rounded-[40px] p-[70px] mt-[30px]">
