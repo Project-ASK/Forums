@@ -74,6 +74,12 @@ const userSchema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
+    about: String, // About
+    regNo: String, // Registration number
+    branch: String, // Branch
+    phoneNumber: String, // Phone number
+    yearOfJoin: String, // Year
+    topics: [String], // Topics of interest
     forums: [{
         name: String,
         description: String
@@ -145,7 +151,6 @@ async function postLogin(req, res) {
         return res.status(200).send({ message: 'Login Successful', email: user.email, token });
     }
 }
-
 
 router.route('/checkUser')
     .post(postCheckUser);
@@ -410,30 +415,7 @@ router.route('/admin/getEventDetails')
         }
         res.status(200).send({ event });
     });
-    router.post('/admin/appendMembers', (req, res) => {
-        const { forum, members } = req.body;
-        console.log(forum);
-        const filePath = path.join(__dirname, `./memberships/${forum}.json`);
-      
-        fs.readFile(filePath, (err, data) => {
-          if (err) {
-            console.error(`Error reading file from disk: ${err}`);
-          } else {
-            const databases = JSON.parse(data);
-            databases.push(...members);
-      
-            fs.writeFile(filePath, JSON.stringify(databases, null, 4), (err) => {
-              if (err) {
-                console.error(`Error writing file to disk: ${err}`);
-              }
-            });
-          }
-        });
-      
-        res.status(200).send({ status: 'success' });
-      });
-      
-      module.exports = router;
+
 
 router.route('/event/getUsers')
     .post(async (req, res) => {
@@ -445,6 +427,60 @@ router.route('/event/getUsers')
             res.status(500).send({ message: 'Error fetching users' });
         }
     });
+
+router.route('/admin/appendMembers')
+    .post(async (req, res) => {
+        const { forum, members } = req.body;
+        console.log(forum);
+        const filePath = path.join(__dirname, `./memberships/${forum}.json`);
+
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                console.error(`Error reading file from disk: ${err}`);
+            } else {
+                const databases = JSON.parse(data);
+                databases.push(...members);
+
+                fs.writeFile(filePath, JSON.stringify(databases, null, 4), (err) => {
+                    if (err) {
+                        console.error(`Error writing file to disk: ${err}`);
+                    }
+                });
+            }
+        });
+        res.status(200).send({ status: 'success' });
+    });
+
+router.route('/getUser')
+    .post(async (req, res) => {
+        const { userName } = req.body;
+        const user = await User.findOne({ username: userName });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        res.status(200).send({ name: user.name });
+
+    })
+
+router.route('/updateUser')
+    .post(async (req, res) => {
+        const { userName, name, reg, phone, year, branch, about, topics } = req.body;
+        const user = await User.findOne({ username: userName });
+        if (!user) {
+            return res.status(400).send({ message: 'User not found' });
+        }
+        if (user.name !== name) {
+            user.name = name;
+        }
+        user.reg = reg;
+        user.phoneNumber = phone;
+        user.yearOfJoin = year;
+        user.branch = branch;
+        user.about = about;
+        user.topics = topics;
+        await user.save();
+        res.status(200).send({ message: 'User Updated' });
+    })
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

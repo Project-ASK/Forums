@@ -145,41 +145,41 @@ const Dashboard = ({ username }) => {
     toggleMenu();
     setCurrentPage('manageEvents');
   };
-  
-  
-// This would be in your React component
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  const reader = new FileReader();
 
-  reader.onload = async (event) => {
-    const csvData = event.target.result;
-    const lines = csvData.split('\n');
-    const members = lines.map((line) => {
-      const [name, id] = line.split(',');
-      return { name, id: id ? id.trim() : undefined  };
-    });
 
-    // Send a POST request to your server-side route with the new member data
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/appendMembers`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ forum, members }),
-    });
+  // This would be in your React component
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-    if (response.ok) {
-      console.log('Members appended successfully');
-    } else {
-      console.log('Failed to append members');
-    }
+    reader.onload = async (event) => {
+      const csvData = event.target.result;
+      const lines = csvData.split('\n');
+      const members = lines.map((line) => {
+        const [name, id] = line.split(',');
+        return { name, id: id ? id.trim() : undefined };
+      });
+
+      // Send a POST request to your server-side route with the new member data
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/appendMembers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ forum, members }),
+      });
+
+      if (response.ok) {
+        console.log('Members appended successfully');
+      } else {
+        console.log('Failed to append members');
+      }
+    };
+
+    reader.readAsText(file);
   };
 
-  reader.readAsText(file);
-};
 
-  
   if (!username) {
     return null;
   }

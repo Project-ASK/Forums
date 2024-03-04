@@ -312,7 +312,7 @@ const Dashboard = ({ username }) => {
         <div className="relative">
           <img
             src="/assets/profile.svg"
-            className="w-6 md:w-8 lg:w-10 xl:w-12 2xl:w-14 self-center mr-4 cursor-pointer" 
+            className="w-6 md:w-8 lg:w-10 xl:w-12 2xl:w-14 self-center mr-4 cursor-pointer"
             onClick={() => setDropdownVisible(!dropdownVisible)} // Toggle the dropdown when the image is clicked
           />
           {dropdownVisible && ( // Only show the dropdown if dropdownVisible is true
