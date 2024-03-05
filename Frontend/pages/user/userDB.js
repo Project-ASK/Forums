@@ -308,18 +308,11 @@ const Dashboard = ({ username }) => {
   return (
     <>
       <div className="flex bg-white w-full justify-between items-center">
-        <div className="flex items-center ml-[30px] ">
-            <div className="flex border-2 border-slate-800 rounded-full p-2 hover:bg-blue-500 bg-white ease-in-out transition-colors duration-200" onClick={()=>{router.back()}}>
-                <svg width="15" height="15" viewBox="0 0 18 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16.6445 0.3155C16.4167 0.113511 16.1079 4.00543e-05 15.7859 4.00543e-05C15.4639 4.00543e-05 15.1551 0.113511 14.9274 0.3155L0.355538 13.2448C0.127888 13.4468 0 13.7208 0 14.0065C0 14.2922 0.127888 14.5662 0.355538 14.7683L14.9274 27.6976C15.1564 27.8939 15.4632 28.0025 15.7816 28C16.1 27.9975 16.4045 27.8842 16.6297 27.6845C16.8548 27.4847 17.4308 26.97 17.4336 26.6875C17.4364 26.405 17.5103 25.8907 17.2891 25.6875L5.14453 13.6856L17.2891 2.18754C17.5167 1.98549 17.2891 1.47324 17.2891 1.18754C17.2891 0.901841 16.8721 0.51755 16.6445 0.3155Z" fill="black"/>
-                </svg>
-            </div>
-            <img src="/assets/logo.png" width={180}/>
-        </div>
+          <img src="/assets/logo.png" width={180} />
         <div className="relative">
           <img
-            src="/assets/account.svg" width={40}
-            className="self-center mr-[3rem] cursor-pointer" 
+            src="/assets/profile.svg" width={40}
+            className="self-center mr-[2rem] cursor-pointer"
             onClick={() => setDropdownVisible(!dropdownVisible)} // Toggle the dropdown when the image is clicked
           />
           {dropdownVisible && ( // Only show the dropdown if dropdownVisible is true
