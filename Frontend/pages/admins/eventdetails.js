@@ -147,6 +147,7 @@ const Dashboard = ({ username }) => {
         }
       </div>
       <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
+        <button onClick={() => { setIsFormOpen(true); router.push('./eventReport'); }} className="p-2.5 bg-blue-500 rounded-xl text-white">Report Event</button>
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
         <div className="w-full flex justify-center items-center mb-5">
           <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add Members</button>

@@ -208,7 +208,6 @@ const Dashboard = ({ username }) => {
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Analytics</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={eventReport}>Event Report</li>
             </ul>
           </div>
         )}
