@@ -10,6 +10,7 @@ const cors = require('cors');
 const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
+const htmlToPdf = require('html-pdf');
 
 const SECRET_KEY = 'super-secret-key';
 
@@ -40,26 +41,6 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage })
-
-// const storages = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         const username = req.params.username;
-//         const dir = `./uploads/${username}`;
-
-//         fs.exists(dir, exist => {
-//             if (!exist) {
-//                 return fs.mkdir(dir, error => cb(error, dir))
-//             }
-//             return cb(null, dir);
-//         })
-//     },
-//     filename: function (req, file, cb) {
-//         const originalName = path.basename(file.originalname, path.extname(file.originalname)); // Get the original filename without extension
-//         cb(null, `${originalName}-${Date.now()}${path.extname(file.originalname)}`)
-//     }
-// })
-
-// const upload = multer({ storage: storages })
 
 // Connect to DB
 mongoose.connect(process.env.DB_CONNECT);
@@ -188,20 +169,6 @@ router.route('/resetPassword')
         await User.updateOne({ email }, { $set: { password: hashedPassword } });
         res.status(200).send({ message: 'Password updated successfully' });
     });
-
-// app.use(upload.none());
-// router.route('/uploadImage/:username')
-//     .post(upload.single('image'), async (req, res) => {
-//         const { username } = req.params;
-//         console.log('Request body:', req.params); // Retrieve the username from the request body
-//         const user = await User.findOne({ username });
-//         if (!user) {
-//             return res.status(400).send({ message: 'User not found' });
-//         }
-//         user.image = req.file.path;
-//         await user.save();
-//         res.status(200).send({ message: 'Image uploaded successfully' });
-//     });
 
 router.get('/images', (req, res) => {
     const directoryPath = path.join(__dirname, 'uploads/guest');
@@ -481,6 +448,113 @@ router.route('/updateUser')
         await user.save();
         res.status(200).send({ message: 'User Updated' });
     })
+
+router.post('/generateHtmlPdf', async (req, res) => {
+    const { richTextContent } = req.body;
+
+    if (!richTextContent || richTextContent.trim() === '') {
+        return res.status(400).json({ error: 'Rich text content is empty' });
+    }
+
+    // Create an HTML file with the rich text content
+    const contentState = JSON.parse(richTextContent);
+
+    // Convert Draft.js content state to HTML
+    const htmlContent = draftToHtml(contentState);
+    const htmlFilename = 'output.html';
+    fs.writeFileSync(htmlFilename, htmlContent);
+
+    // Convert HTML to PDF
+    htmlToPdf.create(htmlContent, {}).toBuffer((err, buffer) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Failed to generate PDF' });
+        } else {
+            const base64String = buffer.toString('base64');
+            res.status(200).json({ pdf: base64String });
+        }
+
+        // Delete HTML file
+        fs.unlinkSync(htmlFilename);
+    });
+});
+
+function draftToHtml(contentState) {
+    const blocks = contentState.blocks.map(block => {
+        let text = block.text;
+        let blockHtml = '';
+
+        switch (block.type) {
+            case 'unordered-list-item':
+                blockHtml += '<ul>';
+                blockHtml += `<li>${text}</li>`;
+                blockHtml += '</ul>';
+                break;
+            case 'ordered-list-item':
+                blockHtml += '<ol>';
+                blockHtml += `<li>${text}</li>`;
+                blockHtml += '</ol>';
+                break;
+            case 'header-one':
+                blockHtml += `<h1>${text}</h1>`;
+                break;
+            case 'header-two':
+                blockHtml += `<h2>${text}</h2>`;
+                break;
+            default:
+                // Check for inline styles
+                if (block.inlineStyleRanges.length > 0) {
+                    let styledText = text;
+                    block.inlineStyleRanges.forEach(style => {
+                        const startTag = style.style === 'BOLD' ? '<strong>' : ''; // Use <strong> for bold
+                        const endTag = style.style === 'BOLD' ? '</strong>' : ''; // Use </strong> for bold
+                        styledText = styledText.slice(0, style.offset) + startTag + styledText.slice(style.offset, style.offset + style.length) + endTag + styledText.slice(style.offset + style.length);
+                    });
+                    blockHtml += `<p>${styledText}</p>`;
+                } else {
+                    blockHtml += `<p>${text}</p>`;
+                }
+                break;
+        }
+
+        return blockHtml;
+    });
+
+    return blocks.join('');
+}
+
+router.route('/checkAndUpdateUser')
+    .post(async (req, res) => {
+        const { name, event, forumName } = req.body;
+        const user = await User.findOne({ name, "forums.name": forumName });
+
+        if (user) {
+            user.joinedEvents.push({ eventName: event, forumName }); // replace 'Your Forum Name' with the actual forum name
+            await user.save();
+            res.status(200).send({ success: true });
+        } else {
+            res.status(200).send({ success: false });
+        }
+    });
+
+router.route('/removeUserFromEvent')
+    .post(async (req, res) => {
+        const { name, event } = req.body;
+        const user = await User.findOne({ name });
+
+        if (user) {
+            const index = user.joinedEvents.findIndex(joinedEvent => joinedEvent.eventName === event);
+            if (index > -1) {
+                user.joinedEvents.splice(index, 1);
+                await user.save();
+                res.status(200).send({ success: true });
+            } else {
+                res.status(200).send({ success: false });
+            }
+        } else {
+            res.status(200).send({ success: false });
+        }
+    });
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

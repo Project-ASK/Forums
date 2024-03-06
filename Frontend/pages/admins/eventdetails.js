@@ -46,16 +46,31 @@ const Dashboard = ({ username }) => {
         const data = await response.json();
 
         // Set the members state
-        setMembers(data.users.map(user => ({ name: user.name, username: user.username })));
+        setMembers(data.users.map(user => ({ name: user.name, username: user.username, phoneNumber: user.phoneNumber })));
       }
     };
 
     fetchUsers();
   }, [eventDetails]);
 
-  const addMember = () => {
-    // Add the new member to the members array
-    setMembers([...members, { name: newMemberName, phoneNumber: newMemberPhoneNumber }]);
+  const addMember = async () => {
+    // Check if the user exists and update the user in the backend
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/checkAndUpdateUser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: newMemberName, event: eventDetails.eventName, forumName: forum }),
+    });
+
+    const data = await response.json();
+
+    // If the user was updated successfully, add the new member to the members array
+    if (data.success) {
+      setMembers([...members, { name: newMemberName, phoneNumber: newMemberPhoneNumber }]);
+    } else {
+      alert('User does not exist');
+    }
 
     // Clear the input fields
     setNewMemberName('');
@@ -64,28 +79,66 @@ const Dashboard = ({ username }) => {
     // Close the form
     setIsFormOpen(false);
   };
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
 
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const csvData = event.target.result;
       const lines = csvData.split('\n');
       const members = lines.map((line) => {
-        const [name, phoneNumber] = line.split(',');
-        return { name, phoneNumber };
+        const [name, phoneNumber, forumName] = line.split(',');
+        return { name, phoneNumber, forumName };
       });
-      setMembers(members);
+
+      for (const member of members) {
+        // Send a request to the backend to check and update the user
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/checkAndUpdateUser`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: member.name, event: eventDetails.eventName, forumName }),
+        });
+
+        const data = await response.json();
+
+        // If the user was updated successfully, add the new member to the members array
+        if (data.success) {
+          setMembers(prevMembers => [...prevMembers, member]);
+        } else {
+          alert(`User ${member.name} does not exist`);
+        }
+      }
     };
 
     reader.readAsText(file);
   };
 
-  const deleteMember = (index) => {
-    // Remove the member from the members array
-    const newMembers = [...members];
-    newMembers.splice(index, 1);
-    setMembers(newMembers);
+  const deleteMember = async (index) => {
+    // Get the member to be deleted
+    const member = members[index];
+
+    // Remove the member from the event in the backend
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/removeUserFromEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: member.name, event: eventDetails.eventName }),
+    });
+
+    const data = await response.json();
+
+    // If the user was removed successfully, remove the member from the members array
+    if (data.success) {
+      const newMembers = [...members];
+      newMembers.splice(index, 1);
+      setMembers(newMembers);
+    } else {
+      alert('Failed to remove user');
+    }
   };
 
   useEffect(() => {
@@ -102,8 +155,6 @@ const Dashboard = ({ username }) => {
     };
   }, []);
 
-
-
   if (!username) {
     return null;
   }
@@ -119,6 +170,7 @@ const Dashboard = ({ username }) => {
   const handleback = () => {
     router.back();
   }
+
   return (
     <>
       <div className="App">
@@ -147,19 +199,22 @@ const Dashboard = ({ username }) => {
         }
       </div>
       <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
-        <button onClick={() => { setIsFormOpen(true); router.push('./eventReport'); }} className="p-2.5 bg-blue-500 rounded-xl text-white">Report Event</button>
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
         <div className="w-full flex justify-center items-center mb-5">
           <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add Members</button>
           <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
           <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] cursor-pointer">Import</label>
           <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Download List</a>
+          <button onClick={() => { Cookies.set('eventId', eventDetails._id); router.push('./eventReport') }} className="p-2.5 bg-blue-500 rounded-xl text-white">Generate Event Report</button>
         </div>
         {isFormOpen && (
           <div className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
             <input type="text" value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Name" />
             <input type="text" value={newMemberPhoneNumber} onChange={(e) => setNewMemberPhoneNumber(e.target.value)} placeholder="Phone Number" />
-            <button onClick={addMember} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add</button>
+            <div>
+              <button onClick={addMember} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add</button>
+              <button onClick={() => { setIsFormOpen(false) }} className="p-2.5 bg-red-500 rounded-xl text-white">Close</button>
+            </div>
           </div>
         )}
         {members.map((member, index) => (
