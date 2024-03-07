@@ -128,11 +128,11 @@ const LoginPage = () => {
                         <form>
                             <div className="mb-4">
                                 <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                <input type="text" id="username" name="username" placeholder="Enter the Email" className="w-[50%] p-2 border border-gray-300 rounded flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                <input type="text" id="username" name="username" placeholder="Enter username" className="w-[50%] p-2 border border-gray-300 rounded-xl flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required />
                             </div>
                             <div>
                                 <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                <input type="password" id="password" name="password" placeholder="Enter the Password" className="w-[50%] p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
                                 <div className='flex justify-left mt-[1rem] mb-[2rem] xs:flex-row'>
                                     <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 mr-[2rem] cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
                                     <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
@@ -165,11 +165,11 @@ const LoginPage = () => {
                             <form>
                                 <div className="mb-4">
                                     <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                    <input type="text" id="username" name="username" placeholder="Enter the Email" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                    <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required />
                                 </div>
                                 <div>
                                     <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                    <input type="password" id="password" name="password" placeholder="Enter the Password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                    <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
                                     <div className='flex justify-center mt-4 mb-6'>
                                         <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
                                         <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline cursor-pointer ml-4" onClick={dev}>Forgot Password?</span>

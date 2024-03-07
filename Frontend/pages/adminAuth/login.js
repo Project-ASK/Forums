@@ -116,15 +116,15 @@ const LoginPage = () => {
                         <form>
                             <div className="mb-4">
                                 <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                <input type="text" id="username" name="username" placeholder="Enter the Email" className="w-[50%] p-2 border border-gray-300 rounded flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                <input type="text" id="username" name="username" placeholder="Enter username" className="w-[50%] p-2 border border-gray-300 rounded-xl flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required />
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                <input type="password" id="password" name="password" placeholder="Enter the Password" className="w-[50%] p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="forum" className="block text-gray-600 text-sm mb-2">Forum Name</label>
-                                <input type="text" id="forum" name="forum" placeholder="Enter the Name of Forum" className="w-[50%] p-2 border border-gray-300 rounded" value={forum} onChange={(e) => setForum(e.target.value)} required />
+                                <input type="text" id="forum" name="forum" placeholder="Enter the Name of Forum" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={forum} onChange={(e) => setForum(e.target.value)} required />
                             </div>
                             <div className='flex justify-left mt-[2rem]'>
                                 <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
@@ -150,15 +150,15 @@ const LoginPage = () => {
                             <form>
                                 <div className="mb-4">
                                     <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                    <input type="text" id="username" name="username" placeholder="Enter the Email" className="w-full p-2 border border-gray-300 rounded" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                    <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required />
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                    <input type="password" id="password" name="password" placeholder="Enter the Password" className="w-full p-2 border border-gray-300 rounded" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                        <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="forum" className="block text-gray-600 text-sm mb-2">Forum Name</label>
-                                    <input type="text" id="forum" name="forum" placeholder="Enter the Forum" className="w-full p-2 border border-gray-300 rounded" value={forum} onChange={(e) => setForum(e.target.value)} required />
+                                        <input type="text" id="forum" name="forum" placeholder="Enter the Forum" className="w-full p-2 border border-gray-300 rounded-xl" value={forum} onChange={(e) => setForum(e.target.value)} required />
                                 </div>
                                 <div className='flex justify-center'>
                                     <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>

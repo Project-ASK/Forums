@@ -110,7 +110,7 @@ const ForgotPassword = () => {
                         <form>
                             <div className="mb-8 relative top-[1rem]">
                                 <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Enter the Email</label>
-                                <input type="email" id="email" name="email" placeholder="Enter email here" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" id="email" name="email" placeholder="Enter email here" className="w-full p-2 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
 
                             <div className='flex justify-center mt-[3rem]'>
@@ -124,11 +124,11 @@ const ForgotPassword = () => {
                         <form>
                             <div className="mb-4 mt-[2rem]">
                                 <label htmlFor="newPassword" className="block text-gray-600 text-sm mb-2">Enter New Password</label>
-                                <input type="password" id="newPassword" name="newPassword" className="w-full p-2 border border-gray-300 rounded" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                <input type="password" id="newPassword" name="newPassword" className="w-full p-2 border border-gray-300 rounded-xl" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                             </div>
                             <div className="mb-8">
                                 <label htmlFor="confirmPassword" className="block text-gray-600 text-sm mb-2">Confirm New Password</label>
-                                <input type="password" id="confirmPassword" name="confirmPassword" className="w-full p-2 border border-gray-300 rounded" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                <input type="password" id="confirmPassword" name="confirmPassword" className="w-full p-2 border border-gray-300 rounded-xl" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                             </div>
                             <div className='flex justify-center'>
                                 <button type="button" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={updatePassword}>
