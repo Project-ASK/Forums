@@ -1,5 +1,5 @@
 //Entering email page
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import emailjs from '@emailjs/browser';
 import Modal from 'react-modal';
@@ -14,6 +14,27 @@ const ForgotPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isEmailSubmitted, setIsEmailSubmitted] = useState(false);
+    const [counter, setCounter] = useState(60);
+    const [showResend, setShowResend] = useState(false);
+
+    useEffect(() => {
+        let timer;
+        if (modalIsOpen && counter > 0) {
+            timer = setTimeout(() => setCounter(counter - 1), 1000);
+        } else if (counter === 0) {
+            setShowResend(true);
+        }
+        return () => clearTimeout(timer);
+    }, [modalIsOpen, counter]);
+
+    const handleResend = async () => {
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        setRealOtp(otp.toString());
+        const email = data.email;
+        await emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID, process.env.NEXT_PUBLIC_TEMPLATE_ID, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY);
+        setCounter(60); // Reset the counter
+        setShowResend(false);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -171,6 +192,10 @@ const ForgotPassword = () => {
                                     autocomplete="off"
                                 />
                             ))}
+                        </div>
+                        <div className="flex justify-end mr-[1rem] relative bottom-[1rem]">
+                            {counter > 0 && <p>Resend OTP in {counter} seconds</p>}
+                            {showResend && <button onClick={handleResend} style={{ color: "blue" }}>Resend OTP</button>}
                         </div>
                         <div className="flex items-center justify-end p-2 border-t border-solid border-gray-300 rounded-b">
                             <button

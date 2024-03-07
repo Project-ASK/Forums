@@ -178,12 +178,7 @@ const Dashboard = ({ username }) => {
 
     reader.readAsText(file);
   };
-
-  const eventReport = () => {
-    router.push('/admins/eventReport');
-  }
-
-
+  
   if (!username) {
     return null;
   }
