@@ -97,28 +97,24 @@ const ForgotPassword = () => {
 
     return (
         <>
-            <div className="flex h-screen items-center justify-center lg:justify-start" style={{ backgroundImage: 'url("/assets/back.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className="flex h-screen items-center justify-center bg-gray-200">
                 <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
                     <img src="/assets/logo.png" width={100} />
                 </div>
-                {/* Left Part - Image covering the whole page */}
-                <div className="hidden lg:flex lg:flex-1">
-                </div>
-
-                {/* Right Part - Centered Login Form above the image */}
-                <div className="max-w-md bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:mr-32 lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
-                    <h2 className="text-2xl font-semibold mb-4">{isEmailSubmitted ? "Reset Password" : "Forgot Password"}</h2>
-
-                    {/* Login Form */}
+                <div className="max-w-md bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
+                    <div className='flex justify-center'>
+                        <img src="/assets/authlogo.png" width={130} />
+                    </div>
+                    <h2 className="text-2xl font-semibold mb-4 relative top-[1rem] text-center">{isEmailSubmitted ? "Reset Password" : "Forgot Password"}</h2>
                     {!isEmailSubmitted &&
                         <form>
-                            <div className="mb-8">
+                            <div className="mb-8 relative top-[1rem]">
                                 <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Enter the Email</label>
-                                <input type="email" id="email" name="email" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" id="email" name="email" placeholder="Enter email here" className="w-full p-2 border border-gray-300 rounded" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
 
-                            <div className='flex justify-center'>
-                                <button type="submit" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onClick={handleSubmit}>
+                            <div className='flex justify-center mt-[3rem]'>
+                                <button type="submit" className="w-[40%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleSubmit}>
                                     Submit
                                 </button>
                             </div>
@@ -126,7 +122,7 @@ const ForgotPassword = () => {
                     }
                     {isVerified && (
                         <form>
-                            <div className="mb-4">
+                            <div className="mb-4 mt-[2rem]">
                                 <label htmlFor="newPassword" className="block text-gray-600 text-sm mb-2">Enter New Password</label>
                                 <input type="password" id="newPassword" name="newPassword" className="w-full p-2 border border-gray-300 rounded" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                             </div>
@@ -135,7 +131,7 @@ const ForgotPassword = () => {
                                 <input type="password" id="confirmPassword" name="confirmPassword" className="w-full p-2 border border-gray-300 rounded" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                             </div>
                             <div className='flex justify-center'>
-                                <button type="button" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" onClick={updatePassword}>
+                                <button type="button" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={updatePassword}>
                                     Update Password
                                 </button>
                             </div>
@@ -143,16 +139,11 @@ const ForgotPassword = () => {
                     )}
                 </div>
             </div>
-            <div className="flex items-center justify-center absolute bottom-2 left-4">
-                <div className="p-2 rounded-2xl shadow-md mx-4 sm:mx-auto sm:w-full sm:max-w-md lg:mx-0 lg:w-full">
-                    <p className="text-md text-center">© 2024 My Website. All rights reserved.</p>
-                </div>
-            </div>
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={handleModalClose}
                 className="fixed inset-0 flex items-center justify-center z-50 outline-none focus:outline-none"
-                overlayClassName="fixed inset-0 bg-black opacity-90"
+                overlayClassName="fixed inset-0 bg-black opacity-100"
             >
                 <div className="relative w-auto max-w-sm mx-auto my-6">
                     <div className="relative flex flex-col w-full bg-white outline-none focus:outline-none rounded-2xl shadow-lg">
