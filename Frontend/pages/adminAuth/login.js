@@ -51,15 +51,13 @@ const LoginPage = () => {
             const otp = Math.floor(100000 + Math.random() * 900000);
             setRealOtp(otp.toString());
             const email = data.email;
-            console.log(otp)
-            setModalIsOpen(true);
-            // emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
-            //     .then((response) => {
-            //         console.log('SUCCESS!', response.status, response.text);
-            //         setModalIsOpen(true);
-            //     }, (err) => {
-            //         console.log('FAILED...', err);
-            //     });
+            emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
+                .then((response) => {
+                    console.log('SUCCESS!', response.status, response.text);
+                    setModalIsOpen(true);
+                }, (err) => {
+                    console.log('FAILED...', err);
+                });
         } else {
             alert(data.message);
         }
