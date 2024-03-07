@@ -99,7 +99,7 @@ const ForgotPassword = () => {
         <>
             <div className="flex h-screen items-center justify-center bg-gray-200">
                 <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-                    <img src="/assets/logo.png" width={100} />
+                    <img src="/assets/logo.png" width={110} />
                 </div>
                 <div className="max-w-md bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                     <div className='flex justify-center'>
