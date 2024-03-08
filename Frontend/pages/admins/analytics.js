@@ -11,6 +11,7 @@ const Analytics = () => {
     const [pieData, setPieData] = useState([]);
     const [topicData, setTopicData] = useState([]);
     const [eventData, setEventData] = useState([]);
+    const [venueData, setVenueData] = useState([]);
     const router = useRouter();
 
     useEffect(() => {
@@ -120,10 +121,26 @@ const Analytics = () => {
                     events: eventCounts[monthYear],
                 }));
 
+                const venueCounts = { Online: 0, Offline: 0 };
+                events.forEach(event => {
+                    if (event.eventVenue === 'Online') {
+                        venueCounts.Online += 1;
+                    } else if (event.eventVenue === 'Offline') {
+                        venueCounts.Offline += 1;
+                    }
+                });
+
+                const totalVenues = venueCounts.Online + venueCounts.Offline;
+                const venuePieData = Object.keys(venueCounts).map(venue => ({
+                    name: venue,
+                    value: (venueCounts[venue] / totalVenues) * 100,
+                }));
+
                 setEventData(eventData);
                 setData(chartData);
                 setPieData(piedata);
                 setTopicData(userPieData);
+                setVenueData(venuePieData);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
             }
@@ -139,7 +156,7 @@ const Analytics = () => {
     return (
         <>
             {!isMobileView ? (
-                <div className='bg-gray-200 min-h-[220vh]'>
+                <div className='bg-gray-200 min-h-[290vh]'>
                     <div className="flex bg-white w-full justify-between items-center bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-md absolute top-2">
                         <img src="/assets/logo.png" width={150} onClick={handleHomeClick} className='cursor-pointer' />
                         <div className="flex items-center justify-center">
@@ -168,27 +185,9 @@ const Analytics = () => {
                             {/* <Legend /> */}
                             <Bar dataKey="value" name="Events" fill="rgb(36, 17, 239)" barSize={60} />
                         </BarChart>
-                        <div className="bg-gray-100 p-4 mt-4">
+                        <div className="bg-gray-200 p-4 mt-4 rounded-xl">
                             <span className="relative left-[2rem]"><span className="font-product-sans">Total Events in this period:</span> {totalEvents}</span>
                         </div>
-                    </div>
-
-                    <div className="mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
-                        <h1 className="text-3xl font-bold text-left mt-10 relative bottom-[2rem]">Events per Month</h1>
-                        <LineChart
-                            width={1500}
-                            height={300}
-                            data={eventData}
-                            margin={{
-                                top: 6, right: 340, bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" interval={0} angle={-10} textAnchor="middle" />
-                            <YAxis />
-                            <Tooltip />
-                            <Line type="monotone" dataKey="events" stroke="#8884d8" activeDot={{ r: 8 }} />
-                        </LineChart>
                     </div>
 
                     <div className="flex mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
@@ -226,7 +225,62 @@ const Analytics = () => {
                                 <Legend />
                             </PieChart>
                         </div>
-                    </div>   
+                    </div>
+
+                    <div className="mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
+                        <h1 className="text-3xl font-bold text-left mt-10 relative bottom-[2rem]">Events per Month</h1>
+                        <LineChart
+                            width={1500}
+                            height={300}
+                            data={eventData}
+                            margin={{
+                                top: 6, right: 340, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" interval={0} angle={-10} textAnchor="middle" />
+                            <YAxis />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="events" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </div>
+
+                    <div className="flex mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
+                        <div style={{ flex: '0 0 50%', padding: '1rem' }}>
+                            <h1 className="text-3xl font-bold text-left relative bottom-[1rem]">Event Venue Distribution</h1>
+                            <PieChart width={600} height={400}>
+                                <Pie
+                                    data={venueData}
+                                    cx={280}
+                                    cy={200}
+                                    labelLine={false}
+                                    label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
+                                    outerRadius={80}
+                                    fill="blue"
+                                    dataKey="value"
+                                />
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </div>
+                        <div style={{ flex: '0 0 50%', padding: '1rem' }}>
+                            {/* <h1 className="text-3xl font-bold text-left relative bottom-[1rem]">User Interests</h1>
+                            <PieChart width={600} height={400}>
+                                <Pie
+                                    data={topicData}
+                                    cx={300}
+                                    cy={200}
+                                    labelLine={false}
+                                    label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
+                                    outerRadius={80}
+                                    fill="rgb(12, 92, 33)"
+                                    dataKey="value"
+                                />
+                                <Tooltip />
+                                <Legend />
+                            </PieChart> */}
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <>

@@ -248,6 +248,7 @@ const EventSchema = new mongoose.Schema({
     time: String,
     description: String,
     location: String,
+    eventVenue: String,
     imagePath: String,
     forumName: String,
     questions: [{
@@ -262,13 +263,13 @@ const EventSchema = new mongoose.Schema({
 const Event = mongoose.model('Event', EventSchema);
 
 router.post('/admin/events', upload.single('image'), async (req, res) => {
-    const { eventName, date, time, location, description, includesPayment, amount } = req.body;
+    const { eventName, date, time, location, description, includesPayment, amount, eventVenue } = req.body;
     const forumName = req.query.forumName;
     const questions = JSON.parse(req.body.questions);
     const tags = JSON.parse(req.body.tags);
     const collabForums = JSON.parse(req.body.collabForums);
     const imagePath = req.file.path.replace(/\\/g, '/');
-    const event = new Event({ eventName, date, time, location, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount });
+    const event = new Event({ eventName, date, time, location, eventVenue, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount });
     //Used for testing
     // questions.forEach(question => {
     //     event.questions.push({ question: question.question, type: question.type });

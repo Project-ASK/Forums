@@ -12,6 +12,7 @@ const CreateEvent = () => {
     const [image, setImage] = useState(null);
     const [questions, setQuestions] = useState([]);
     const [description, setDescription] = useState('');
+    const [eventVenue, setEventVenue] = useState('');
     const [includesPayment, setIncludesPayment] = useState(false);
     const [amount, setAmount] = useState(0);
     const router = useRouter();
@@ -45,9 +46,6 @@ const CreateEvent = () => {
 
     const handleHome = () => {
         router.push('/admins/admindb');
-    }
-    const handleback = () => {
-        router.back();
     }
 
     const handleImageUpload = (event) => {
@@ -85,6 +83,7 @@ const CreateEvent = () => {
         formData.append('tags', JSON.stringify(tags)); // append tags
         formData.append('collabForums', JSON.stringify([...collabForums, forumName]));
         formData.append('amount', amount);
+        formData.append('eventVenue', eventVenue);
 
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/events?forumName=${forumName}`, {
@@ -128,6 +127,14 @@ const CreateEvent = () => {
                     <label className="block mb-2">
                         Location:
                         <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} required className="mt-1 w-full p-2 border rounded" />
+                    </label>
+                    <label className="block mb-2">
+                        Venue:
+                        <select value={eventVenue} onChange={(e) => setEventVenue(e.target.value)} required className="mt-1 w-full p-2 border rounded">
+                            <option value="">Select</option>
+                            <option value="Online">Online</option>
+                            <option value="Offline">Offline</option>
+                        </select>
                     </label>
                     <label className="block mb-2">
                         Tags:
