@@ -166,7 +166,7 @@ const Analytics = () => {
                             <PieChart width={600} height={400}>
                                 <Pie
                                     data={pieData}
-                                    cx={230}
+                                    cx={280}
                                     cy={200}
                                     labelLine={false}
                                     label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
@@ -175,7 +175,7 @@ const Analytics = () => {
                                     dataKey="value"
                                 />
                                 <Tooltip />
-                                <Legend />
+                                <Legend/>
                             </PieChart>
                         </div>
                         <div style={{ flex: '0 0 50%', padding: '1rem' }}>
