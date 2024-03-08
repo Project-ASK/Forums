@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, LineChart, Line } from 'recharts';
 import Cookies from 'js-cookie';
 
 const Analytics = () => {
@@ -10,6 +10,7 @@ const Analytics = () => {
     const [totalEvents, setTotalEvents] = useState(0);
     const [pieData, setPieData] = useState([]);
     const [topicData, setTopicData] = useState([]);
+    const [eventData, setEventData] = useState([]);
     const router = useRouter();
 
     useEffect(() => {
@@ -108,6 +109,18 @@ const Analytics = () => {
                     value: (userTopicCounts[topic] / totalUsers) * 100,
                 }));
 
+                const eventCounts = {};
+                events.forEach(event => {
+                    const monthYear = new Date(event.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+                    eventCounts[monthYear] = (eventCounts[monthYear] || 0) + 1;
+                });
+
+                const eventData = Object.keys(eventCounts).map(monthYear => ({
+                    name: monthYear,
+                    events: eventCounts[monthYear],
+                }));
+
+                setEventData(eventData);
                 setData(chartData);
                 setPieData(piedata);
                 setTopicData(userPieData);
@@ -126,7 +139,7 @@ const Analytics = () => {
     return (
         <>
             {!isMobileView ? (
-                <div className='bg-gray-200 min-h-[150vh]'>
+                <div className='bg-gray-200 min-h-[220vh]'>
                     <div className="flex bg-white w-full justify-between items-center bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-2xl shadow-md absolute top-2">
                         <img src="/assets/logo.png" width={150} onClick={handleHomeClick} className='cursor-pointer' />
                         <div className="flex items-center justify-center">
@@ -160,6 +173,24 @@ const Analytics = () => {
                         </div>
                     </div>
 
+                    <div className="mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
+                        <h1 className="text-3xl font-bold text-left mt-10 relative bottom-[2rem]">Events per Month</h1>
+                        <LineChart
+                            width={1500}
+                            height={300}
+                            data={eventData}
+                            margin={{
+                                top: 6, right: 340, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" interval={0} angle={-10} textAnchor="middle" />
+                            <YAxis />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="events" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </div>
+
                     <div className="flex mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
                         <div style={{ flex: '0 0 50%', padding: '1rem' }}>
                             <h1 className="text-3xl font-bold text-left relative bottom-[1rem]">Tags Distribution</h1>
@@ -175,7 +206,7 @@ const Analytics = () => {
                                     dataKey="value"
                                 />
                                 <Tooltip />
-                                <Legend/>
+                                <Legend />
                             </PieChart>
                         </div>
                         <div style={{ flex: '0 0 50%', padding: '1rem' }}>
@@ -195,7 +226,7 @@ const Analytics = () => {
                                 <Legend />
                             </PieChart>
                         </div>
-                    </div>
+                    </div>   
                 </div>
             ) : (
                 <>
