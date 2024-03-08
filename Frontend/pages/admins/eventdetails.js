@@ -201,19 +201,19 @@ const Dashboard = ({ username }) => {
       <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
         <div className="w-full flex justify-center items-center mb-5">
-          <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add Members</button>
+          <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem]">Add Members</button>
           <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] cursor-pointer">Import</label>
-          <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Download List</a>
-          <button onClick={() => { Cookies.set('eventId', eventDetails._id); router.push('./eventReport') }} className="p-2.5 bg-blue-500 rounded-xl text-white">Generate Event Report</button>
+          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] cursor-pointer">Import</label>
+          <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem]">Download List</a>
+          <button onClick={() => { Cookies.set('eventId', eventDetails._id); router.push('./eventReport') }} className="p-2.5 bg-blue-500 rounded-full text-white">Generate Event Report</button>
         </div>
         {isFormOpen && (
           <div className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
             <input type="text" value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Name" />
             <input type="text" value={newMemberPhoneNumber} onChange={(e) => setNewMemberPhoneNumber(e.target.value)} placeholder="Phone Number" />
             <div>
-              <button onClick={addMember} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Add</button>
-              <button onClick={() => { setIsFormOpen(false) }} className="p-2.5 bg-red-500 rounded-xl text-white">Close</button>
+              <button onClick={addMember} className="p-2.5 bg-blue-500 rounded-2xl text-white mr-[1rem]">Add</button>
+              <button onClick={() => { setIsFormOpen(false) }} className="p-2.5 bg-red-500 rounded-2xl text-white">Close</button>
             </div>
           </div>
         )}
@@ -225,7 +225,7 @@ const Dashboard = ({ username }) => {
             </div>
             <div>
               <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} />
-              <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-xl text-white ml-[1rem]">Delete</button>
+              <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
             </div>
           </div>
         ))}

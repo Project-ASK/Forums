@@ -146,6 +146,10 @@ const Dashboard = ({ username }) => {
     setCurrentPage('manageEvents');
   };
 
+  const handleAnalytics = () => {
+    router.push('/admins/analytics')
+  }
+
 
   // This would be in your React component
   const handleFileUpload = (event) => {
@@ -191,7 +195,7 @@ const Dashboard = ({ username }) => {
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer' />
-          <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem]">Logout</button>
+          <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white mr-[1rem]">Logout</button>
         </div>
         {isMenuOpen && (
           <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 ${isMenuOpen ? 'animate-slide-in' : 'animate-slide-out'}`}>
@@ -201,7 +205,7 @@ const Dashboard = ({ username }) => {
             <ul>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleHomeClick}>Home</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
-              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={() => { }}>Analytics</li>
+              <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleAnalytics}>Analytics</li>
               <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
             </ul>
           </div>
@@ -212,7 +216,7 @@ const Dashboard = ({ username }) => {
         // If showMembers is true, display the list of members
         <div className="w-full flex flex-col items-center mt-10">
           <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-xl text-white mr-[1rem] cursor-pointer">Import</label>
+          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] mb-[1rem] cursor-pointer w-[6rem] text-center">Import</label>
           <h2 className="text-2xl font-bold mb-5">Members of {forum}:</h2>
           {members.map((member, index) => (
             <div key={index} className="w-1/2 p-4 border rounded mb-4">
@@ -222,7 +226,7 @@ const Dashboard = ({ username }) => {
         </div>
       ) : currentPage === 'manageEvents' ? (
         <div className="w-full flex flex-col items-center mt-10">
-          <button className="p-2.5 bg-blue-500 rounded-xl text-white mb-4" onClick={() => { router.push('createEvent') }}>Create Event</button>
+          <button className="p-2.5 bg-blue-500 rounded-full text-white mb-4" onClick={() => { router.push('createEvent') }}>Create Event</button>
           {events && events.length > 0 ? (
             events.map((event, index) => (
               <div key={index} className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex" onClick={() => {
