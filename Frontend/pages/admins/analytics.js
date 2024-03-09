@@ -12,6 +12,8 @@ const Analytics = () => {
     const [topicData, setTopicData] = useState([]);
     const [eventData, setEventData] = useState([]);
     const [venueData, setVenueData] = useState([]);
+    const [startMonth, setStartMonth] = useState('');
+    const [endMonth, setEndMonth] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -47,23 +49,41 @@ const Analytics = () => {
                     body: JSON.stringify({ forum }),
                 });
                 const result = await response.json();
-                const events = result.events;
+                let events = result.events;
+                if (startMonth && endMonth) {
+                    events = events.filter(event => {
+                        const eventMonthYear = new Date(event.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+                        return event.date >= startMonth && event.date <= endMonth;
+                    });
+                }
                 const groupedEvents = events.reduce((acc, event) => {
                     const monthYear = new Date(event.date).toLocaleString('default', { month: 'short', year: 'numeric' });
                     acc[monthYear] = (acc[monthYear] || 0) + 1;
                     return acc;
                 }, {});
 
-                const total = Object.values(groupedEvents).reduce((acc, count) => acc + count, 0);
+                let total = 0;
+                Object.values(groupedEvents).forEach(value => {
+                    total += value;
+                });
                 setTotalEvents(total);
 
                 // Generate the last 5 months and next 5 months
-                const date = new Date();
+                let startDate = new Date(startMonth || Date.now());
+                let endDate = new Date(endMonth || Date.now());
                 const months = [];
-                for (let i = -5; i <= 5; i++) {
-                    const newDate = new Date(date.getFullYear(), date.getMonth() + i, 1);
-                    const monthYear = newDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+                
+                if (!startMonth && !endMonth) {
+                    const today = new Date();
+                    startDate = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 5, 1);
+                }
+                
+                const currentDate = new Date(startDate);
+                while (currentDate <= endDate) {
+                    const monthYear = currentDate.toLocaleString('default', { month: 'short', year: 'numeric' });
                     months.push(monthYear);
+                    currentDate.setMonth(currentDate.getMonth() + 1);
                 }
 
                 // Ensure all months are included in the data
@@ -147,10 +167,18 @@ const Analytics = () => {
         };
 
         fetchData();
-    }, [forum]);
+    }, [forum, startMonth, endMonth]);
 
     const handleHomeClick = () => {
         router.back();
+    }
+
+    const handleStartDateChange = (e) => {
+        setStartMonth(e.target.value);
+    }
+
+    const handleEndDateChange = (e) => {
+        setEndMonth(e.target.value);
     }
 
     return (
@@ -166,10 +194,12 @@ const Analytics = () => {
                     </div>
                     <div className="mx-auto shadow-xl bg-white rounded-xl overflow-hidden max-w-7xl mt-10 p-10 relative top-[6rem]">
                         <h1 className="text-3xl font-bold text-left mt-10 relative bottom-[2rem]">Month vs Events</h1>
-                        {/* <div className="flex justify-end mb-4">
-                            <input type="month" placeholder="Start Month" value={startMonth} onChange={e => setStartMonth(e.target.value)} className="mr-4 p-2 border border-gray-300 rounded" />
-                            <input type="month" placeholder="End Month" value={endMonth} onChange={e => setEndMonth(e.target.value)} className="p-2 border border-gray-300 rounded" />
-                        </div> */}
+                        <div className="flex justify-end mb-4">
+                            <span className="font-product-sans relative top-[0.5rem] right-[0.5rem]">Start Month:</span>
+                            <input type="month" placeholder="Start Month" value={startMonth} onChange={handleStartDateChange} className="mr-4 p-2 border border-gray-300 rounded" />
+                            <span className="font-product-sans relative top-[0.5rem] right-[0.5rem]">End Month:</span>
+                            <input type="month" placeholder="End Month" value={endMonth} onChange={handleEndDateChange} className="p-2 border border-gray-300 rounded" />
+                        </div>
                         <BarChart
                             width={1500}
                             height={300}
