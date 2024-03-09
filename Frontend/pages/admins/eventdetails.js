@@ -167,6 +167,31 @@ const Dashboard = ({ username }) => {
     return url;
   };
 
+  const handleAttendanceChange = async (index, attended) => {
+    // Get the member whose attendance status has changed
+    const member = members[index];
+    // Send a request to the backend to update the user's attendance status
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateAttendanceStatus`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: member.name, event: eventDetails.eventName, attended }),
+    });
+
+    const data = await response.json();
+
+    // If the user's attendance status was updated successfully, update the members array
+    if (data.success) {
+      const newMembers = [...members];
+      newMembers[index].isAttended = attended;
+      setMembers(newMembers);
+    } else {
+      alert('Failed to update attendance status');
+    }
+  };
+
+
   const handleback = () => {
     router.back();
   }
@@ -224,7 +249,8 @@ const Dashboard = ({ username }) => {
               <span>{member.phoneNumber}</span>
             </div>
             <div>
-              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} />
+              <label htmlFor={`attendance-${index}`} className="mr-[1rem]">Check In</label>
+              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
               <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
             </div>
           </div>

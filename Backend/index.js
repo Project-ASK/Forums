@@ -77,6 +77,7 @@ const userSchema = new mongoose.Schema({
             question: { type: String },
             response: { type: String }
         }],
+        isAttended: Boolean
     }]
 });
 
@@ -547,6 +548,25 @@ router.route('/removeUserFromEvent')
             const index = user.joinedEvents.findIndex(joinedEvent => joinedEvent.eventName === event);
             if (index > -1) {
                 user.joinedEvents.splice(index, 1);
+                await user.save();
+                res.status(200).send({ success: true });
+            } else {
+                res.status(200).send({ success: false });
+            }
+        } else {
+            res.status(200).send({ success: false });
+        }
+    });
+
+router.route('/updateAttendanceStatus')
+    .post(async (req, res) => {
+        const { name, event, attended } = req.body;
+        const user = await User.findOne({ name });
+
+        if (user) {
+            const eventIndex = user.joinedEvents.findIndex(joinedEvent => joinedEvent.eventName === event);
+            if (eventIndex > -1) {
+                user.joinedEvents[eventIndex].isAttended = attended;
                 await user.save();
                 res.status(200).send({ success: true });
             } else {
