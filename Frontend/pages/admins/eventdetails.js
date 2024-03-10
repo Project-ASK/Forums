@@ -46,10 +46,22 @@ const Dashboard = ({ username }) => {
         const data = await response.json();
 
         // Set the members state
-        setMembers(data.users.map(user => ({ name: user.name, username: user.username, phoneNumber: user.phoneNumber })));
+        setMembers(data.users.map(user => {
+          // Find the joinedEvent for the current event
+          const joinedEvent = user.joinedEvents.find(je => je.eventName === eventDetails.eventName);
+          // If the joinedEvent exists, use its isAttended status, otherwise default to false
+          const isAttended = joinedEvent ? joinedEvent.isAttended : false;
+
+          return {
+            name: user.name,
+            username: user.username,
+            phoneNumber: user.phoneNumber,
+            isAttended
+          };
+        }));
       }
     };
-
+    
     fetchUsers();
   }, [eventDetails]);
 
@@ -67,7 +79,15 @@ const Dashboard = ({ username }) => {
 
     // If the user was updated successfully, add the new member to the members array
     if (data.success) {
-      setMembers([...members, { name: newMemberName, phoneNumber: newMemberPhoneNumber }]);
+      const newMembers = members.map((m, i) => {
+      // For the member whose attendance status has changed, return a new object
+      if (i === index) {
+        return { ...m, isAttended: attended };
+      }
+      // For all other members, return the original object
+      return m;
+    });
+    setMembers(newMembers);
     } else {
       alert('User does not exist');
     }
@@ -250,7 +270,7 @@ const Dashboard = ({ username }) => {
             </div>
             <div>
               <label htmlFor={`attendance-${index}`} className="mr-[1rem]">Check In</label>
-              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
+              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
               <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
             </div>
           </div>
