@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import Head from 'next/head';
+import Layout from '../components/Layout';
 
 export default function App({ Component, pageProps }) {
   return (
@@ -7,7 +8,9 @@ export default function App({ Component, pageProps }) {
       <Head>
         <title>Forum Management</title>
       </Head>
-      <Component {...pageProps} />
+      <Layout >
+        <Component {...pageProps} />
+      </Layout>
     </>
   );
 }
