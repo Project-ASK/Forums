@@ -8,6 +8,7 @@ import { Grid } from '@mui/material';
 import { useMediaQuery } from 'react-responsive';
 
 const Dashboard = ({ username }) => {
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const isSmallScreen = useMediaQuery({ query: '(max-width: 768px)' });
   const [forums, setForums] = useState([]);
   const [greeting, setGreeting] = useState('');
@@ -40,10 +41,40 @@ const Dashboard = ({ username }) => {
   const [joinedEvents, setJoinedEvents] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
+  const [containerWidth, setContainerWidth] = useState('100%'); // Initial width is 100%
+  const [showScrollbar, setShowScrollbar] = useState(false); // Flag to show/hide scrollbar
+
+  useEffect(() => {
+  // Calculate the number of cards
+  const numCards = forums.length;
+
+  // Calculate the width of each card (assuming each card has a fixed width)
+  const cardWidth = isSmallScreen ? 100 / numCards : 100 / numCards; // in percentage
+
+  // Calculate the total width required
+  const totalWidth = numCards * cardWidth;
+
+  // Set the container width to accommodate all cards
+  setContainerWidth(`${totalWidth}%`);
+
+  // Show the scrollbar
+  setShowScrollbar(true);
+}, [forums, isSmallScreen]);
+
+
   useEffect(() => {
     getNoOfDays();
     setGreeting(getGreeting());
   }, [month, year]);
+
+  const toggleShowFullDescription = (index) => {
+    if (forums[index].description.length > 46) {
+      setShowFullDescription({
+        ...showFullDescription,
+        [index]: !showFullDescription[index]
+      });
+    }
+  };
 
   const handleClickOutside = e => { // Add this function
     if (node.current.contains(e.target)) {
@@ -383,7 +414,7 @@ const Dashboard = ({ username }) => {
           <p className="font-product-sans font-bold text-center md:text-2xl xs:text-lg mt-[30px]">Welcome, {name}</p>
         </div>
       </div> */}
-      <div className="relative ml-[5rem] mt-[2rem]">
+      <div className={`relative top-[2rem] mb-[8rem] ${isSmallScreen ? 'text-center mx-auto' : 'ml-[5rem]'}`}>
         <h2 className="font-product-sans text-xl">{greeting},<span className="font-product-sans font-bold text-xl"> {name}</span></h2>
       </div>
       <div className="flex justify-center mt-[4rem] flex-wrap">
@@ -410,105 +441,103 @@ const Dashboard = ({ username }) => {
         </div>
         {/* <div className="w-80 h-56 bg-gray-200 shadow-md rounded-lg mx-2"></div> */}
       </div>
-      <div className="relative ml-[6rem] top-[6rem]">
+      <div className={`relative top-[6rem] pt-[4rem] ${isSmallScreen ? 'text-center mx-auto' : 'ml-[6rem]'}`}>
         <h2 className="font-product-sans font-semibold text-xl">Upcoming Events</h2>
       </div>
-      <div className="flex justify-center items-center h-screen shadow-lg rounded-lg bg-red-50 mt-[2rem]">
-        <Carousel className="w-full h-[70%]" indicatorContainerProps={{ style: { display: 'none' } }}>
-          {isSmallScreen ? (
-            events &&
-            events.map((event, index) => (
-              <Grid container spacing={15} className="justify-center items-center" key={index}>
-                <Grid item xs={9.5} md={3} >
-                  <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 mt-[20px] mx-2">
-                    <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
-                      <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
-                    </div>
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="block font-bold text-xl">{event.eventName}</p>
+      <div className="overflow-y-auto hover:overflow-y-scroll flex flex-wrap justify-center items-start h-screen shadow-lg rounded-lg bg-blue-100 mt-[2rem]">
+        {isSmallScreen ? (
+          <Carousel className="w-full h-[70%]" indicatorContainerProps={{ style: { display: 'none' } }}>
+            {events &&
+              events.map((event, index) => (
+                <Grid container spacing={15} className="justify-center items-center" key={index}>
+                  <Grid item xs={9.5} md={3} >
+                    <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 mt-[20px] mx-2">
+                      <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
+                        <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
                       </div>
-                      <div className="flex items-center space-x-5 mb-2">
-                        <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-red-300 rounded-xl">
-                          <img src="/assets/queue.png" height={20} width={20} />
-                          <p>{event.forumName}</p>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="block font-bold text-xl">{event.eventName}</p>
                         </div>
-                        <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-amber-200 rounded-xl">
-                          <img src="/assets/time.png" height={20} width={22} />
-                          <p className="text-zinc-600">{event.date}</p>
+                        <div className="flex items-center space-x-5 mb-2">
+                          <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-red-300 rounded-xl">
+                            <img src="/assets/queue.png" height={20} width={20} />
+                            <p>{event.forumName}</p>
+                          </div>
+                          <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-amber-200 rounded-xl">
+                            <img src="/assets/time.png" height={20} width={22} />
+                            <p className="text-zinc-600">{event.date}</p>
+                          </div>
+                        </div>
+                        <div className="flex p-2 text-xs text-white font-bold justify-between items-center bg-emerald-300 rounded-xl">
+                          <img src="/assets/pin.png" height={20} width={20} />
+                          <p>{event.location}</p>
                         </div>
                       </div>
-                      <div className="flex p-2 text-xs text-white font-bold justify-between items-center bg-emerald-300 rounded-xl">
-                        <img src="/assets/pin.png" height={20} width={20} />
-                        <p>{event.location}</p>
+                      <div className="p-6 pt-0">
+                        {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
+                          <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
+                            Already Joined
+                          </p>
+                        ) : (
+                          <button
+                            className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
+                            type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
+                            Join Event
+                          </button>
+                        )}
                       </div>
                     </div>
-                    <div className="p-6 pt-0">
-                      {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
-                        <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
-                          Already Joined
-                        </p>
-                      ) : (
-                        <button
-                          className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
-                          type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
-                          Join Event
-                        </button>
-                      )}
+                  </Grid>
+                </Grid>
+              ))
+            }
+          </Carousel>
+        ) : (
+            <Grid container spacing={15} rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 39 }} className="justify-center items-center w-[110%] relative top-[4rem]">
+            {events.map((event, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index} className=''>
+                <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-full mt-[20px] mx-2">
+                  <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-full">
+                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="block font-bold text-xl">{event.eventName}</p>
+                    </div>
+                    <div className="flex items-center space-x-5 mb-2">
+                      <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-red-300 rounded-xl">
+                        <img src="/assets/queue.png" height={20} width={20} />
+                        <p>{event.forumName}</p>
+                      </div>
+                      <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-amber-200 rounded-xl">
+                        <img src="/assets/time.png" height={20} width={22} />
+                        <p className="text-zinc-600">{event.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex p-2 text-xs text-white font-bold justify-between items-center bg-emerald-300 rounded-xl">
+                      <img src="/assets/pin.png" height={20} width={20} />
+                      <p>{event.location}</p>
                     </div>
                   </div>
-                </Grid>
+                  <div className="p-6 pt-0">
+                    {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
+                      <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
+                        Already Joined
+                      </p>
+                    ) : (
+                      <button
+                        className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
+                        type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
+                        Join Event
+                      </button>
+                    )}
+                  </div>
+                </div>
               </Grid>
-            ))
-          ) : (
-            Array(Math.ceil(events.length / 3)).fill().map((_, i) => (
-              <div key={i} className="flex justify-around">
-                {events.slice(i * 3, (i * 3) + 3).map((event, index) => (
-                  <Grid container spacing={15} className="justify-center items-center" key={index}>
-                    <Grid item md={7.5} className=''>
-                      <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-full mt-[20px] mx-2">
-                        <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-full">
-                          <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
-                        </div>
-                        <div className="p-6">
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="block font-bold text-xl">{event.eventName}</p>
-                          </div>
-                          <div className="flex items-center space-x-5 mb-2">
-                            <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-red-300 rounded-xl">
-                              <img src="/assets/queue.png" height={20} width={20} />
-                              <p>{event.forumName}</p>
-                            </div>
-                            <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-amber-200 rounded-xl">
-                              <img src="/assets/time.png" height={20} width={22} />
-                              <p className="text-zinc-600">{event.date}</p>
-                            </div>
-                          </div>
-                          <div className="flex p-2 text-xs text-white font-bold justify-between items-center bg-emerald-300 rounded-xl">
-                            <img src="/assets/pin.png" height={20} width={20} />
-                            <p>{event.location}</p>
-                          </div>
-                        </div>
-                        <div className="p-6 pt-0">
-                          {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
-                            <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
-                              Already Joined
-                            </p>
-                          ) : (
-                            <button
-                              className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
-                              type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
-                              Join Event
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </Grid>
-                  </Grid>
-                ))}
-              </div>
-            )))}
-        </Carousel>
+            ))}
+          </Grid>
+        )}
       </div>
       {joinEventModal &&
         <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} className="fixed z-40 top-0 right-0 left-0 bottom-0 h-full w-full">
@@ -552,26 +581,66 @@ const Dashboard = ({ username }) => {
           </div>
         </div>
       }
-      {events.length == 0 &&
+      {
+        events.length == 0 &&
         <div className="flex w-full justify-center">
           <p className="font-product-sans font-semi-bold text-center text-xl">No events available</p>
         </div>
       }
-      <div className="">
-        <div id="no-scroll" className="flex w-scren md:ml-[50px] flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px] overflow-x-scroll">
-          {forums.map((forum, index) => (
-            <div key={index} className="flex-col border items-center border-gray-800 rounded-2xl bg-white w-[140%] lg:w-[20%] flex justify-center">
-              <Image
-                src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
-                alt={forum.name}
-                width={60} // Update these values as needed
-                height={60}
-                className="mt-[20px]" />
-              <p className="font-product-sans font-bold p-3">{forum.name}</p>
-              <p className="font-product-sans-m text-sm p-3 text-justify">{forum.description}</p>
-              <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => { router.push({ pathname: '/user/userForum', query: { data: forum.name } }, '/user/userForum') }}>View Dashboard</button>
-            </div>
-          ))}
+      <div className={`relative top-[6rem] ${isSmallScreen ? 'text-center mx-auto mb-[3rem]' : 'ml-[6rem]'}`}>
+        <h2 className="font-product-sans font-semibold text-xl">My Forums</h2>
+      </div>
+      <div className="pb-[4rem] pt-[4rem]">
+        <div id="no-scroll" className="flex w-screen flex-row md:items-start xs:items-center xs:justify-center md:justify-start gap-4 mt-[30px]" style={{ width: containerWidth }}>
+          {isSmallScreen ? (
+            <Carousel className="w-full h-[70%]" indicatorContainerProps={{ style: { display: 'none' } }}>
+              {forums.map((forum, index) => (
+                <div key={index} className="flex-col border items-center border-gray-800 rounded-2xl bg-white w-[80%] mx-auto lg:w-[20%] flex justify-center h-[70%]">
+                  <Image
+                    src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
+                    alt={forum.name}
+                    width={60} // Update these values as needed
+                    height={60}
+                    className="mt-[20px]" />
+                  <p className="font-product-sans font-bold p-3">{forum.name}</p>
+                  <p className="font-product-sans-m text-sm p-3 text-justify">
+                    {showFullDescription[index] || forums[index].description.length <= 46 ? forum.description : `${forum.description.substring(0, 46)}...`}
+                      {forums[index].description.length > 46 && (
+                        <button onClick={() => toggleShowFullDescription(index)}>
+                          {showFullDescription[index] ? '... Show Less' : 'Show More'}
+                        </button>
+                      )}
+                  </p>
+                  <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => { router.push({ pathname: '/user/userForum', query: { data: forum.name } }, '/user/userForum') }}>View Dashboard</button>
+                </div>
+              ))}
+            </Carousel>
+          ) : (
+              <Grid container spacing={5} rowSpacing={3} className="mt-[2rem] mx-auto flex flex-wrap">
+                {forums.map((forum, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index} className=''>
+                    <div key={index} className="mx-auto flex-col border items-center border-gray-800 rounded-2xl bg-white w-[80%] flex justify-center">
+                      <Image
+                        src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
+                        alt={forum.name}
+                        width={60} // Update these values as needed
+                        height={60}
+                        className="mt-[20px]" />
+                      <p className="font-product-sans font-bold p-3">{forum.name}</p>
+                      <p className="font-product-sans-m text-sm p-3 text-justify">
+                        {showFullDescription[index] || forums[index].description.length <= 46 ? forum.description : `${forum.description.substring(0, 46)}...`}
+                          {forums[index].description.length > 46 && (
+                            <button onClick={() => toggleShowFullDescription(index)}>
+                              {showFullDescription[index] ? '... Show Less' : 'Show More'}
+                            </button>
+                          )}
+                      </p>
+                      <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => { router.push({ pathname: '/user/userForum', query: { data: forum.name } }, '/user/userForum') }}>View Dashboard</button>
+                    </div>
+                  </Grid>
+                ))}
+              </Grid>
+          )}
         </div>
         <div className="flex justify-center mt-[30px]">
           <button type="button" onClick={handleModalOpen} className="hire flex items-center p-3 border-gray-800 border-[1px] rounded-[50px]">
