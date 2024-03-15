@@ -93,6 +93,15 @@ const adminSchema = new mongoose.Schema({
 
 const Admin = mongoose.model('Admin', adminSchema);
 
+const officeAdminSchema = new mongoose.Schema({
+    name:String,
+    email:String,
+    username: String,
+    password: String,
+})
+
+const OfficeAdmin = mongoose.model('Office',officeAdminSchema);
+
 const router = express.Router();
 app.use('/', router);
 
@@ -575,6 +584,33 @@ router.route('/updateAttendanceStatus')
         } else {
             res.status(200).send({ success: false });
         }
+    });
+
+router.route('/office/login')
+    .post(async (req,res) => {
+        const {username,password} = req.body;
+        const office = await OfficeAdmin.findOne({username});
+        if (!office) {
+            return res.status(401).send({ message: 'Incorrect Credentials' });
+        }
+        else {
+            const validPassword = await bcrypt.compare(password, office.password);
+            if (!validPassword) {
+                return res.status(401).send({ message: 'Incorrect Credentials' });
+            }
+            const token = jwt.sign({ officeId: office._id }, SECRET_KEY, { expiresIn: '1hr' });
+            return res.status(200).send({ message: 'Login Successful', email: office.email, token });
+        }
+    })
+
+router.route('/office/getDetails')
+    .post(async (req, res) => {
+        const { username } = req.body;
+        const officeAdmin = await OfficeAdmin.findOne({ username });
+        if (!officeAdmin) {
+            return res.status(400).send({ message: 'Office admin not found' });
+        }
+        res.status(200).send({ name: officeAdmin.name, email: officeAdmin.email });
     });
 
 app.listen(port, () => {

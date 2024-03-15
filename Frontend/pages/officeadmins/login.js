@@ -4,11 +4,10 @@ import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
 import Cookies from 'js-cookie';
 
-const LoginPage = () => {
+const OfficeLoginPage = () => {
     const [data, setData] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [forum, setForum] = useState('');
     const [otp, setOtp] = useState(Array(6).fill(null));
     const [realOtp, setRealOtp] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -54,12 +53,12 @@ const LoginPage = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/login`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/office/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password, forum }),
+            body: JSON.stringify({ username, password }),
         });
         const data = await response.json();
         setData(data);
@@ -67,22 +66,13 @@ const LoginPage = () => {
             const otp = Math.floor(100000 + Math.random() * 900000);
             setRealOtp(otp.toString());
             const email = data.email;
-
-        // For developers: Uncomment the following to get the OTP as the alert box 
-            // setModalIsOpen(true)
-             // alert(otp)
-             
-        // For developers: Comment the following 
-            emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
+            emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID, process.env.NEXT_PUBLIC_TEMPLATE_ID, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY)
                 .then((response) => {
                     console.log('SUCCESS!', response.status, response.text);
                     setModalIsOpen(true);
                 }, (err) => {
                     console.log('FAILED...', err);
                 });
-
-            // Till here
-           
         } else {
             alert(data.message);
         }
@@ -92,10 +82,9 @@ const LoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
             setModalIsOpen(false);
-            Cookies.set('adminUsername', username);
+            Cookies.set('officeUsername', username);
             Cookies.set('token', data.token);
-            Cookies.set('forum', forum);
-            router.replace('/admins/admindb');
+            router.replace('/officeadmins/officeadmin');
         } else {
             alert('Incorrect OTP. Please try again.');
         }
@@ -106,10 +95,6 @@ const LoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
         }
-    }
-
-    const handleOfficeLogin = () => {
-        router.push('/officeadmins/login');
     }
 
     return (
@@ -123,28 +108,21 @@ const LoginPage = () => {
                         <div className='flex justify-center'>
                             <img src="/assets/authlogo.png" width={160} />
                         </div>
-                        <h2 className="text-3xl font-semibold flex justify-end mr-[6rem] relative top-[7.5rem]">Sign In</h2>
-                        <h2 className="text-md flex justify-end relative top-[8.5rem]">Use your admin username and password</h2>
+                        <h2 className="text-3xl font-semibold flex justify-end mr-[4rem] relative top-[6.5rem]">Sign In</h2>
+                        <h2 className="text-md flex justify-end relative top-[7.5rem]">Use your username and password</h2>
                         {/* Login Form */}
                         <form>
                             <div className="mb-4">
                                 <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
                                 <input type="text" id="username" name="username" placeholder="Enter username" className="w-[50%] p-2 border border-gray-300 rounded-xl flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required />
                             </div>
-                            <div className="mb-4">
+                            <div>
                                 <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
                                 <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="forum" className="block text-gray-600 text-sm mb-2">Forum Name</label>
-                                <input type="text" id="forum" name="forum" placeholder="Enter the Name of Forum" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={forum} onChange={(e) => setForum(e.target.value)} required />
-                            </div>
-                            <div className='flex justify-left mt-[2rem]'>
-                                <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
+                            <div className='flex justify-left'>
+                                <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600 mt-[2rem]" onClick={handleLogin}>
                                     Sign In
-                                </button>
-                                <button type="submit" className="w-[20%] bg-gray-200 hover:bg-gray-300 text-blue-800 font-semibold py-2 px-4 rounded-full ml-[2rem]" onClick={handleOfficeLogin}>
-                                    Office Login
                                 </button>
                             </div>
                         </form>
@@ -161,27 +139,20 @@ const LoginPage = () => {
                                 <img src="/assets/authlogo.png" width={160} />
                             </div>
                             <h2 className="text-3xl font-semibold text-center mt-6">Sign In</h2>
-                            <h2 className="text-md text-center mb-10 relative top-[0.5rem]">Use your admin username and password</h2>
+                            <h2 className="text-md text-center mb-10 relative top-[0.5rem]">Use your username and password</h2>
                             {/* Login Form */}
                             <form>
                                 <div className="mb-4">
                                     <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
                                     <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required />
                                 </div>
-                                <div className="mb-4">
+                                <div>
                                     <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                        <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                    <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
                                 </div>
-                                <div className="mb-4">
-                                    <label htmlFor="forum" className="block text-gray-600 text-sm mb-2">Forum Name</label>
-                                        <input type="text" id="forum" name="forum" placeholder="Enter the Forum" className="w-full p-2 border border-gray-300 rounded-xl" value={forum} onChange={(e) => setForum(e.target.value)} required />
-                                </div>
-                                <div className='flex justify-center flex-col items-center gap-2'>
+                                <div className='flex justify-center'>
                                     <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
                                         Sign In
-                                    </button>
-                                    <button type="submit" className="w-1/2 bg-gray-200 hover:bg-gray-300 text-blue-800 py-2 px-4 rounded-full" onClick={handleOfficeLogin}>
-                                        Office Login
                                     </button>
                                 </div>
                             </form>
@@ -253,4 +224,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default OfficeLoginPage;

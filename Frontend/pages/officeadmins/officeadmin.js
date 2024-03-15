@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Menu, X } from 'react-feather';
 import path from 'path'
 
-const officeadmins = ({ username }) => {
+const OfficeAdmins = ({ username }) => {
   const [forum, setForum] = useState();
   const [inputValue, setInputValue] = useState('');
   const router = useRouter();
@@ -54,8 +54,8 @@ const officeadmins = ({ username }) => {
   }
 
   useEffect(() => {
-    const fetchForums = async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/getForums`, {
+    const fetchDetails = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/office/getDetails`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,17 +63,16 @@ const officeadmins = ({ username }) => {
         body: JSON.stringify({ username }),
       });
       const data = await response.json();
-      setForum(data.forum);
       setName(data.name);
       setEmail(data.email);
     };
-    fetchForums();
+    fetchDetails();
   }, [username]);
 
   useEffect(() => {
     const fetchEvents = async () => {
       if (forum) {
-        const responseEvents = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/getEvents`, {
+        const responseEvents = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/office/getEvents`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -91,7 +90,7 @@ const officeadmins = ({ username }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       if (forum) {
-        const responseEvents = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/getCollabEvents`, {
+        const responseEvents = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/office/getCollabEvents`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -110,9 +109,9 @@ const officeadmins = ({ username }) => {
 
   const handleLogout = () => {
     // Clear the cookies and redirect the user to the login page
-    Cookies.remove('adminUsername');
+    Cookies.remove('officeUsername');
     Cookies.remove('token');
-    router.replace('/adminAuth/login');
+    router.replace('/officeadmins/login');
   }
 
   const [isOpen, setIsOpen] = useState(false);
@@ -125,7 +124,7 @@ const officeadmins = ({ username }) => {
   const handleMemberListClick = async () => {
     toggleMenu();
     setCurrentPage('memberList');
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/getOrganizationMembers`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/office/getOrganizationMembers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -242,13 +241,13 @@ const officeadmins = ({ username }) => {
     };
     export async function getServerSideProps(context) {
     // Get username from cookies
-    const username = context.req.cookies.adminUsername;
+    const username = context.req.cookies.officeUsername;
 
     // If username is not available, redirect to login
     if (!username) {
         return {
         redirect: {
-            destination: '/adminAuth/login',
+            destination: '/officeadmins/login',
             permanent: false,
         },
         }
@@ -260,4 +259,4 @@ const officeadmins = ({ username }) => {
     }
     }
 
-    export default officeadmins;
+    export default OfficeAdmins;

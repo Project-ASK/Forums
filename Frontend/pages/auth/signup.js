@@ -158,7 +158,7 @@ const SignUpPage = () => {
                             </div>
                             <div className='flex justify-left mt-[2rem]'>
                                 <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleSignUp}>
-                                    Sign In
+                                    Sign Up
                                 </button>
                             </div>
                         </form>

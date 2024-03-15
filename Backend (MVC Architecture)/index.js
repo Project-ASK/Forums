@@ -10,6 +10,7 @@ const path = require('path');
 const eventRoutes = require('./controllers/eventController'); // Adjust the path as needed
 const userRoutes = require('./controllers/userController'); // Adjust the path as needed
 const adminRoutes = require('./controllers/adminController'); // Adjust the path as needed
+const officeAdminRoutes = require('./controllers/officeController'); // Adjust the path as needed
 
 
 // Create Express app
@@ -35,6 +36,7 @@ db.once('open', () => {
 app.use('/', userRoutes); // Adjust the base URL as needed
 app.use('/', adminRoutes); // Adjust the base URL as needed
 app.use('/', eventRoutes); // Adjust the base URL as needed
+app.use('/', officeAdminRoutes); // Adjust the base URL as needed
 
 // Start server
 const port = process.env.PORT || 3001;
