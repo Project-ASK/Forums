@@ -68,14 +68,22 @@ const LoginPage = () => {
             setRealOtp(otp.toString());
             const email = data.email;
             console.log(otp)
-            setModalIsOpen(true)
-            // emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
-            //     .then((response) => {
-            //         console.log('SUCCESS!', response.status, response.text);
-            //         setModalIsOpen(true);
-            //     }, (err) => {
-            //         console.log('FAILED...', err);
-            //     });
+
+        // For developers: Uncomment the following to get the OTP as the alert box 
+            // setModalIsOpen(true)
+             // alert(otp)
+             
+        // For developers: Comment the following 
+            emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
+                .then((response) => {
+                    console.log('SUCCESS!', response.status, response.text);
+                    setModalIsOpen(true);
+                }, (err) => {
+                    console.log('FAILED...', err);
+                });
+
+            // Till here
+           
         } else {
             alert(data.message);
         }
