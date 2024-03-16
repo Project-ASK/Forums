@@ -140,8 +140,8 @@ const LoginPage = () => {
                         <div className='flex justify-center'>
                             <img src="/assets/authlogo.png" width={160} />
                         </div>
-                        <h2 className="text-3xl font-semibold flex justify-end mr-[4rem] relative top-[6.5rem]">Sign In</h2>
-                        <h2 className="text-md flex justify-end relative top-[7.5rem]">Use your username and password</h2>
+                        <h2 className="text-3xl font-semibold flex justify-end mr-[4rem] relative top-[4.5rem]">Sign In</h2>
+                        <h2 className="text-md flex justify-end relative top-[5.5rem]">Use your username and password</h2>
                         {/* Login Form */}
                         <form>
                             <div className="mb-4">
@@ -316,7 +316,7 @@ const LoginPage = () => {
                                     name={index + 1}
                                     className="w-10 px-3 py-2 mb-4 mr-2 text-base text-black placeholder-gray-600 border rounded-lg focus:shadow-outline text-center"
                                     autoFocus={index === 0}
-                                    autocomplete="off"
+                                    autoComplete="off"
                                 />
                             ))}
                         </div>

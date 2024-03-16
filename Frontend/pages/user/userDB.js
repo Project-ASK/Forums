@@ -7,14 +7,14 @@ import Carousel from 'react-material-ui-carousel'
 import { Grid } from '@mui/material';
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 import "swiper/css";
+import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+// import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 
 const Dashboard = ({ username }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
-    const [eventsByDate, setEventsByDate] = useState({});
     const [selectedDate, setSelectedDate] = useState(null);
     const [forums, setForums] = useState([]);
     const [greeting, setGreeting] = useState('');
@@ -49,7 +49,6 @@ const Dashboard = ({ username }) => {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [containerWidth, setContainerWidth] = useState('100%'); // Initial width is 100%
     const [showScrollbar, setShowScrollbar] = useState(false); // Flag to show/hide scrollbar
-    const customEventDates = ['2024-03-16', '2024-03-20', '2024-03-25'];
 
      const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -216,10 +215,6 @@ const Dashboard = ({ username }) => {
                     })
                         .then(response => response.json())
                         .then(data => { });
-                        setEventsByDate({
-                            ...eventsByDate,
-                            [selectedEvent.date]: selectedEvent.eventName
-                        });
                 } else {
                     alert('Failed to join the event');
                 }
@@ -320,7 +315,7 @@ const Dashboard = ({ username }) => {
             fetchEvents(data.forums);
             setCalEvents(data.customEvents);
         };
-
+        
         const fetchEvents = async (forums) => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getEvents`, {
                 method: 'POST',
@@ -869,13 +864,13 @@ const Dashboard = ({ username }) => {
                     }
                 </div>
             </div>
-            <footer class="text-gray-600 body-font">
-                <div class="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-                    <div class="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+            <footer className="text-gray-600 body-font">
+                <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+                    <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
                         <img src="/assets/authlogo.png" width={90} />
-                        <span class="ml-3 text-xl">Forums CEC</span>
+                        <span className="ml-3 text-xl">Forums CEC</span>
                     </div>
-                    <p class="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
+                    <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
                 </div>
             </footer>
         </>
