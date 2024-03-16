@@ -3,6 +3,15 @@ import { useRouter } from 'next/router';
 import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
 import Cookies from 'js-cookie';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 
 const LoginPage = () => {
     const [data, setData] = useState(null);
@@ -16,6 +25,13 @@ const LoginPage = () => {
     const [showResend, setShowResend] = useState(false);
     const [isMobileView, setIsMobileView] = useState(false);
     const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     const dev = () => {
         router.push('/auth/forgetPassword');
@@ -57,6 +73,8 @@ const LoginPage = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log(username);
+        console.log(password);
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
             method: 'POST',
             headers: {
@@ -127,12 +145,47 @@ const LoginPage = () => {
                         {/* Login Form */}
                         <form>
                             <div className="mb-4">
-                                <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                <input type="text" id="username" name="username" placeholder="Enter username" className="w-[50%] p-2 border border-gray-300 rounded-xl flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                <TextField
+                                    label="Username"
+                                    id="outlined-size-small"
+                                    required
+                                    defaultValue=""
+                                    size="small"
+                                    className="w-[50%]"
+                                    value={username} 
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
+                                {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
+                                <input type="text" id="username" name="username" placeholder="Enter username" className="w-[50%] p-2 border border-gray-300 rounded-xl flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required /> */}
                             </div>
                             <div>
-                                <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                <FormControl className="w-[100%]" size="small" variant="outlined" required>
+                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                    <OutlinedInput
+                                        // placeholder="Enter password"
+                                        id="outlined-adornment-password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        className="w-[50%]"
+                                        size="small"
+                                        value={password} 
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                                >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                        }
+                                        label="Password"
+                                    />
+                                </FormControl>
+                                {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
+                                <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                 <div className='flex justify-left mt-[1rem] mb-[2rem] xs:flex-row'>
                                     <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 mr-[2rem] cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
                                     <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
@@ -164,12 +217,46 @@ const LoginPage = () => {
                             {/* Login Form */}
                             <form>
                                 <div className="mb-4">
-                                    <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                    <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                    <TextField
+                                    label="Username"
+                                    id="outlined-size-small"
+                                    required
+                                    defaultValue=""
+                                    size="small"
+                                    className="w-full"
+                                    value={username} 
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
+                                    {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
+                                    <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required /> */}
                                 </div>
                                 <div>
-                                    <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                    <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                    <FormControl className="w-full" size="small" variant="outlined" required>
+                                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                        <OutlinedInput
+                                            // placeholder="Enter password"
+                                            id="outlined-adornment-password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            size="small"
+                                            value={password} 
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                    >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                            }
+                                            label="Password"
+                                        />
+                                    </FormControl>
+                                    {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
+                                    <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                     <div className='flex justify-center mt-4 mb-6'>
                                         <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
                                         <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline cursor-pointer ml-4" onClick={dev}>Forgot Password?</span>

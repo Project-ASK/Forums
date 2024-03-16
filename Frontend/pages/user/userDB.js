@@ -830,7 +830,8 @@ const Dashboard = ({ username }) => {
                                             Cancel
                                         </button>
                                         <button type="button" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" onClick={addEvent}>
-                                            Save Event   </button>
+                                            Save Event
+                                        </button>
                                     </div>
                                 </div>
                             </div>

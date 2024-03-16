@@ -3,6 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import emailjs from '@emailjs/browser';
 import Modal from 'react-modal';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const ForgotPassword = () => {
     const router = useRouter();
@@ -16,6 +24,13 @@ const ForgotPassword = () => {
     const [isEmailSubmitted, setIsEmailSubmitted] = useState(false);
     const [counter, setCounter] = useState(60);
     const [showResend, setShowResend] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     useEffect(() => {
         let timer;
@@ -38,7 +53,7 @@ const ForgotPassword = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
+        // const email = document.getElementById('email').value;
         if (!email.endsWith('@ceconline.edu')) {
             alert('Please use an email with domain @ceconline.edu');
             return;
@@ -72,7 +87,7 @@ const ForgotPassword = () => {
     }
 
     const updatePassword = async () => {
-        const password = document.getElementById('newPassword').value;
+        const password = newPassword;
         var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
         if (!password.match(passw)) {
             alert('Password is invalid');
@@ -108,9 +123,19 @@ const ForgotPassword = () => {
                     <h2 className="text-2xl font-semibold mb-4 relative top-[1rem] text-center">{isEmailSubmitted ? "Reset Password" : "Forgot Password"}</h2>
                     {!isEmailSubmitted &&
                         <form>
-                            <div className="mb-8 relative top-[1rem]">
-                                <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Enter the Email</label>
-                                <input type="email" id="email" name="email" placeholder="Enter email here" className="w-full p-2 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <div className="mt-8 relative top-[1rem]">
+                                <TextField
+                                    label="Email"
+                                    id="outlined-size-small"
+                                    required
+                                    defaultValue=""
+                                    size="small"
+                                    className="w-full"
+                                    value={email} 
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                {/* <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Enter the Email</label>
+                                <input type="email" id="email" name="email" placeholder="Enter email here" className="w-full p-2 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} /> */}
                             </div>
 
                             <div className='flex justify-center mt-[3rem]'>
@@ -123,12 +148,58 @@ const ForgotPassword = () => {
                     {isVerified && (
                         <form>
                             <div className="mb-4 mt-[2rem]">
-                                <label htmlFor="newPassword" className="block text-gray-600 text-sm mb-2">Enter New Password</label>
-                                <input type="password" id="newPassword" name="newPassword" className="w-full p-2 border border-gray-300 rounded-xl" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                <FormControl className="w-[100%]" size="small" variant="outlined" required>
+                                    <InputLabel htmlFor="outlined-adornment-password">New Password</InputLabel>
+                                    <OutlinedInput
+                                        id="outlined-adornment-password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        size="small"
+                                        value={newPassword} 
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                                >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                        }
+                                        label="New Password"
+                                    />
+                                </FormControl>
+                                {/* <label htmlFor="newPassword" className="block text-gray-600 text-sm mb-2">Enter New Password</label>
+                                <input type="password" id="newPassword" name="newPassword" className="w-full p-2 border border-gray-300 rounded-xl" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /> */}
                             </div>
                             <div className="mb-8">
-                                <label htmlFor="confirmPassword" className="block text-gray-600 text-sm mb-2">Confirm New Password</label>
-                                <input type="password" id="confirmPassword" name="confirmPassword" className="w-full p-2 border border-gray-300 rounded-xl" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                <FormControl className="w-[100%]" size="small" variant="outlined" required>
+                                    <InputLabel htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
+                                    <OutlinedInput
+                                        id="outlined-adornment-password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        size="small"
+                                        value={confirmPassword} 
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                                >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                        }
+                                        label="Confirm Password"
+                                    />
+                                </FormControl>
+                                {/* <label htmlFor="confirmPassword" className="block text-gray-600 text-sm mb-2">Confirm New Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" className="w-full p-2 border border-gray-300 rounded-xl" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} /> */}
                             </div>
                             <div className='flex justify-center'>
                                 <button type="button" className="w-[50%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={updatePassword}>
