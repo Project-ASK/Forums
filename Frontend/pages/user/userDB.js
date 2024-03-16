@@ -7,9 +7,15 @@ import Carousel from 'react-material-ui-carousel'
 import { Grid } from '@mui/material';
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 import "swiper/css";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 
 const Dashboard = ({ username }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [eventsByDate, setEventsByDate] = useState({});
+    const [selectedDate, setSelectedDate] = useState(null);
     const [forums, setForums] = useState([]);
     const [greeting, setGreeting] = useState('');
     const [attendedEventsCount, setAttendedEventsCount] = useState(0);
@@ -43,6 +49,12 @@ const Dashboard = ({ username }) => {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [containerWidth, setContainerWidth] = useState('100%'); // Initial width is 100%
     const [showScrollbar, setShowScrollbar] = useState(false); // Flag to show/hide scrollbar
+    const customEventDates = ['2024-03-16', '2024-03-20', '2024-03-25'];
+
+     const handleDateChange = (date) => {
+        setSelectedDate(date);
+        setOpenEventModal(true);
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -204,6 +216,10 @@ const Dashboard = ({ username }) => {
                     })
                         .then(response => response.json())
                         .then(data => { });
+                        setEventsByDate({
+                            ...eventsByDate,
+                            [selectedEvent.date]: selectedEvent.eventName
+                        });
                 } else {
                     alert('Failed to join the event');
                 }
@@ -490,7 +506,7 @@ const Dashboard = ({ username }) => {
                 </div>
             </div>
             <div className={`relative top-[6rem] pt-[4rem] ${isSmallScreen ? 'text-center mx-auto' : 'ml-[5rem]'}`}>
-                <h2 className="font-product-sans font-semibold text-2xl">Upcoming Events</h2>
+                <h2 className="font-product-sans font-semibold text-2xl">Events</h2>
             </div>
             <div className="flex flex-wrap justify-center items-center h-screen shadow-lg rounded-lg bg-blue-100 mt-[2rem] w-[96%] mx-auto">
                 {isSmallScreen ? (
@@ -636,7 +652,7 @@ const Dashboard = ({ username }) => {
                     <p className="font-product-sans font-semi-bold text-center text-xl">No events available</p>
                 </div>
             }
-            <div className={`relative top-[6rem] ${isSmallScreen ? 'text-center mx-auto mb-[4rem]' : 'ml-[6rem]'}`}>
+            <div className={`relative top-[6rem] ${isSmallScreen ? 'text-center mx-auto mb-[4rem]' : 'ml-[5rem]'}`}>
                 <h2 className="font-product-sans font-semibold text-2xl">My Forums</h2>
             </div>
             <div className="pb-[4rem] pt-[4rem]">
@@ -735,8 +751,9 @@ const Dashboard = ({ username }) => {
                     </div>
                 </Modal>
             </div>
-            <div className="w-[96%] mx-auto pb-[4rem]">
-                <div className="antialiased sans-serif bg-blue-100 h-full rounded-lg">
+            <div className="w-[96%] mx-auto">
+                <div className="antialiased sans-serif bg-blue-100 h-full rounded-lg xs:pb-[1rem]">
+                    {!isSmallScreen ? (
                     <div className="lg:container xs:bg-blue-100 xs:rounded-lg mx-auto xs:pt-[2rem] xs:pb-[2rem] md:py-12">
                         <div className="bg-white rounded-lg shadow overflow-hidden">
                             <div className="flex items-center justify-between py-2 px-6">
@@ -800,6 +817,19 @@ const Dashboard = ({ username }) => {
                             </div>
                         </div>
                     </div>
+                    ):(
+                        <>
+                            <div className={`relative pt-[2rem] ${isSmallScreen ? 'text-center mx-auto' : 'ml-[5rem]'}`}>
+                                <h2 className="font-product-sans font-semibold text-2xl">Calendar</h2>
+                            </div>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DateCalendar
+                                        value={selectedDate}
+                                        onChange={handleDateChange}
+                                    />
+                                </LocalizationProvider>
+                        </>
+                    )}
                     {openEventModal &&
                         <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} className="fixed z-40 top-0 right-0 left-0 bottom-0 h-full w-full">
                             <div className="p-4 max-w-xl mx-auto relative left-0 right-0 overflow-hidden mt-24">
@@ -839,6 +869,15 @@ const Dashboard = ({ username }) => {
                     }
                 </div>
             </div>
+            <footer class="text-gray-600 body-font">
+                <div class="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+                    <div class="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+                        <img src="/assets/authlogo.png" width={90} />
+                        <span class="ml-3 text-xl">Forums CEC</span>
+                    </div>
+                    <p class="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
+                </div>
+            </footer>
         </>
     );
 };
