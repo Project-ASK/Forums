@@ -14,6 +14,9 @@ const Analytics = () => {
     const [venueData, setVenueData] = useState([]);
     const [startMonth, setStartMonth] = useState('');
     const [endMonth, setEndMonth] = useState('');
+    const [selectedEvent, setSelectedEvent] = useState('');
+    const [participationData, setParticipationData] = useState([]);
+    const [adminEvents, setAdminEvents] = useState([]);
     const router = useRouter();
 
     useEffect(() => {
@@ -49,6 +52,7 @@ const Analytics = () => {
                     body: JSON.stringify({ forum }),
                 });
                 const result = await response.json();
+                setAdminEvents(Array.isArray(result.events) ? result.events : []);
                 let events = result.events;
                 if (startMonth && endMonth) {
                     events = events.filter(event => {
@@ -168,6 +172,39 @@ const Analytics = () => {
 
         fetchData();
     }, [forum, startMonth, endMonth]);
+
+    useEffect(() => {
+        if (selectedEvent) {
+            // Fetch the participation data for the selected event
+            const fetchParticipationData = async () => {
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/event/getUsers`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ eventName: selectedEvent }),
+                    });
+                    const result = await response.json();
+                    const attendedCount = result.users.filter((user) => {
+                        const event = user.joinedEvents.find(event => event.eventName === selectedEvent);
+                        return event && event.isAttended;
+                    }).length;
+                    const notAttendedCount = result.users.length - attendedCount;
+                    setParticipationData([
+                        { name: 'Attended', value: attendedCount },
+                        { name: 'Not Attended', value: notAttendedCount },
+                    ]);
+                    console.log('selectedEvent:', selectedEvent);
+                    console.log('fetch response:', result);
+                } catch (error) {
+                    console.error('Failed to fetch participation data:', error);
+                }
+            };
+
+            fetchParticipationData();
+        }
+    }, [selectedEvent]);
 
     const handleHomeClick = () => {
         router.back();
@@ -294,10 +331,20 @@ const Analytics = () => {
                             </PieChart>
                         </div>
                         <div style={{ flex: '0 0 50%', padding: '1rem' }}>
-                            {/* <h1 className="text-3xl font-bold text-left relative bottom-[1rem]">User Interests</h1>
+                            <h1 className="text-3xl font-bold text-left relative bottom-[1rem]">Event Participation</h1>
+                            <div className="flex gap-4">
+                                <h1 className="text-lg font-bold text-left">Select Event Name</h1>
+                                <select value={selectedEvent} onChange={(e) => setSelectedEvent(e.target.value)} className="border-[2px] rounded">
+                                    {adminEvents.sort((a, b) => a.eventName.localeCompare(b.eventName)).map((event) => (
+                                        <option key={event._id} value={event.eventName}>
+                                            {event.eventName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             <PieChart width={600} height={400}>
                                 <Pie
-                                    data={topicData}
+                                    data={participationData}
                                     cx={300}
                                     cy={200}
                                     labelLine={false}
@@ -308,7 +355,7 @@ const Analytics = () => {
                                 />
                                 <Tooltip />
                                 <Legend />
-                            </PieChart> */}
+                            </PieChart>
                         </div>
                     </div>
                 </div>

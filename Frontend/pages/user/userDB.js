@@ -314,8 +314,8 @@ const Dashboard = ({ username }) => {
             });
 
             const data = await response.json();
-            let currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
-            currentEvents = currentEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            // let currentEvents = data.events.filter(event => new Date(event.date) >= new Date());
+            let currentEvents = data.events.sort((a, b) => new Date(b.date) - new Date(a.date));
             setEvents(currentEvents);
         }
 
@@ -587,16 +587,22 @@ const Dashboard = ({ username }) => {
                                                 </div>
                                             </div>
                                             <div className="p-6 pt-0">
-                                                {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
-                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
-                                                        Already Joined
+                                                {joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName && joinedEvent.isAttended) ? (
+                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-red-200 cursor-not-allowed">
+                                                        Participated
                                                     </p>
                                                 ) : (
-                                                    <button
-                                                        className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
-                                                        type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
-                                                        Join Event
-                                                    </button>
+                                                    joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName) ? (
+                                                        <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-100 hover:bg-green-200">
+                                                            Already Joined
+                                                        </p>
+                                                    ) : (
+                                                        <button
+                                                            className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
+                                                            type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
+                                                            Join Event
+                                                        </button>
+                                                    )
                                                 )}
                                             </div>
                                         </div>
@@ -634,16 +640,22 @@ const Dashboard = ({ username }) => {
                                         </div>
                                     </div>
                                     <div className="p-6 pt-0">
-                                        {joinedEvents.map(joinedEvent => joinedEvent.eventName).includes(event.eventName) ? (
-                                            <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-200 cursor-not-allowed">
-                                                Already Joined
+                                        {joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName && joinedEvent.isAttended) ? (
+                                            <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-red-200 cursor-not-allowed">
+                                                Participated
                                             </p>
                                         ) : (
-                                            <button
-                                                className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
-                                                type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
-                                                Join Event
-                                            </button>
+                                            joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName) ? (
+                                                <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-100 hover:bg-green-200">
+                                                    Already Joined
+                                                </p>
+                                            ) : (
+                                                <button
+                                                    className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
+                                                    type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
+                                                    Join Event
+                                                </button>
+                                            )
                                         )}
                                     </div>
                                 </div>
