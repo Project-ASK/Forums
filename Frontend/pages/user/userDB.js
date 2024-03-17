@@ -11,7 +11,9 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-// import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import Badge from '@mui/material/Badge';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 
 const Dashboard = ({ username }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
@@ -49,11 +51,9 @@ const Dashboard = ({ username }) => {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [containerWidth, setContainerWidth] = useState('100%'); // Initial width is 100%
     const [showScrollbar, setShowScrollbar] = useState(false); // Flag to show/hide scrollbar
-
-     const handleDateChange = (date) => {
-        setSelectedDate(date);
-        setOpenEventModal(true);
-    };
+    const requestAbortController = React.useRef(null);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [highlightedDays, setHighlightedDays] = React.useState([]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -104,22 +104,12 @@ const Dashboard = ({ username }) => {
     };
 
     useEffect(() => {
-        // Calculate the number of cards
         const numCards = forums.length;
-
-        // Calculate the width of each card (assuming each card has a fixed width)
         const cardWidth = isSmallScreen ? 100 / numCards : 100 / numCards; // in percentage
-
-        // Calculate the total width required
         const totalWidth = numCards * cardWidth;
-
-        // Set the container width to accommodate all cards
         setContainerWidth(`${totalWidth}%`);
-
-        // Show the scrollbar
         setShowScrollbar(true);
     }, [forums, isSmallScreen]);
-
 
     useEffect(() => {
         getNoOfDays();
@@ -135,16 +125,14 @@ const Dashboard = ({ username }) => {
         }
     };
 
-    const handleClickOutside = e => { // Add this function
+    const handleClickOutside = e => {
         if (node.current.contains(e.target)) {
-            // inside click
             return;
         }
-        // outside click 
         setDropdownVisible(false);
     };
 
-    useEffect(() => { // Add this useEffect
+    useEffect(() => {
         if (dropdownVisible) {
             document.addEventListener("mousedown", handleClickOutside);
         } else {
@@ -315,7 +303,7 @@ const Dashboard = ({ username }) => {
             fetchEvents(data.forums);
             setCalEvents(data.customEvents);
         };
-        
+
         const fetchEvents = async (forums) => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getEvents`, {
                 method: 'POST',
@@ -432,6 +420,71 @@ const Dashboard = ({ username }) => {
         }
     }
 
+    function ServerDay(props) {
+        const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+
+        const isSelected =
+            !props.outsideCurrentMonth && highlightedDays.includes(day.format('YYYY-MM-DD'));
+
+        return (
+            <Badge
+                key={props.day.toString()}
+                overlap="circular"
+                badgeContent={isSelected ? '✅' : undefined}
+            >
+                <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+            </Badge>
+        );
+    }
+
+    const fetchHighlightedDays = async (date) => {
+        const controller = new AbortController();
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getForums`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username }),
+            signal: controller.signal,
+        });
+        const data = await response.json();
+        const daysToHighlight = data.customEvents.map(event => event.event_date);
+        setHighlightedDays(daysToHighlight);
+        setIsLoading(false);
+        requestAbortController.current = controller;
+    };
+
+    useEffect(() => {
+        fetchHighlightedDays(dayjs(new Date()));
+        return () => requestAbortController.current?.abort();
+    }, []);
+
+    const handleMonthChange = (date) => {
+        if (requestAbortController.current) {
+            requestAbortController.current.abort();
+        }
+        setIsLoading(true);
+        setHighlightedDays([]);
+        fetchHighlightedDays(date);
+    };
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+
+        // Find the event for the selected date
+        const event = calevents.find(e => e.event_date === formattedDate);
+
+        // If an event exists for the selected date, delete it
+        if (event) {
+            deleteEvent(event);
+        } else {
+            // If no event exists for the selected date, open the modal
+            setEvent_date(formattedDate); // Set the event_date state to the formatted date
+            setOpenEventModal(true); // Open the modal
+        }
+    };
+
     // If username is not available, don't render anything
     if (!username) {
         return null;
@@ -457,7 +510,7 @@ const Dashboard = ({ username }) => {
                         onClick={() => setDropdownVisible(!dropdownVisible)} // Toggle the dropdown when the image is clicked
                     />
                     {dropdownVisible && ( // Only show the dropdown if dropdownVisible is true
-                        <div ref={node} className="absolute mt-36 right-2 w-48 bg-white border border-gray-200 rounded-lg py-2 shadow-xl">
+                        <div ref={node} className="absolute mt-36 right-2 w-48 bg-white border border-gray-200 rounded-lg py-2 shadow-xl z-50">
                             <button
                                 onClick={handleProfileEdit}
                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left rounded-md"
@@ -479,21 +532,21 @@ const Dashboard = ({ username }) => {
             </div>
             <div className="flex justify-center mt-[4rem] flex-wrap">
                 <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0">
-                    <img src="/assets/events.png" alt="Image" className="w-20 h-20 mt-4 mb-2" /> {/* Replace "image-url-here" with the actual URL of your image */}
+                    <img src="/assets/events.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Events Joined</h2>
                         <p className="font-product-sans text-xl">{joinedEvents.length}</p>
                     </div>
                 </div>
                 <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0">
-                    <img src="/assets/attendance.png" alt="Image" className="w-20 h-20 mt-4 mb-2" /> {/* Replace "image-url-here" with the actual URL of your image */}
+                    <img src="/assets/attendance.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Events Participated</h2>
                         <p className="font-product-sans text-xl">{attendedEventsCount}</p>
                     </div>
                 </div>
                 <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2">
-                    <img src="/assets/forumCount.png" alt="Image" className="w-20 h-20 mt-4 mb-2" /> {/* Replace "image-url-here" with the actual URL of your image */}
+                    <img src="/assets/forumCount.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Active Forums</h2>
                         <p className="font-product-sans text-xl">{numForums}</p>
@@ -558,7 +611,7 @@ const Dashboard = ({ username }) => {
                         {events.map((event, index) => (
                             <SwiperSlide key={index}>
                                 <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 h-[90%] overflow-auto mt-[20px]">
-                                    <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-full">
+                                    <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
                                         <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
                                     </div>
                                     <div className="p-6">
@@ -749,80 +802,91 @@ const Dashboard = ({ username }) => {
             <div className="w-[96%] mx-auto">
                 <div className="antialiased sans-serif bg-blue-100 h-full rounded-lg xs:pb-[1rem]">
                     {!isSmallScreen ? (
-                    <div className="lg:container xs:bg-blue-100 xs:rounded-lg mx-auto xs:pt-[2rem] xs:pb-[2rem] md:py-12">
-                        <div className="bg-white rounded-lg shadow overflow-hidden">
-                            <div className="flex items-center justify-between py-2 px-6">
-                                <div>
-                                    <span className="text-lg font-bold text-gray-800">{MONTH_NAMES[month]}</span>
-                                    <span className="ml-1 text-lg text-gray-600 font-normal">{year}</span>
+                        <div className="lg:container xs:bg-blue-100 xs:rounded-lg mx-auto xs:pt-[2rem] xs:pb-[2rem] md:py-12">
+                            <div className="bg-white rounded-lg shadow overflow-hidden">
+                                <div className="flex items-center justify-between py-2 px-6">
+                                    <div>
+                                        <span className="text-lg font-bold text-gray-800">{MONTH_NAMES[month]}</span>
+                                        <span className="ml-1 text-lg text-gray-600 font-normal">{year}</span>
+                                    </div>
+                                    <div className="flex border rounded-lg space-x-5 justify-center p-1">
+                                        <button
+                                            type="button"
+                                            className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-2 items-center"
+                                            disabled={month == 0}
+                                            onClick={() => { setMonth(month - 1); getNoOfDays(); }}
+                                        >
+                                            Previous
+                                        </button>
+                                        <div className="border-r inline-flex h-"></div>
+                                        <button
+                                            type="button"
+                                            className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-2"
+                                            disabled={month == 11}
+                                            onClick={() => { setMonth(month + 1); getNoOfDays(); }}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex border rounded-lg space-x-5 justify-center p-1">
-                                    <button
-                                        type="button"
-                                        className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-2 items-center"
-                                        disabled={month == 0}
-                                        onClick={() => { setMonth(month - 1); getNoOfDays(); }}
-                                    >
-                                        Previous
-                                    </button>
-                                    <div className="border-r inline-flex h-"></div>
-                                    <button
-                                        type="button"
-                                        className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-2"
-                                        disabled={month == 11}
-                                        onClick={() => { setMonth(month + 1); getNoOfDays(); }}
-                                    >
-                                        Next
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="-mx-1 -mb-1">
-                                <div className="flex flex-wrap" style={{ marginBottom: '-40px' }}>
-                                    {DAYS.map((day, index) =>
-                                        <div style={{ width: '14.26%' }} className="px-2 py-2" key={index}>
-                                            <div className="text-gray-600 text-sm uppercase tracking-wide font-bold text-center">{day}</div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex flex-wrap border-t border-l">
-                                    {blankdays.map((i) =>
-                                        <div style={{ width: '14.28%', height: '120px' }} className="text-center border-r border-b px-4 pt-2" key={i}></div>
-                                    )}
-                                    {no_of_days.map((date, i) =>
-                                        <div className="px-4 pt-2 border-r border-b relative w-[14.28%] h-[120px]" key={i}>
-                                            <div
-                                                onClick={() => showEventModal(date)}
-                                                className={`inline-flex w-6 h-6 xs:mt-[2rem] lg:mt-0 items-center justify-center cursor-pointer text-center leading-none rounded-full transition ease-in-out duration-100 ${isToday(date) ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200'}`}
-                                            >
-                                                {date}
+                                <div className="-mx-1 -mb-1">
+                                    <div className="flex flex-wrap" style={{ marginBottom: '-40px' }}>
+                                        {DAYS.map((day, index) =>
+                                            <div style={{ width: '14.26%' }} className="px-2 py-2" key={index}>
+                                                <div className="text-gray-600 text-sm uppercase tracking-wide font-bold text-center">{day}</div>
                                             </div>
-                                            <div style={{ height: '80px' }} className="overflow-y-auto mt-1">
-                                                {calevents && calevents.filter(e => new Date(e.event_date).toDateString() === new Date(year, month, date).toDateString()).map((event, i) =>
-                                                    <div
-                                                        className={`px-2 py-1 rounded-lg mt-1 cursor-pointer overflow-hidden border ${event.event_theme === 'blue' ? 'border-blue-200 text-blue-800 bg-blue-100' : event.event_theme === 'red' ? 'border-red-200 text-red-800 bg-red-100' : event.event_theme === 'yellow' ? 'border-yellow-200 text-yellow-800 bg-yellow-100' : event.event_theme === 'green' ? 'border-green-200 text-green-800 bg-green-100' : 'border-purple-200 text-purple-800 bg-purple-100'}`}
-                                                        key={i} onClick={() => deleteEvent(event)}
-                                                    >
-                                                        <p className="text-sm truncate leading-tight">{event.event_title}</p>
-                                                    </div>
-                                                )}
+                                        )}
+                                    </div>
+                                    <div className="flex flex-wrap border-t border-l">
+                                        {blankdays.map((i) =>
+                                            <div style={{ width: '14.28%', height: '120px' }} className="text-center border-r border-b px-4 pt-2" key={i}></div>
+                                        )}
+                                        {no_of_days.map((date, i) =>
+                                            <div className="px-4 pt-2 border-r border-b relative w-[14.28%] h-[120px]" key={i}>
+                                                <div
+                                                    onClick={() => showEventModal(date)}
+                                                    className={`inline-flex w-6 h-6 xs:mt-[2rem] lg:mt-0 items-center justify-center cursor-pointer text-center leading-none rounded-full transition ease-in-out duration-100 ${isToday(date) ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200'}`}
+                                                >
+                                                    {date}
+                                                </div>
+                                                <div style={{ height: '80px' }} className="overflow-y-auto mt-1">
+                                                    {calevents && calevents.filter(e => new Date(e.event_date).toDateString() === new Date(year, month, date).toDateString()).map((event, i) =>
+                                                        <div
+                                                            className={`px-2 py-1 rounded-lg mt-1 cursor-pointer overflow-hidden border ${event.event_theme === 'blue' ? 'border-blue-200 text-blue-800 bg-blue-100' : event.event_theme === 'red' ? 'border-red-200 text-red-800 bg-red-100' : event.event_theme === 'yellow' ? 'border-yellow-200 text-yellow-800 bg-yellow-100' : event.event_theme === 'green' ? 'border-green-200 text-green-800 bg-green-100' : 'border-purple-200 text-purple-800 bg-purple-100'}`}
+                                                            key={i} onClick={() => deleteEvent(event)}
+                                                        >
+                                                            <p className="text-sm truncate leading-tight">{event.event_title}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    ):(
+                    ) : (
                         <>
                             <div className={`relative pt-[2rem] ${isSmallScreen ? 'text-center mx-auto' : 'ml-[5rem]'}`}>
                                 <h2 className="font-product-sans font-semibold text-2xl">Calendar</h2>
                             </div>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DateCalendar
-                                        value={selectedDate}
-                                        onChange={handleDateChange}
-                                    />
-                                </LocalizationProvider>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateCalendar
+                                    loading={isLoading}
+                                    onMonthChange={handleMonthChange}
+                                    value={selectedDate}
+                                    onChange={handleDateChange}
+                                    renderLoading={() => <DayCalendarSkeleton />}
+                                    slots={{
+                                        day: ServerDay,
+                                    }}
+                                    slotProps={{
+                                        day: {
+                                            highlightedDays,
+                                        },
+                                    }}
+                                />
+                            </LocalizationProvider>
                         </>
                     )}
                     {openEventModal &&
@@ -878,10 +942,7 @@ const Dashboard = ({ username }) => {
 };
 
 export async function getServerSideProps(context) {
-    // Get username from cookies
     const username = context.req.cookies.username;
-
-    // If username is not available, redirect to login
     if (!username) {
         return {
             redirect: {
@@ -890,7 +951,6 @@ export async function getServerSideProps(context) {
             },
         }
     }
-
     // If username is available, pass it as a prop
     return {
         props: { username }, // will be passed to the page component as props
