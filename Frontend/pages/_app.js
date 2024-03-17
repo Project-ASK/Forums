@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Forum Management</title>
+        <title>Forums CEC</title>
       </Head>
       <Layout >
         <Component {...pageProps} />
