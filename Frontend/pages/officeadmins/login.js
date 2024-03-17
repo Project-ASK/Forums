@@ -115,11 +115,8 @@ const OfficeLoginPage = () => {
     return (
         <>
             {!isMobileView ? (
-                <div className="flex h-screen items-center justify-center bg-gray-200">
-                    <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-                        <img src="/assets/logo.png" width={110} />
-                    </div>
-                    <div className="max-w-full bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
+                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+                    <div className="max-w-full border-2 border-slate-400 bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                         <div className='flex justify-center'>
                             <img src="/assets/authlogo.png" width={160} />
                         </div>
@@ -178,10 +175,7 @@ const OfficeLoginPage = () => {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col h-screen bg-gray-200">
-                    <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md">
-                        <img src="/assets/logo.png" width={110} className="mx-auto" />
-                    </div>
+                 <div className="flex flex-col h-screen bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
                     <div className="flex-grow flex items-center justify-center">
                         <div className="max-w-full bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                             <div className='flex justify-center'>

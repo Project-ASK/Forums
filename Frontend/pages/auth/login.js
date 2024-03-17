@@ -206,9 +206,6 @@ const LoginPage = () => {
                 <div className="flex flex-col h-screen bg-gray-200 border-2 border-slate-500" style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center" }}>
                     <div className="flex-grow flex items-center justify-center">
                         <div className="max-w-full bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
-                            <div className='flex justify-center'>
-                                <img src="/assets/authlogo.png" width={160} />
-                            </div>
                             <h2 className="text-3xl font-semibold text-center mt-6">Sign In</h2>
                             <h2 className="text-md text-center mb-10 relative top-[0.5rem]">Use your username and password</h2>
                             {/* Login Form */}

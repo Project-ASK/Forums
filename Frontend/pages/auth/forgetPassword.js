@@ -112,11 +112,8 @@ const ForgotPassword = () => {
 
     return (
         <>
-            <div className="flex h-screen items-center justify-center bg-gray-200">
-                <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-                    <img src="/assets/logo.png" width={110} />
-                </div>
-                <div className="max-w-md bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
+            <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+                <div className="max-w-md border-2 border-slate-400 bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                     <div className='flex justify-center'>
                         <img src="/assets/authlogo.png" width={130} />
                     </div>
