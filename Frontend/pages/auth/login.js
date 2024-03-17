@@ -132,18 +132,15 @@ const LoginPage = () => {
     return (
         <>
             {!isMobileView ? (
-                <div className="flex h-screen items-center justify-center bg-gray-200">
-                    <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md w-full absolute top-2 flex justify-between items-center">
-                        <img src="/assets/logo.png" width={110} />
+                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+                <div className="max-w-full bg-white p-8 rounded-3xl border-2 border-slate-500 shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
+                    <div className='flex justify-center'>
+                        <img src="/assets/authlogo.png" width={160} />
                     </div>
-                    <div className="max-w-full bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
-                        <div className='flex justify-center'>
-                            <img src="/assets/authlogo.png" width={160} />
-                        </div>
-                        <h2 className="text-3xl font-semibold flex justify-end mr-[4rem] relative top-[4.5rem]">Sign In</h2>
-                        <h2 className="text-md flex justify-end relative top-[5.5rem]">Use your username and password</h2>
+                    
+                    <div className="flex justify-between items-center">
                         {/* Login Form */}
-                        <form>
+                        <form className="mt-[3rem]" style={{width: '70%'}}>
                             <div className="mb-4">
                                 <TextField
                                     label="Username"
@@ -151,21 +148,18 @@ const LoginPage = () => {
                                     required
                                     defaultValue=""
                                     size="small"
-                                    className="w-[50%]"
+                                    className="w-[70%]"
                                     value={username} 
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
-                                {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
-                                <input type="text" id="username" name="username" placeholder="Enter username" className="w-[50%] p-2 border border-gray-300 rounded-xl flex justify-end" value={username} onChange={(e) => setUsername(e.target.value)} required /> */}
                             </div>
                             <div>
                                 <FormControl className="w-[100%]" size="small" variant="outlined" required>
                                     <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                                     <OutlinedInput
-                                        // placeholder="Enter password"
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
-                                        className="w-[50%]"
+                                        className="w-[70%]"
                                         size="small"
                                         value={password} 
                                         onChange={(e) => setPassword(e.target.value)}
@@ -184,29 +178,32 @@ const LoginPage = () => {
                                         label="Password"
                                     />
                                 </FormControl>
-                                {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
-                                <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                 <div className='flex justify-left mt-[1rem] mb-[2rem] xs:flex-row'>
                                     <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 mr-[2rem] cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
                                     <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
                                 </div>
                             </div>
                             <div className='flex justify-left'>
-                                <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
+                                <button type="submit" className="w-[40%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
                                     Sign In
                                 </button>
-                                <button type="submit" className="w-[20%] bg-gray-200 text-blue-800 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 ml-[2rem]" onClick={handleSignUp}>
+                                <button type="submit" className="w-[40%] bg-gray-200 text-blue-800 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 ml-[2rem]" onClick={handleSignUp}>
                                     Sign Up
                                 </button>
                             </div>
                         </form>
+            
+                        <div style={{width: '50%'}} className="flex items-center">
+                            <img src="/assets/sign.svg" width={250} className="self-start relative" />
+                        </div>
                     </div>
                 </div>
+            </div>
+            
+            
+            
             ) : (
-                <div className="flex flex-col h-screen bg-gray-200">
-                    <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md">
-                        <img src="/assets/logo.png" width={110} className="mx-auto" />
-                    </div>
+                <div className="flex flex-col h-screen bg-gray-200 border-2 border-slate-500" style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center" }}>
                     <div className="flex-grow flex items-center justify-center">
                         <div className="max-w-full bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                             <div className='flex justify-center'>
