@@ -140,6 +140,11 @@ async function getEventDetails(req,res){
     res.status(200).send({ event });
 }
 
+async function getAllEvents(req,res){
+    const events = await Event.find({});
+    res.status(200).send({ events });
+}
+
 router.post('/admin/events', upload.single('image'), createEvent); // Handle POST requests to create events
 router.post('/admin/getEvents', getAdminEvents);    // Handle GET requests to fetch events
 router.post('/getEvents', getEvents);    // Handle GET requests to fetch events
@@ -150,5 +155,6 @@ router.post('/getJoinedEvents', getJoinedEvents);    // Handle POST requests to 
 router.post('/getQuestions', getQuestions);    // Handle POST requests to fetch questions
 router.post('/admin/getCollabEvents', getCollabEvents);    // Handle POST requests to fetch events
 router.post('/admin/getEventDetails', getEventDetails);    // Handle POST requests to fetch event details
+router.get('/getAllEvents', getAllEvents);
 
 module.exports = router;

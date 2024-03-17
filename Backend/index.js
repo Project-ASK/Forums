@@ -613,6 +613,12 @@ router.route('/office/getDetails')
         res.status(200).send({ name: officeAdmin.name, email: officeAdmin.email });
     });
 
+router.route('/getAllEvents')
+    .get(async (req, res) => {
+        const events = await Event.find({});
+        res.status(200).send({ events });
+    });
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
