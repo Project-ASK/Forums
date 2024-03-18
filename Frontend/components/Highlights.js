@@ -1,49 +1,44 @@
 import * as React from 'react';
+import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import Carousel from 'react-material-ui-carousel'
-import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
-import "swiper/css";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export default function Highlights() {
   const [events, setEvents] = React.useState([]);
   const [isSmallScreen, setIsSmallScreen] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState(null);
+  const [open,isOpen] = React.useState(false);
+  const router = useRouter();
+  let touchTimer;
 
-  const sliderSettings = {
-    slidesPerView: 1,
-    spaceBetween: 100,
-    breakpoints: {
-      480: {
-        slidesPerView: 1,
-      },
-      600: {
-        slidesPerView: 2,
-      },
-      750: {
-        slidesPerView: 3,
-      },
-      1100: {
-        slidesPerView: 4,
-      },
-    },
+  const handleTouchStart = () => {
+    touchTimer = setTimeout(() => {
+      isOpen(true);
+    }, 500); // Trigger action after 5 seconds
   };
 
-  const SlideNextButton = () => {
-    const swiper = useSwiper();
-    return (
-      <div className="flex justify-between">
-        <button onClick={() => swiper.slidePrev()} className=" bg-blue-200 rounded-lg hover:bg-blue-300 w-12 h-12">
-          <span className="text-blue-600">&lt;</span>
-        </button>
-        <button onClick={() => swiper.slideNext()} className=" bg-blue-200 rounded-lg hover:bg-blue-300 w-12 h-12">
-          <span className="text-blue-600">&gt;</span>
-        </button>
-      </div>
-    );
+  const handleTouchEnd = () => {
+    clearTimeout(touchTimer);
+  };
+
+  const handleImageClick = (imagePath) => {
+    setSelectedImage(imagePath);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImage(null);
   };
 
   React.useEffect(() => {
@@ -71,11 +66,19 @@ export default function Highlights() {
       });
 
       const data = await response.json();
-      let currentEvents = data.events.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const currentEvents = data.events.sort((a, b) => new Date(b.date) - new Date(a.date));
       setEvents(currentEvents);
     }
     fetchAllEvents();
   }, []);
+
+  const handleClose = () => {
+    isOpen(false);
+  }
+
+  const redirectLogin = () => {
+    router.push('/auth/login');
+  }
 
   return (
     <Box
@@ -122,7 +125,7 @@ export default function Highlights() {
                 useFlexGap
                 sx={{
                   p: 2,
-                  height: '10%',
+                  height: '100%',
                   width: "90%",
                   border: '3px solid',
                   borderColor: '#4287f5',
@@ -130,12 +133,15 @@ export default function Highlights() {
                   backgroundColor: 'grey.400',
                   margin: "auto"
                 }}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`)}
               >
                 <Box sx={{ opacity: '100%' }}>
                   <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" />
                 </Box>
                 <div>
-                  <Typography fontWeight="medium" gutterBottom className="text-xl">
+                  <Typography fontWeight="medium" gutterBottom>
                     {event.eventName}
                   </Typography>
                   <Typography
@@ -174,7 +180,7 @@ export default function Highlights() {
                   }}
                 >
                   <Box sx={{ opacity: '100%' }}>
-                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-auto rounded-lg" />
+                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`)}/>
                   </Box>
                   <div>
                     <Typography fontWeight="medium" gutterBottom className="text-xl">
@@ -190,6 +196,24 @@ export default function Highlights() {
                     >
                       {event.description}
                     </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          mt: 2, // Adjust margin-top for spacing
+                          alignSelf: 'center', // Align button to the center
+                          bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#2196f3'), // Adjust background color based on theme mode
+                          color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff'), // Adjust text color based on theme mode
+                          '&:hover': {
+                            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#64b5f6' : '#1976d2'), // Adjust hover background color based on theme mode
+                          },
+                        }}
+                        endIcon={<AlarmIcon />}
+                        onClick={() => {isOpen(true)}}
+                      >
+                        Join Event
+                      </Button>
+                    </Box>
                   </div>
                 </Stack>
               </Grid>
@@ -197,6 +221,49 @@ export default function Highlights() {
           </Grid>
         )}
       </Container>
+      {selectedImage && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+          }}
+          onClick={handleCloseModal}
+        >
+          <img src={selectedImage} alt="selected-event-image" style={{
+            maxHeight: isSmallScreen ? '80vh' : '60%',
+            maxWidth: isSmallScreen ? '80vw' : '60%',
+            borderRadius: '2%',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+          }} />
+        </Box>
+      )}
+      {open && (
+        <Dialog
+        open={open}
+        // TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Are you a CEC Student?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            If you are a CEC student, please proceed with event registration using your student account, or continue as a guest to register for the event.          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} className="hover:bg-red-200">No</Button>
+          <Button onClick={redirectLogin} className="hover:bg-green-200">Yes</Button>
+        </DialogActions>
+      </Dialog>
+      )}
     </Box>
   );
 }
