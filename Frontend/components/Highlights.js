@@ -14,12 +14,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation,Autoplay } from 'swiper/modules';
+import "swiper/css";
+import 'swiper/css/navigation';
+import 'swiper/css/autoplay';
+
 
 export default function Highlights() {
   const [events, setEvents] = React.useState([]);
   const [isSmallScreen, setIsSmallScreen] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState(null);
-  const [open,isOpen] = React.useState(false);
+  const [open, isOpen] = React.useState(false);
   const router = useRouter();
   let touchTimer;
 
@@ -28,6 +34,31 @@ export default function Highlights() {
       isOpen(true);
     }, 500); // Trigger action after 5 seconds
   };
+
+  const sliderSettings = {
+    slidesPerView: 3,
+    slidesPerGroup: 3, // Add this line
+    spaceBetween: 100,
+    breakpoints: {
+      480: {
+        slidesPerView: 1,
+        slidesPerGroup: 1, // Add this line
+      },
+      600: {
+        slidesPerView: 2,
+        slidesPerGroup: 2, // Add this line
+      },
+      750: {
+        slidesPerView: 3,
+        slidesPerGroup: 3, // Add this line
+      },
+      1100: {
+        slidesPerView: 3,
+        slidesPerGroup: 3, // Add this line
+      },
+    },
+  };
+
 
   const handleTouchEnd = () => {
     clearTimeout(touchTimer);
@@ -159,66 +190,78 @@ export default function Highlights() {
             ))}
           </Carousel>
         ) : (
-          <Grid container spacing={2.5}>
-            {events.map((event, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Stack
-                  direction="column"
-                  color="inherit"
-                  component={Card}
-                  spacing={1}
-                  useFlexGap
-                  sx={{
-                    p: 2,
-                    height: '100%',
-                    width: "90%",
-                    border: '3px solid',
-                    borderColor: '#4287f5',
-                    background: 'transparent',
-                    backgroundColor: 'grey.400',
-                    margin: "auto"
-                  }}
-                >
-                  <Box sx={{ opacity: '100%' }}>
-                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`)}/>
-                  </Box>
-                  <div>
-                    <Typography fontWeight="medium" gutterBottom className="text-xl">
-                      {event.eventName}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        whiteSpace: 'nowrap', // Apply whiteSpace property
-                        overflow: 'hidden', // Apply overflow property
-                        textOverflow: 'ellipsis', // Apply textOverflow property
-                      }}
-                    >
-                      {event.description}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          mt: 2, // Adjust margin-top for spacing
-                          alignSelf: 'center', // Align button to the center
-                          bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#2196f3'), // Adjust background color based on theme mode
-                          color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff'), // Adjust text color based on theme mode
-                          '&:hover': {
-                            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#64b5f6' : '#1976d2'), // Adjust hover background color based on theme mode
-                          },
-                        }}
-                        endIcon={<AlarmIcon />}
-                        onClick={() => {isOpen(true)}}
-                      >
-                        Join Event
-                      </Button>
+          // <Grid container spacing={2.5}>
+            <Swiper {...sliderSettings} className="w-[100%] mx-auto"
+              modules={[Navigation,Autoplay]}
+              navigation={{
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+              }}
+              autoplay={{ delay: 2000 }}
+              disableOnInteraction={true}
+            >
+              {events.map((event, index) => (
+                <SwiperSlide key={index}>
+                  {/* <Grid item xs={12} sm={6} md={4} key={index}> */}
+                  <Stack
+                    direction="column"
+                    color="inherit"
+                    component={Card}
+                    spacing={1}
+                    useFlexGap
+                    sx={{
+                      p: 2,
+                      height: '100%',
+                      width: "90%",
+                      border: '3px solid',
+                      borderColor: '#4287f5',
+                      background: 'transparent',
+                      backgroundColor: 'grey.400',
+                      margin: "auto"
+                    }}
+                  >
+                    <Box sx={{ opacity: '100%' }}>
+                      <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`)} />
                     </Box>
-                  </div>
-                </Stack>
-              </Grid>
-            ))}
-          </Grid>
+                    <div>
+                      <Typography fontWeight="medium" gutterBottom className="text-xl">
+                        {event.eventName}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          whiteSpace: 'nowrap', // Apply whiteSpace property
+                          overflow: 'hidden', // Apply overflow property
+                          textOverflow: 'ellipsis', // Apply textOverflow property
+                        }}
+                      >
+                        {event.description}
+                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            mt: 2, // Adjust margin-top for spacing
+                            alignSelf: 'center', // Align button to the center
+                            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#2196f3'), // Adjust background color based on theme mode
+                            color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff'), // Adjust text color based on theme mode
+                            '&:hover': {
+                              bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#64b5f6' : '#1976d2'), // Adjust hover background color based on theme mode
+                            },
+                          }}
+                          endIcon={<AlarmIcon />}
+                          onClick={() => { isOpen(true) }}
+                        >
+                          Join Event
+                        </Button>
+                      </Box>
+                    </div>
+                  </Stack>
+                </SwiperSlide>
+              ))}
+              <div className="swiper-button-prev" style={{ color: 'blue',paddingRight:"20px" }}></div>
+              <div className="swiper-button-next" style={{ color: '#03fc2c',paddingLeft:"20px" }}></div>
+            </Swiper>
         )}
       </Container>
       {selectedImage && (
@@ -247,22 +290,22 @@ export default function Highlights() {
       )}
       {open && (
         <Dialog
-        open={open}
-        // TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle>{"Are you a CEC Student?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            If you are a CEC student, please proceed with event registration using your student account, or continue as a guest to register for the event.          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} className="hover:bg-red-200">No</Button>
-          <Button onClick={redirectLogin} className="hover:bg-green-200">Yes</Button>
-        </DialogActions>
-      </Dialog>
+          open={open}
+          // TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Are you a CEC Student?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              If you are a CEC student, please proceed with event registration using your student account, or continue as a guest to register for the event.          </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} className="hover:bg-red-200">No</Button>
+            <Button onClick={redirectLogin} className="hover:bg-green-200">Yes</Button>
+          </DialogActions>
+        </Dialog>
       )}
     </Box>
   );
