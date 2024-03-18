@@ -5,9 +5,61 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Carousel from 'react-material-ui-carousel'
+import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import "swiper/css";
 
 export default function Highlights() {
   const [events, setEvents] = React.useState([]);
+  const [isSmallScreen, setIsSmallScreen] = React.useState(false);
+
+  const sliderSettings = {
+    slidesPerView: 1,
+    spaceBetween: 100,
+    breakpoints: {
+      480: {
+        slidesPerView: 1,
+      },
+      600: {
+        slidesPerView: 2,
+      },
+      750: {
+        slidesPerView: 3,
+      },
+      1100: {
+        slidesPerView: 4,
+      },
+    },
+  };
+
+  const SlideNextButton = () => {
+    const swiper = useSwiper();
+    return (
+      <div className="flex justify-between">
+        <button onClick={() => swiper.slidePrev()} className=" bg-blue-200 rounded-lg hover:bg-blue-300 w-12 h-12">
+          <span className="text-blue-600">&lt;</span>
+        </button>
+        <button onClick={() => swiper.slideNext()} className=" bg-blue-200 rounded-lg hover:bg-blue-300 w-12 h-12">
+          <span className="text-blue-600">&gt;</span>
+        </button>
+      </div>
+    );
+  };
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsSmallScreen(true);
+      } else {
+        setIsSmallScreen(false);
+      }
+    };
+    handleResize(); // Call once to set initial value
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   React.useEffect(() => {
     const fetchAllEvents = async () => {
@@ -59,9 +111,9 @@ export default function Highlights() {
             precision in every detail.
           </Typography>
         </Box>
-        <Grid container spacing={2.5}>
-          {events.map((event, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+        {isSmallScreen ? (
+          <Carousel className="w-[90%]">
+            {events.map((event) => (
               <Stack
                 direction="column"
                 color="inherit"
@@ -70,30 +122,80 @@ export default function Highlights() {
                 useFlexGap
                 sx={{
                   p: 2,
-                  height: '100%',
-                  width:"90%",
+                  height: '10%',
+                  width: "90%",
                   border: '3px solid',
                   borderColor: '#4287f5',
                   background: 'transparent',
                   backgroundColor: 'grey.400',
-                  margin:"auto"
+                  margin: "auto"
                 }}
               >
                 <Box sx={{ opacity: '100%' }}>
-                  <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-auto rounded-lg" />
+                  <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" />
                 </Box>
                 <div>
                   <Typography fontWeight="medium" gutterBottom className="text-xl">
                     {event.eventName}
                   </Typography>
-                  <Typography variant="body2">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      whiteSpace: 'nowrap', // Apply whiteSpace property
+                      overflow: 'hidden', // Apply overflow property
+                      textOverflow: 'ellipsis', // Apply textOverflow property
+                    }}
+                  >
                     {event.description}
                   </Typography>
                 </div>
               </Stack>
-            </Grid>
-          ))}
-        </Grid>
+            ))}
+          </Carousel>
+        ) : (
+          <Grid container spacing={2.5}>
+            {events.map((event, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Stack
+                  direction="column"
+                  color="inherit"
+                  component={Card}
+                  spacing={1}
+                  useFlexGap
+                  sx={{
+                    p: 2,
+                    height: '100%',
+                    width: "90%",
+                    border: '3px solid',
+                    borderColor: '#4287f5',
+                    background: 'transparent',
+                    backgroundColor: 'grey.400',
+                    margin: "auto"
+                  }}
+                >
+                  <Box sx={{ opacity: '100%' }}>
+                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-auto rounded-lg" />
+                  </Box>
+                  <div>
+                    <Typography fontWeight="medium" gutterBottom className="text-xl">
+                      {event.eventName}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        whiteSpace: 'nowrap', // Apply whiteSpace property
+                        overflow: 'hidden', // Apply overflow property
+                        textOverflow: 'ellipsis', // Apply textOverflow property
+                      }}
+                    >
+                      {event.description}
+                    </Typography>
+                  </div>
+                </Stack>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Container>
     </Box>
   );

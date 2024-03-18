@@ -94,4 +94,28 @@ hire{
     @apply px-4 py-2 shadow;
 }
 
+/* This will affect the scrollbar globally */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Adjust scrollbar width */
+  height: 5px;
+  /* Adjust scrollbar height */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* Track color */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius:6px;
+  /* Handle color */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Color of the handle on hover */
+}
+
 

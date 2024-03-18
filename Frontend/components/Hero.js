@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { alpha } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
@@ -109,7 +106,7 @@ export default function Hero() {
             })}
           />
         ) : (
-          <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
+          <Carousel autoPlay infiniteLoop showThumbs={false} emulateTouch={true} preventMovementUntilSwipeScrollTolerance={true} showStatus={false}>
             {images.map((image, index) => (
               <div key={index}>
                 <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`} alt="image" />
