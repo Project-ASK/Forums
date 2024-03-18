@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import Typewriter from 'typewriter-effect'; // Import Typewriter
 
 export default function Hero() {
 
@@ -72,7 +73,13 @@ export default function Hero() {
                   theme.palette.mode === 'light' ? 'primary.main' : 'primary.light',
               }}
             >
-              Forums CEC
+              <Typewriter
+                options={{
+                  strings: ['Forums CEC'],
+                  autoStart: true,
+                  loop: true,
+                }}
+              />
             </Typography>
           </Typography>
           <Typography variant="body1" textAlign="center" color="text.secondary">
@@ -102,7 +109,7 @@ export default function Hero() {
             })}
           />
         ) : (
-            <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
+          <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
             {images.map((image, index) => (
               <div key={index}>
                 <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`} alt="image" />
