@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import { Menu, X } from 'react-feather';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import path from 'path'
 
 const Dashboard = ({ username }) => {
@@ -244,6 +245,12 @@ const Dashboard = ({ username }) => {
                   {event.collabForums.filter(forumName => forumName !== forum).length > 0 && (
                     <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
                   )}
+                </div>
+                <div className="w-1/4 flex justify-end items-center"> {/* Add some padding to the left of the delete icon */}
+                  <DeleteRoundedIcon className="cursor-pointer" onClick={(e) => {
+                    e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+                    // Add your delete event handler here
+                  }} />
                 </div>
               </div>
             ))
