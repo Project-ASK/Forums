@@ -85,39 +85,32 @@ const OfficeAdmins = ({ username }) => {
           </div>
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white">Logout</button>
         </div>
+       
+      
+        <div className="flex items-center justify-center mt-20">
+    <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-2 grid-rows-1 gap-5 p-1 max-w-screen-md">
+    <div className="flex flex-col items-center justify-center p-10 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
+      <img src="/assets/officeadmins/annualreport.jpeg" width={200} height={200} alt="annualreport" />
+      <p>Annual Report</p>
+    </div>
+    <div className="flex flex-col items-center justify-center p-10 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
+      <img src="/assets/officeadmins/eventreport.jpeg" onClick={() => {router.push("/officeadmins/reports")}} width={200} height={200} alt="eventReports" />
+      <p>Events Report</p>
+    </div>
+  </div>
+</div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0.5 p-2 h-screen mt-[2rem] w-[80%] mx-auto">
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
-            <img src="/assets/logo.png" width={200} alt="Forums" />
-            <p>Forums</p>
+
+  </div>
+      <footer className="text-gray-600 body-font absolute bottom-0 w-full">
+        <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+          <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+            <img src="/assets/authlogo.png" width={90} />
+            <span className="ml-3 text-xl">Forums CEC</span>
           </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
-            <img src="/assets/officeadmins/reporticon.png" onClick={() => {router.push("/officeadmins/reports")}} width={200} alt="Reports" />
-            <p>Reports</p>
-          </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
-            <img src="/assets/officeadmins/gallery.png" width={200} alt="Gallery" />
-            <p>Gallery</p>
-          </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
-            <img src="/assets/officeadmins/chat.png" width={200} alt="Connect Admins" />
-            <p>Connect Admins</p>
-          </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
-            <img src="/assets/officeadmins/pending-approval.png" width={200} alt="Pending Approvals" />
-            <p>Pending Approvals</p>
-          </div>
+          <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
         </div>
-      </div>
-      <footer className="text-gray-600 body-font">
-                <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-                    <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
-                        <img src="/assets/authlogo.png" width={90} />
-                        <span className="ml-3 text-xl">Forums CEC</span>
-                    </div>
-                    <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
-                </div>
-            </footer>
+      </footer>
     </>
   );
 
