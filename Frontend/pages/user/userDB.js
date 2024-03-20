@@ -5,8 +5,11 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Carousel from 'react-material-ui-carousel'
 import { Grid } from '@mui/material';
-import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation,Autoplay } from 'swiper/modules';
 import "swiper/css";
+import 'swiper/css/navigation';
+import 'swiper/css/autoplay';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -71,20 +74,25 @@ const Dashboard = ({ username }) => {
     }, []);
 
     const sliderSettings = {
-        slidesPerView: 1,
+        slidesPerView: 4,
+        slidesPerGroup: 4, // Add this line
         spaceBetween: 100,
         breakpoints: {
             480: {
                 slidesPerView: 1,
+                slidesPerGroup: 1, // Add this line
             },
             600: {
                 slidesPerView: 2,
+                slidesPerGroup: 2, // Add this line
             },
             750: {
                 slidesPerView: 3,
+                slidesPerGroup: 3, // Add this line
             },
             1100: {
                 slidesPerView: 4,
+                slidesPerGroup: 4, // Add this line
             },
         },
     };
@@ -612,8 +620,16 @@ const Dashboard = ({ username }) => {
                         }
                     </Carousel>
                 ) : (
-                    <Swiper {...sliderSettings} className="w-[97%] mx-auto">
-                        <SlideNextButton />
+                    <>
+                    <Swiper {...sliderSettings} className="w-[90%] mx-auto"
+                            modules={[Navigation, Autoplay]}
+                            navigation={{
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            }}
+                            autoplay={{ delay: 2000 }}
+                            disableOnInteraction={true}
+                    >
                         {events.map((event, index) => (
                             <SwiperSlide key={index}>
                                 <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 h-[90%] overflow-auto mt-[20px]">
@@ -661,7 +677,10 @@ const Dashboard = ({ username }) => {
                                 </div>
                             </SwiperSlide>
                         ))}
+                        <div className="swiper-button-prev" style={{ color: 'blue',paddingRight:"20px" }}></div>
+                        <div className="swiper-button-next" style={{ color: 'blue',paddingLeft:"20px" }}></div>
                     </Swiper>
+                    </>
                 )}
             </div>
             {joinEventModal &&
@@ -741,7 +760,7 @@ const Dashboard = ({ username }) => {
                             ))}
                         </Carousel>
                     ) : (
-                        <Grid container spacing={5} rowSpacing={3} className="mt-[2rem] mx-auto flex flex-wrap">
+                        <Grid container rowSpacing={3} className="mt-[2rem] mx-auto flex flex-wrap">
                             {forums.map((forum, index) => (
                                 <Grid item xs={12} sm={6} md={4} key={index} className=''>
                                     <div key={index} className="mx-auto flex-col border items-center border-gray-800 rounded-2xl bg-white w-[80%] flex justify-center">

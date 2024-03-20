@@ -36,7 +36,7 @@ function AppAppBar({ mode, toggleColorMode }) {
   };
 
   return (
-    <div>
+    <div id="appbar">
       <AppBar
         position="fixed"
         sx={{
@@ -78,7 +78,7 @@ function AppAppBar({ mode, toggleColorMode }) {
                 px: 0,
               }}
             >
-              <Typography className="text-xl font-bold text-blue-600 ml-[1rem] mr-[1rem] cursor-pointer" onClick={() => { scrollTo(0, 0) }}>
+              <Typography className="text-xl font-bold text-blue-600 ml-[1rem] mr-[1rem] cursor-pointer" onClick={() => { scrollToSection('appbar') }}>
                 forums
               </Typography>
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -170,7 +170,7 @@ function AppAppBar({ mode, toggleColorMode }) {
                       flexGrow: 1,
                     }}
                   >
-                  <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+                    <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
                   <MenuItem onClick={() => scrollToSection('logoCollection')}>
                     Our Forums
