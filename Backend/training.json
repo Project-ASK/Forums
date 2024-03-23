@@ -1,0 +1,87 @@
+{
+  "user": [
+    {
+      "_id": {
+        "$oid": "65d58f60c0e922d682304185"
+      },
+      "name": "Karthik Vijay",
+      "username": "karthik1801",
+      "about": "MERN Stack Developer,React Native App Developer,Networking Enthusiast",
+      "topics": [
+        "Cybersecurity",
+        "Web Development",
+        "App Development"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "65d8b04badeb19c8aaccb2c3"
+      },
+      "name": "R Ashwin",
+      "username": "ashwinr7603",
+      "topics": []
+    },
+    {
+      "_id": {
+        "$oid": "65da148897364afe19d9e83f"
+      },
+      "name": "Sanjay Mathew",
+      "username": "m3bionix",
+      "about": "HI I AM SANJAY MATHEW....",
+      "topics": [
+        "Personality"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "_id": {
+        "$oid": "65dc7b49b9a905f7593beba5"
+      },
+      "eventName": "Fly with Flutter",
+      "eventDate": "2024-03-28",
+      "tags": []
+    },
+    {
+      "_id": {
+        "$oid": "65e1c21379f05ca14dd41bab"
+      },
+      "eventName": "Aptitest",
+      "eventDate": "2024-03-17",
+      "tags": [
+        "Aptitude"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "65e33f1d89a19e70dcd2c42a"
+      },
+      "eventName": "YIP Marathon",
+      "eventDate": "2024-03-30",
+      "tags": [
+        "Personality",
+        "AI"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "65f2bc02e11a7a9a99a47041"
+      },
+      "eventName": "CodeVerse",
+      "eventDate": "2024-04-04",
+      "tags": [
+        "Web Development"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "65f31aea26229aba0b1170f9"
+      },
+      "eventName": "PiCraft",
+      "eventDate": "2024-04-12",
+      "tags": [
+        "Cybersecurity"
+      ]
+    }
+  ]
+}

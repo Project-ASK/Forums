@@ -11,6 +11,8 @@ const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
 const htmlToPdf = require('html-pdf');
+const { exec } = require('child_process');
+const cron = require('node-cron');
 
 const SECRET_KEY = 'super-secret-key';
 
@@ -19,6 +21,7 @@ app.use(bodyParser.json())
 // app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
+app.use('/eventjson', express.static(path.join(__dirname, 'eventjson')));
 app.use('/events', express.static(path.join(__dirname, 'events')));
 dotenv.config();
 
@@ -94,13 +97,13 @@ const adminSchema = new mongoose.Schema({
 const Admin = mongoose.model('Admin', adminSchema);
 
 const officeAdminSchema = new mongoose.Schema({
-    name:String,
-    email:String,
+    name: String,
+    email: String,
     username: String,
     password: String,
 })
 
-const OfficeAdmin = mongoose.model('Office',officeAdminSchema);
+const OfficeAdmin = mongoose.model('Office', officeAdminSchema);
 
 const router = express.Router();
 app.use('/', router);
@@ -182,6 +185,16 @@ router.route('/resetPassword')
 
 router.get('/images', (req, res) => {
     const directoryPath = path.join(__dirname, 'uploads/guest');
+    fs.readdir(directoryPath, function (err, files) {
+        if (err) {
+            return res.status(500).send({ message: 'Unable to scan directory: ' + err });
+        }
+        res.send(files);
+    });
+});
+
+router.get('/eventJson', (req, res) => {
+    const directoryPath = path.join(__dirname, 'eventjson');
     fs.readdir(directoryPath, function (err, files) {
         if (err) {
             return res.status(500).send({ message: 'Unable to scan directory: ' + err });
@@ -587,9 +600,9 @@ router.route('/updateAttendanceStatus')
     });
 
 router.route('/office/login')
-    .post(async (req,res) => {
-        const {username,password} = req.body;
-        const office = await OfficeAdmin.findOne({username});
+    .post(async (req, res) => {
+        const { username, password } = req.body;
+        const office = await OfficeAdmin.findOne({ username });
         if (!office) {
             return res.status(401).send({ message: 'Incorrect Credentials' });
         }
@@ -618,6 +631,98 @@ router.route('/getAllEvents')
         const events = await Event.find({});
         res.status(200).send({ events });
     });
+
+router.route('/recommendation')
+    .post(async (req, res) => {
+        const { username } = req.body;
+        const user = await User.find({});
+        const formattedUsers = user.map(user => ({
+            _id: { $oid: user._id.toString() },
+            name: user.name,
+            username: user.username,
+            about: user.about,
+            topics: user.topics
+        }));
+
+        const events = await Event.find({});
+        const formattedEvents = events.map(event => ({
+            _id: { $oid: event._id.toString() },
+            eventName: event.eventName,
+            eventDate: event.date,
+            tags: event.tags
+        }));
+
+        // Create an object for the output
+        const output = {
+            user: formattedUsers,
+            events: formattedEvents
+        };
+
+        // Convert it to a JSON string
+        const jsonOutput = JSON.stringify(output, null, 2);
+
+        // Write it to a file in your directory
+        try {
+            await fs.promises.writeFile('training.json', jsonOutput);
+            // await fs.promises.writeFile(`eventjson/${username}_events.json`, '[]');
+            exec(`python model.py ${username}`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+            });
+            res.status(200).send({ message: 'Successfully written to file and Python script executed' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).send({ message: 'Error writing to file' });
+        }
+    });
+
+cron.schedule('0 0 */2 * *', async () => { // Make this function async
+    try {
+        // This function will run every 2 days
+        const user = await User.find({});
+        const formattedUsers = user.map(user => ({
+            _id: { $oid: user._id.toString() },
+            name: user.name,
+            username: user.username,
+            about: user.about,
+            topics: user.topics
+        }));
+
+        const events = await Event.find({});
+        const formattedEvents = events.map(event => ({
+            _id: { $oid: event._id.toString() },
+            eventName: event.eventName,
+            eventDate: event.date,
+            tags: event.tags
+        }));
+
+        // Create an object for the output
+        const output = {
+            user: formattedUsers,
+            events: formattedEvents
+        };
+
+        // Convert it to a JSON string
+        const jsonOutput = JSON.stringify(output, null, 2);
+
+        // Convert the data to JSON and write it to training.json
+        await fs.promises.writeFile('training.json', jsonOutput);
+        exec(`python train.py`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+        });
+        res.status(200).send({ message: 'Successfully updated training set and updated recommendation model' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: 'Error writing to file' });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
 import Cookies from 'js-cookie';
@@ -26,6 +30,8 @@ const LoginPage = () => {
     const [isMobileView, setIsMobileView] = useState(false);
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -73,8 +79,6 @@ const LoginPage = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        console.log(username);
-        console.log(password);
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
             method: 'POST',
             headers: {
@@ -106,11 +110,25 @@ const LoginPage = () => {
             setModalIsOpen(false);
             Cookies.set('username', username);
             Cookies.set('token', data.token);
+            setIsLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/recommendation`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username }),
+            });
+            const res = await response.json();
+            if (res.message === 'Successfully written to file and Python script executed') {
+                setIsLoading(false); // Stop loading
+            }
             router.replace('/user/userDB');
         } else {
             alert('Incorrect OTP. Please try again.');
         }
         setOtp(Array(6).fill(null)); // Clear the OTP input box
+        setIsLoading(false);
     }
 
     const handleModalClose = () => {
@@ -131,77 +149,87 @@ const LoginPage = () => {
 
     return (
         <>
+            {isLoading && (
+                <Dialog open={isLoading}>
+                    <DialogTitle>Loading dashboard...</DialogTitle>
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        p={3}
+                    >
+                        <CircularProgress />
+                    </Box>
+                </Dialog>
+            )}
             {!isMobileView ? (
-                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
-                <div className="max-w-full bg-white p-8 rounded-3xl border-2 border-slate-500 shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
-                    <div className='flex justify-center'>
-                        <img src="/assets/authlogo.png" width={160} />
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                        {/* Login Form */}
-                        <form className="mt-[3rem]" style={{width: '70%'}}>
-                            <div className="mb-4">
-                                <TextField
-                                    label="Username"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-[70%]"
-                                    value={username} 
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <FormControl className="w-[100%]" size="small" variant="outlined" required>
-                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                                    <OutlinedInput
-                                        id="outlined-adornment-password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        className="w-[70%]"
+                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "hard-light" }}>
+                    <div className="max-w-full bg-white p-8 rounded-3xl border-2 border-slate-500 shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
+                        <div className='flex justify-center'>
+                            <img src="/assets/authlogo.png" width={160} />
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                            {/* Login Form */}
+                            <form className="mt-[3rem]" style={{ width: '70%' }}>
+                                <div className="mb-4">
+                                    <TextField
+                                        label="Username"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
                                         size="small"
-                                        value={password} 
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
-                                                >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                        }
-                                        label="Password"
+                                        className="w-[70%]"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
                                     />
-                                </FormControl>
-                                <div className='flex justify-left mt-[1rem] mb-[2rem] xs:flex-row'>
-                                    <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 mr-[2rem] cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
-                                    <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
                                 </div>
+                                <div>
+                                    <FormControl className="w-[100%]" size="small" variant="outlined" required>
+                                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                        <OutlinedInput
+                                            id="outlined-adornment-password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            className="w-[70%]"
+                                            size="small"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                            label="Password"
+                                        />
+                                    </FormControl>
+                                    <div className='flex justify-left mt-[1rem] mb-[2rem] xs:flex-row'>
+                                        <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 mr-[2rem] cursor-pointer" onClick={handleAdminLogin}>Login as Admin</span>
+                                        <span className="text-md font-medium text-blue-500 hover:text-blue-600 hover:underline block text-right mt-4 cursor-pointer" onClick={dev}>Forgot Password?</span>
+                                    </div>
+                                </div>
+                                <div className='flex justify-left'>
+                                    <button type="submit" className="w-[40%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
+                                        Sign In
+                                    </button>
+                                    <button type="submit" className="w-[40%] bg-gray-200 text-blue-800 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 ml-[2rem]" onClick={handleSignUp}>
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div style={{ width: '50%' }} className="flex items-center">
+                                <img src="/assets/sign.svg" width={250} className="self-start relative" />
                             </div>
-                            <div className='flex justify-left'>
-                                <button type="submit" className="w-[40%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
-                                    Sign In
-                                </button>
-                                <button type="submit" className="w-[40%] bg-gray-200 text-blue-800 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 ml-[2rem]" onClick={handleSignUp}>
-                                    Sign Up
-                                </button>
-                            </div>
-                        </form>
-            
-                        <div style={{width: '50%'}} className="flex items-center">
-                            <img src="/assets/sign.svg" width={250} className="self-start relative" />
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            
-            
             ) : (
                 <div className="flex flex-col h-screen bg-gray-200 border-2 border-slate-500" style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center" }}>
                     <div className="flex-grow flex items-center justify-center">
@@ -212,15 +240,15 @@ const LoginPage = () => {
                             <form>
                                 <div className="mb-4">
                                     <TextField
-                                    label="Username"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-full"
-                                    value={username} 
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
+                                        label="Username"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
+                                        size="small"
+                                        className="w-full"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
                                     {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
                                     <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required /> */}
                                 </div>
@@ -232,19 +260,19 @@ const LoginPage = () => {
                                             id="outlined-adornment-password"
                                             type={showPassword ? 'text' : 'password'}
                                             size="small"
-                                            value={password} 
+                                            value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
                                                     >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
                                             }
                                             label="Password"
                                         />
