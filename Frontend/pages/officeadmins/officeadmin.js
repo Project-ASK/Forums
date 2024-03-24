@@ -91,11 +91,11 @@ const OfficeAdmins = ({ username }) => {
             <img src="/assets/logo.png" width={200} alt="Forums" />
             <p>Forums</p>
           </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
-            <img src="/assets/officeadmins/reporticon.png" onClick={() => {router.push("/officeadmins/reports")}} width={200} alt="Reports" />
+          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { router.push("/officeadmins/reports") }}>
+            <img src="/assets/officeadmins/reporticon.png" width={200} alt="Reports" />
             <p>Reports</p>
           </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
+          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { router.push("/officeadmins/events") }}>
             <img src="/assets/officeadmins/gallery.png" width={200} alt="Gallery" />
             <p>Gallery</p>
           </div>
@@ -110,14 +110,14 @@ const OfficeAdmins = ({ username }) => {
         </div>
       </div>
       <footer className="text-gray-600 body-font">
-                <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-                    <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
-                        <img src="/assets/authlogo.png" width={90} />
-                        <span className="ml-3 text-xl">Forums CEC</span>
-                    </div>
-                    <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
-                </div>
-            </footer>
+        <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+          <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+            <img src="/assets/authlogo.png" width={90} />
+            <span className="ml-3 text-xl">Forums CEC</span>
+          </div>
+          <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
+        </div>
+      </footer>
     </>
   );
 

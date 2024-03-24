@@ -749,6 +749,17 @@ cron.schedule('0 0 */2 * *', async () => { // Make this function async
     }
 });
 
+router.route('/officeadmin/getAllEvents')
+    .post(async (req, res) => {
+        try {
+            const events = await Event.find({});
+            res.status(200).send({ events });
+        } catch (error) {
+            res.status(500).send({ message: 'Error fetching events' });
+        }
+    });
+
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
