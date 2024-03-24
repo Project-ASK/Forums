@@ -11,7 +11,8 @@ const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
 const htmlToPdf = require('html-pdf');
-const { exec } = require('child_process');
+const os = require('os');
+const exec = require('child_process').exec;
 const cron = require('node-cron');
 
 const SECRET_KEY = 'super-secret-key';
@@ -635,6 +636,18 @@ router.route('/getAllEvents')
 router.route('/recommendation')
     .post(async (req, res) => {
         const { username } = req.body;
+        //Used to run python script based on os platform (Different OS has command differences)
+        let command;
+        if (os.platform() === 'win32') {
+            // Windows
+            command = `python model.py ${username}`;
+        } else if (os.platform() === 'linux') {
+            // Linux
+            command = `python3 model.py ${username}`;
+        } else {
+            // Other platforms (darwin, openbsd, etc.)
+            command = `python model.py ${username}`;
+        }
         const user = await User.find({});
         const formattedUsers = user.map(user => ({
             _id: { $oid: user._id.toString() },
@@ -665,7 +678,7 @@ router.route('/recommendation')
         try {
             await fs.promises.writeFile('training.json', jsonOutput);
             // await fs.promises.writeFile(`eventjson/${username}_events.json`, '[]');
-            exec(`python model.py ${username}`, (error, stdout, stderr) => {
+            exec(command, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return;
@@ -684,6 +697,18 @@ cron.schedule('0 0 */2 * *', async () => { // Make this function async
     try {
         // This function will run every 2 days
         const user = await User.find({});
+        //Used to run python script based on os platform (Different OS has command differences)
+        let scheduler;
+        if (os.platform() === 'win32') {
+            // Windows
+            command = 'python train.py';
+        } else if (os.platform() === 'linux') {
+            // Linux
+            command = 'python3 train.py';
+        } else {
+            // Other platforms (darwin, openbsd, etc.)
+            command = 'python train.py';
+        }
         const formattedUsers = user.map(user => ({
             _id: { $oid: user._id.toString() },
             name: user.name,
@@ -711,7 +736,7 @@ cron.schedule('0 0 */2 * *', async () => { // Make this function async
 
         // Convert the data to JSON and write it to training.json
         await fs.promises.writeFile('training.json', jsonOutput);
-        exec(`python train.py`, (error, stdout, stderr) => {
+        exec(scheduler, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 return;

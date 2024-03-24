@@ -44,6 +44,7 @@ function AppAppBar({ mode, toggleColorMode }) {
           bgcolor: 'transparent',
           backgroundImage: 'none',
           mt: 2,
+          zIndex: 0
         }}
       >
         <Container maxWidth="lg">
