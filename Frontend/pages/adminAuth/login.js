@@ -11,6 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
     const [data, setData] = useState(null);
@@ -83,11 +85,11 @@ const LoginPage = () => {
             setRealOtp(otp.toString());
             const email = data.email;
 
-        // For developers: Uncomment the following to get the OTP as the alert box 
+            // For developers: Uncomment the following to get the OTP as the alert box 
             // setModalIsOpen(true)
-             // alert(otp)
-             
-        // For developers: Comment the following 
+            // alert(otp)
+
+            // For developers: Comment the following 
             emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
                 .then((response) => {
                     console.log('SUCCESS!', response.status, response.text);
@@ -97,9 +99,19 @@ const LoginPage = () => {
                 });
 
             // Till here
-           
+
         } else {
-            alert(data.message);
+            toast.error(data.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     }
 
@@ -112,7 +124,17 @@ const LoginPage = () => {
             Cookies.set('forum', forum);
             router.replace('/admins/admindb');
         } else {
-            alert('Incorrect OTP. Please try again.');
+            toast.error('Incorrect OTP. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
         setOtp(Array(6).fill(null)); // Clear the OTP input box
     }
@@ -129,8 +151,9 @@ const LoginPage = () => {
 
     return (
         <>
+            <ToastContainer />
             {!isMobileView ? (
-                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "hard-light" }}>
                     <div className="max-w-full bg-white p-8 border-2 border-slate-400 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                         <div className='flex justify-center'>
                             <img src="/assets/authlogo.png" width={160} />
@@ -147,7 +170,7 @@ const LoginPage = () => {
                                     defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-4"
-                                    value={username} 
+                                    value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
                                 {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
@@ -161,19 +184,19 @@ const LoginPage = () => {
                                         type={showPassword ? 'text' : 'password'}
                                         className="w-[50%]"
                                         size="small"
-                                        value={password} 
+                                        value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
                                                 >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
                                         }
                                         label="Password"
                                     />
@@ -189,7 +212,7 @@ const LoginPage = () => {
                                     defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-4"
-                                    value={forum} 
+                                    value={forum}
                                     onChange={(e) => setForum(e.target.value)}
                                 />
                                 {/* <label htmlFor="forum" className="block text-gray-600 text-sm mb-2">Forum Name</label>
@@ -207,8 +230,8 @@ const LoginPage = () => {
                     </div>
                 </div>
             ) : (
-    
-                <div className="flex flex-col h-screen " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+
+                <div className="flex flex-col h-screen " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "hard-light" }}>
                     <div className="flex-grow flex items-center justify-center">
                         <div className="max-w-full bg-white p-8 rounded-3xl shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                             <div className='flex justify-center'>
@@ -220,15 +243,15 @@ const LoginPage = () => {
                             <form>
                                 <div className="mb-4">
                                     <TextField
-                                    label="Username"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-full"
-                                    value={username} 
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
+                                        label="Username"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
+                                        size="small"
+                                        className="w-full"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
                                     {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
                                     <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required /> */}
                                 </div>
@@ -240,19 +263,19 @@ const LoginPage = () => {
                                             id="outlined-adornment-password"
                                             type={showPassword ? 'text' : 'password'}
                                             size="small"
-                                            value={password} 
+                                            value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
                                                     >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
                                             }
                                             label="Password"
                                         />
@@ -262,15 +285,15 @@ const LoginPage = () => {
                                 </div>
                                 <div className="mb-4">
                                     <TextField
-                                    label="Forum Name"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-full mb-4"
-                                    value={forum} 
-                                    onChange={(e) => setForum(e.target.value)}
-                                />
+                                        label="Forum Name"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
+                                        size="small"
+                                        className="w-full mb-4"
+                                        value={forum}
+                                        onChange={(e) => setForum(e.target.value)}
+                                    />
                                     {/* <label htmlFor="forum" className="block text-gray-600 text-sm mb-2">Forum Name</label>
                                         <input type="text" id="forum" name="forum" placeholder="Enter the Forum" className="w-full p-2 border border-gray-300 rounded-xl" value={forum} onChange={(e) => setForum(e.target.value)} required /> */}
                                 </div>

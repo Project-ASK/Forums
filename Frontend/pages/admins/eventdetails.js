@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import path from 'path'
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = ({ username }) => {
   const router = useRouter();
@@ -61,7 +63,7 @@ const Dashboard = ({ username }) => {
         }));
       }
     };
-    
+
     fetchUsers();
   }, [eventDetails]);
 
@@ -80,16 +82,26 @@ const Dashboard = ({ username }) => {
     // If the user was updated successfully, add the new member to the members array
     if (data.success) {
       const newMembers = members.map((m, i) => {
-      // For the member whose attendance status has changed, return a new object
-      if (i === index) {
-        return { ...m, isAttended: attended };
-      }
-      // For all other members, return the original object
-      return m;
-    });
-    setMembers(newMembers);
+        // For the member whose attendance status has changed, return a new object
+        if (i === index) {
+          return { ...m, isAttended: attended };
+        }
+        // For all other members, return the original object
+        return m;
+      });
+      setMembers(newMembers);
     } else {
-      alert('User does not exist');
+      toast.error('User does not exist', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
 
     // Clear the input fields
@@ -128,7 +140,17 @@ const Dashboard = ({ username }) => {
         if (data.success) {
           setMembers(prevMembers => [...prevMembers, member]);
         } else {
-          alert(`User ${member.name} does not exist`);
+          toast.error(`User ${member.name} does not exist`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
         }
       }
     };
@@ -157,7 +179,17 @@ const Dashboard = ({ username }) => {
       newMembers.splice(index, 1);
       setMembers(newMembers);
     } else {
-      alert('Failed to remove user');
+      toast.error('Failed to remove user', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -206,8 +238,29 @@ const Dashboard = ({ username }) => {
       const newMembers = [...members];
       newMembers[index].isAttended = attended;
       setMembers(newMembers);
+      toast.success('Attendance updated successfully', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     } else {
-      alert('Failed to update attendance status');
+      toast.error('Failed to update attendance status', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -218,6 +271,7 @@ const Dashboard = ({ username }) => {
 
   return (
     <>
+      <ToastContainer />
       <div className="App">
         <div className="flex bg-white w-full justify-between items-center">
           <img src="/assets/logo.png" width={200} onClick={handleback} className='cursor-pointer' />

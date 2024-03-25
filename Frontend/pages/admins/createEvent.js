@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import Cookies from 'js-cookie';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateEvent = () => {
     const [eventName, setEventName] = useState('');
@@ -91,7 +93,17 @@ const CreateEvent = () => {
                 body: formData,
             });
             if (response.status === 200) {
-                alert('Event created successfully');
+                toast.success('Event created successfully', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
                 router.back();
             }
         } catch (error) {
@@ -101,6 +113,7 @@ const CreateEvent = () => {
 
     return (
         <>
+            <ToastContainer/>
             <div className="App">
                 <div className="flex bg-white w-full justify-between items-center">
                     <img src="/assets/logo.png" width={200} onClick={handleHome} />

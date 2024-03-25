@@ -4,6 +4,8 @@ import Modal from 'react-modal';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Carousel from 'react-material-ui-carousel'
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Grid } from '@mui/material';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from 'swiper/modules';
@@ -188,7 +190,17 @@ const Dashboard = ({ username }) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Successfully joined the event');
+                    toast.success('Successfully joined the event', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                     setCalEvents([...calevents, {
                         event_date: selectedEvent.date,
                         event_title: selectedEvent.eventName,
@@ -213,7 +225,17 @@ const Dashboard = ({ username }) => {
                         .then(response => response.json())
                         .then(data => { });
                 } else {
-                    alert('Failed to join the event');
+                    toast.error('Failed to join the event', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                 }
             });
         setJoinEventModal(false);
@@ -273,14 +295,34 @@ const Dashboard = ({ username }) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Event added successfully');
+                    toast.success('Event added successfully', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                     setCalEvents([...calevents, {
                         event_date: event_date,
                         event_title: event_title,
                         event_theme: event_theme
                     }]);
                 } else {
-                    alert('Failed to add event');
+                    toast.error('Failed to add event', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                 }
             });
 
@@ -311,6 +353,17 @@ const Dashboard = ({ username }) => {
             // Call fetchEvents here after forums data is set
             fetchEvents(data.forums);
             setCalEvents(data.customEvents);
+            toast(`Welcome ${data.name}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         };
 
         const fetchEvents = async (forums) => {
@@ -377,10 +430,30 @@ const Dashboard = ({ username }) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Success');
+                    toast.success('Success', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                     handleModalClose();
                 } else {
-                    alert('Failed');
+                    toast.error('Failed', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                 }
             });
     }
@@ -398,10 +471,30 @@ const Dashboard = ({ username }) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Event deleted successfully');
+                    toast.success('Event deleted successfully', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                     setCalEvents(calevents.filter(e => !(e.event_date === event.event_date && e.event_title === event.event_title)));
                 } else {
-                    alert('Failed to delete event');
+                    toast.error('Failed to delete event', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                 }
             });
     }
@@ -501,6 +594,7 @@ const Dashboard = ({ username }) => {
 
     return (
         <>
+            <ToastContainer />
             <div className="flex bg-white w-full shadow-lg justify-between items-center rounded-lg">
                 <img src="/assets/logo.png" width={160} />
                 <div className="relative flex items-center">
@@ -540,21 +634,21 @@ const Dashboard = ({ username }) => {
                 <h2 className="font-product-sans text-xl">{greeting},<span className="font-product-sans font-bold text-xl"> {name}</span></h2>
             </div>
             <div className="flex justify-center mt-[4rem] flex-wrap">
-                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0">
+                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0 border-4 border-l-green-400">
                     <img src="/assets/events.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Events Joined</h2>
                         <p className="font-product-sans text-xl">{joinedEvents.length}</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0">
+                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0 border-4 border-l-red-400">
                     <img src="/assets/attendance.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Events Participated</h2>
                         <p className="font-product-sans text-xl">{attendedEventsCount}</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2">
+                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 border-4 border-l-blue-400">
                     <img src="/assets/forumCount.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Active Forums</h2>

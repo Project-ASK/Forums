@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Select from 'react-select';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function forms() {
     const router = useRouter();
@@ -54,7 +56,17 @@ export default function forms() {
         const data = await response.json();
         setIsLoading(false);
         if (data.message === 'User Updated') {
-            alert('User Profile Updated');
+            toast.success('User Profile Updated', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             //Clear all the values after update
             setReg('');
             setPhone('');
@@ -65,7 +77,17 @@ export default function forms() {
             setName('');
             router.back();
         } else {
-            alert(data.message);
+            toast.error(data.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     }
 
@@ -75,6 +97,7 @@ export default function forms() {
 
     return (
         <>
+            <ToastContainer/>
             <div className="flex bg-white w-full justify-between shadow-md">
                 <img src="/assets/logo.png" width={160} onClick={handleHome} className="cursor-pointer" />
             </div>

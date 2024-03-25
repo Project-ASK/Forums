@@ -11,6 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ForgotPassword = () => {
     const router = useRouter();
@@ -55,7 +57,17 @@ const ForgotPassword = () => {
         e.preventDefault();
         // const email = document.getElementById('email').value;
         if (!email.endsWith('@ceconline.edu')) {
-            alert('Please use an email with domain @ceconline.edu');
+            toast.warning('Please use an email with domain @ceconline.edu', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
         const otp = Math.floor(100000 + Math.random() * 900000);
@@ -75,7 +87,17 @@ const ForgotPassword = () => {
             setIsVerified(true);
             setModalIsOpen(false);
         } else {
-            alert('Incorrect OTP. Please try again.');
+            toast.error('Incorrect OTP. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
         setOtp(Array(6).fill(null)); // Clear the OTP input box
     }
@@ -90,11 +112,31 @@ const ForgotPassword = () => {
         const password = newPassword;
         var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
         if (!password.match(passw)) {
-            alert('Password is invalid');
+            toast.error('Password is invalid', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
         if (newPassword !== confirmPassword) {
-            alert('Passwords do not match. Please try again.');
+            toast.warning('Passwords do not match. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/resetPassword`, {
@@ -106,13 +148,24 @@ const ForgotPassword = () => {
         if (data.message === 'Password updated successfully') {
             router.replace('/auth/login');
         } else {
-            alert('Error updating password. Please try again.');
+            toast.error('Error updating password. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     }
 
     return (
         <>
-            <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+            <ToastContainer />
+            <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "hard-light" }}>
                 <div className="max-w-md border-2 border-slate-400 bg-white p-8 rounded-2xl shadow-md mx-auto sm:w-full sm:max-w-md lg:w-1/4 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                     <div className='flex justify-center'>
                         <img src="/assets/authlogo.png" width={130} />
@@ -128,7 +181,7 @@ const ForgotPassword = () => {
                                     defaultValue=""
                                     size="small"
                                     className="w-full"
-                                    value={email} 
+                                    value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                                 {/* <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Enter the Email</label>
@@ -151,19 +204,19 @@ const ForgotPassword = () => {
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
                                         size="small"
-                                        value={newPassword} 
+                                        value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
                                         endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
                                                 >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
                                         }
                                         label="New Password"
                                     />
@@ -178,19 +231,19 @@ const ForgotPassword = () => {
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
                                         size="small"
-                                        value={confirmPassword} 
+                                        value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
                                                 >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
                                         }
                                         label="Confirm Password"
                                     />

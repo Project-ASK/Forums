@@ -4,6 +4,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
 import emailjs from '@emailjs/browser';
 import Cookies from 'js-cookie';
@@ -100,7 +102,17 @@ const LoginPage = () => {
                     console.log('FAILED...', err);
                 });
         } else {
-            alert(data.message);
+            toast.error(data.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     }
 
@@ -125,7 +137,17 @@ const LoginPage = () => {
             }
             router.replace('/user/userDB');
         } else {
-            alert('Incorrect OTP. Please try again.');
+            toast.error('Incorrect OTP. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
         setOtp(Array(6).fill(null)); // Clear the OTP input box
         setIsLoading(false);
@@ -149,6 +171,7 @@ const LoginPage = () => {
 
     return (
         <>
+            <ToastContainer />
             {isLoading && (
                 <Dialog open={isLoading}>
                     <DialogTitle>Loading dashboard...</DialogTitle>

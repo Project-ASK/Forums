@@ -12,6 +12,8 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const SignUpPage = () => {
@@ -73,13 +75,33 @@ const SignUpPage = () => {
         e.preventDefault();
         // const email = document.getElementById('email').value;
         if (!email.endsWith('@ceconline.edu')) {
-            alert('Please use an email with domain @ceconline.edu');
+            toast.warning('Please use an email with domain @ceconline.edu', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
         // const password = document.getElementById('password').value;
         var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
         if (!password.match(passw)) {
-            alert('Password is invalid');
+            toast.error('Password is invalid', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/checkUser`, {
@@ -91,7 +113,17 @@ const SignUpPage = () => {
         });
         const data = await response.json();
         if (data.message === 'A user already exists') {
-            alert('A user with this email or username already exists');
+            toast.warning('User with this credentials already exists', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
         const otp = Math.floor(100000 + Math.random() * 900000);
@@ -119,14 +151,44 @@ const SignUpPage = () => {
             });
             const data = await response.json();
             if (data.message === 'Sign Up Successful') {
-                alert('Sign Up Successful');
+                toast.success('Sign Up Successful', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
                 setModalIsOpen(false);
             }
             else {
-                alert(data.message);
+                toast.error(data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
             }
         } else {
-            alert('Incorrect OTP. Please try again.');
+            toast.error('Incorrect OTP. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             setOtp(Array(6).fill(null));
         }
     }
@@ -143,8 +205,9 @@ const SignUpPage = () => {
 
     return (
         <>
+            <ToastContainer />
             {!isMobileView ? (
-                 <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+                <div className="flex h-screen items-center justify-center bg-gray-200 " style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "hard-light" }}>
                     <div className="max-w-full bg-white p-8 rounded-3xl  border-2 border-slate-500  shadow-md mx-auto sm:w-full lg:w-1/2 bg-opacity-70 backdrop-filter backdrop-blur-lg">
                         <div className='flex justify-center'>
                             <img src="/assets/authlogo.png" width={160} />
@@ -160,7 +223,7 @@ const SignUpPage = () => {
                                     defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-1"
-                                    value={name} 
+                                    value={name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                                 {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Name</label>
@@ -174,7 +237,7 @@ const SignUpPage = () => {
                                     defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-1"
-                                    value={email} 
+                                    value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                                 {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Email</label>
@@ -188,7 +251,7 @@ const SignUpPage = () => {
                                     defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-1"
-                                    value={name} 
+                                    value={name}
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
                                 {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Username</label>
@@ -202,19 +265,19 @@ const SignUpPage = () => {
                                         type={showPassword ? 'text' : 'password'}
                                         className="w-[50%]"
                                         size="small"
-                                        value={password} 
+                                        value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
                                                 >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
                                         }
                                         label="Password"
                                     />
@@ -231,7 +294,7 @@ const SignUpPage = () => {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col h-screen bg-gray-200"  style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode : "hard-light"}}>
+                <div className="flex flex-col h-screen bg-gray-200" style={{ backgroundImage: 'url("/assets/bguest.jpg")', backgroundSize: "cover", backgroundPosition: "center", backgroundBlendMode: "hard-light" }}>
                     <div className="bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-3 rounded-2xl shadow-md">
                         <img src="/assets/logo.png" width={110} className="mx-auto" />
                     </div>
@@ -244,71 +307,71 @@ const SignUpPage = () => {
                             <form>
                                 <div className="mb-4">
                                     <TextField
-                                    label="Name"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-full mb-4 mt-4"
-                                    value={username} 
-                                    onChange={(e) => setName(e.target.value)}
-                                />
+                                        label="Name"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
+                                        size="small"
+                                        className="w-full mb-4 mt-4"
+                                        value={username}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
                                     {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Name</label>
                                     <input type="text" id="name" name="name" placeholder="Enter the Name" className="w-full p-2 border border-gray-300 rounded-xl" value={name} onChange={(e) => setName(e.target.value)} required /> */}
                                 </div>
-                                    <div className="mb-4">
-                                        <TextField
-                                    label="Email"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-full mb-4"
-                                    value={email} 
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                                        {/* <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Email</label>
-                                        <input type="text" id="email" name="email" placeholder="Enter email" className="w-full p-2 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} required /> */}
-                                    </div>
                                 <div className="mb-4">
                                     <TextField
-                                    label="Username"
-                                    id="outlined-size-small"
-                                    required
-                                    defaultValue=""
-                                    size="small"
-                                    className="w-full mb-4"
-                                    value={username} 
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
+                                        label="Email"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
+                                        size="small"
+                                        className="w-full mb-4"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                    {/* <label htmlFor="email" className="block text-gray-600 text-sm mb-2">Email</label>
+                                        <input type="text" id="email" name="email" placeholder="Enter email" className="w-full p-2 border border-gray-300 rounded-xl" value={email} onChange={(e) => setEmail(e.target.value)} required /> */}
+                                </div>
+                                <div className="mb-4">
+                                    <TextField
+                                        label="Username"
+                                        id="outlined-size-small"
+                                        required
+                                        defaultValue=""
+                                        size="small"
+                                        className="w-full mb-4"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
                                     {/* <label htmlFor="name" className="block text-gray-600 text-sm mb-2">Username</label>
                                     <input type="text" id="username" name="username" placeholder="Enter username" className="w-full p-2 border border-gray-300 rounded-xl" value={username} onChange={(e) => setUsername(e.target.value)} required /> */}
                                 </div>
                                 <div className="mb-4">
                                     <FormControl className="w-[100%] mb-4" size="small" variant="outlined" required>
-                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                                    <OutlinedInput
-                                        id="outlined-adornment-password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        className="w-full"
-                                        size="small"
-                                        value={password} 
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
-                                                >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                        }
-                                        label="Password"
-                                    />
-                                </FormControl>
+                                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                        <OutlinedInput
+                                            id="outlined-adornment-password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            className="w-full"
+                                            size="small"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                            label="Password"
+                                        />
+                                    </FormControl>
                                     {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
                                         <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                 </div>
