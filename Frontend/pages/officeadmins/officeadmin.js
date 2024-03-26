@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 
-
 const OfficeAdmins = ({ username }) => {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -103,7 +102,7 @@ const OfficeAdmins = ({ username }) => {
             <img src="/assets/officeadmins/chat.png" width={200} alt="Connect Admins" />
             <p>Connect Admins</p>
           </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
+          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { router.push("/officeadmins/pendingApprovals") }}>
             <img src="/assets/officeadmins/pending-approval.png" width={200} alt="Pending Approvals" />
             <p>Pending Approvals</p>
           </div>

@@ -390,8 +390,7 @@ const Dashboard = ({ username }) => {
     }, [username]);
 
     useEffect(() => {
-        if(name)
-        {
+        if (name) {
             toast(`Welcome ${name}`, {
                 position: "top-center",
                 autoClose: 5000,
@@ -403,19 +402,20 @@ const Dashboard = ({ username }) => {
                 theme: "light",
                 transition: Bounce,
             });
-        }else{
-            toast(`Welcome User`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
         }
+        // else{
+        //     toast(`Welcome User`, {
+        //         position: "top-center",
+        //         autoClose: 5000,
+        //         hideProgressBar: false,
+        //         closeOnClick: true,
+        //         pauseOnHover: true,
+        //         draggable: true,
+        //         progress: undefined,
+        //         theme: "light",
+        //         transition: Bounce,
+        //     });
+        // }
     }, [name])
 
     const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];

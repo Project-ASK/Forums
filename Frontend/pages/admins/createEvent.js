@@ -93,7 +93,7 @@ const CreateEvent = () => {
                 body: formData,
             });
             if (response.status === 200) {
-                toast.success('Event created successfully', {
+                toast.success('Event approval sent successfully', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,

@@ -51,14 +51,11 @@ const events = ({ username }) => {
                 <div className="lg:w-full flex flex-col items-center mt-10 xs:w-[70%] mx-auto">
                     {events && events.length > 0 ? (
                         events.map((event, index) => (
-                            <div key={index} className="w-full md:w-3/4 lg:w-2/3 p-4 border rounded-2xl mb-4 bg-gray-300 flex flex-col md:flex-row items-center" onClick={() => {
-                                Cookies.set('eventId', event._id); // Set the event id as a cookie
-                                router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
-                            }}>
+                            <div key={index} className="w-full md:w-3/4 lg:w-2/3 p-4 border rounded-2xl mb-4 bg-gray-300 flex flex-col md:flex-row items-center">
                                 <div className="md:w-1/6 pr-2">
                                     <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.imagePath)} alt={event.eventName} width={100} height={100} layout="responsive" />
                                 </div>
-                                <div className="xs:mt-2 lg:mt-0 md:w-3/4 cursor-pointer md:ml-[1rem]">
+                                <div className="xs:mt-2 lg:mt-0 md:w-3/4 md:ml-[1rem]">
                                     <h2 className="text-lg font-bold">{event.eventName}</h2>
                                     <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{event.date}</p>
                                     <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{event.time}</p>

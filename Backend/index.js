@@ -281,7 +281,8 @@ const EventSchema = new mongoose.Schema({
     }],
     tags: [String],
     collabForums: [String],
-    amount: Number
+    amount: Number,
+    isApproved: String
 });
 
 const Event = mongoose.model('Event', EventSchema);
@@ -293,7 +294,9 @@ router.post('/admin/events', upload.single('image'), async (req, res) => {
     const tags = JSON.parse(req.body.tags);
     const collabForums = JSON.parse(req.body.collabForums);
     const imagePath = req.file.path.replace(/\\/g, '/');
-    const event = new Event({ eventName, date, time, location, eventVenue, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount });
+    const event = new Event({
+        eventName, date, time, location, eventVenue, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount, isApproved: 'Pending'
+    });
     //Used for testing
     // questions.forEach(question => {
     //     event.questions.push({ question: question.question, type: question.type });
@@ -317,7 +320,7 @@ router.route('/admin/getEvents')
 router.route('/getEvents')
     .post(async (req, res) => {
         const { forums } = req.body;
-        const events = await Event.find({ forumName: { $in: forums } });
+        const events = await Event.find({ forumName: { $in: forums }, isApproved: 'Approved' });
         res.status(200).send({ events });
     });
 
@@ -629,7 +632,7 @@ router.route('/office/getDetails')
 
 router.route('/getAllEvents')
     .get(async (req, res) => {
-        const events = await Event.find({});
+        const events = await Event.find({ isApproved: 'Approved' });
         res.status(200).send({ events });
     });
 
@@ -759,6 +762,20 @@ router.route('/officeadmin/getAllEvents')
         }
     });
 
+router.post('/updateEventApproval', async (req, res) => {
+    const { eventId, isApproved } = req.body;
+    try {
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+        event.isApproved = isApproved;
+        await event.save();
+        res.status(200).json({ message: 'Event updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'An error occurred' });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
