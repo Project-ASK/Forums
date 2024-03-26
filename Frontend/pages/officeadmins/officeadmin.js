@@ -96,8 +96,8 @@ const OfficeAdmins = ({ username }) => {
             <p>Reports</p>
           </div>
           <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { router.push("/officeadmins/events") }}>
-            <img src="/assets/officeadmins/gallery.png" width={200} alt="Gallery" />
-            <p>Gallery</p>
+            <img src="/assets/officeadmins/events.png" width={200} alt="Events" />
+            <p>Events</p>
           </div>
           <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
             <img src="/assets/officeadmins/chat.png" width={200} alt="Connect Admins" />

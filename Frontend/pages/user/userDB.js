@@ -353,17 +353,6 @@ const Dashboard = ({ username }) => {
             // Call fetchEvents here after forums data is set
             fetchEvents(data.forums);
             setCalEvents(data.customEvents);
-            toast(`Welcome ${data.name}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
         };
 
         const fetchEvents = async (forums) => {
@@ -399,6 +388,35 @@ const Dashboard = ({ username }) => {
         fetchForums();
         fetchJoinedEvents();
     }, [username]);
+
+    useEffect(() => {
+        if(name)
+        {
+            toast(`Welcome ${name}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }else{
+            toast(`Welcome User`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    }, [name])
 
     const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
 
@@ -634,21 +652,21 @@ const Dashboard = ({ username }) => {
                 <h2 className="font-product-sans text-xl">{greeting},<span className="font-product-sans font-bold text-xl"> {name}</span></h2>
             </div>
             <div className="flex justify-center mt-[4rem] flex-wrap">
-                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0 border-4 border-l-green-400">
+                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0 border-[5px] border-l-green-400">
                     <img src="/assets/events.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Events Joined</h2>
                         <p className="font-product-sans text-xl">{joinedEvents.length}</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0 border-4 border-l-red-400">
+                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 xs:mb-[2rem] lg:mb-0 border-[5px] border-l-red-400">
                     <img src="/assets/attendance.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Events Participated</h2>
                         <p className="font-product-sans text-xl">{attendedEventsCount}</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 border-4 border-l-blue-400">
+                <div className="flex flex-col items-center justify-center w-80 bg-gray-200 shadow-md rounded-lg mx-2 border-[5px] border-l-blue-400">
                     <img src="/assets/forumCount.png" alt="Image" className="w-20 h-20 mt-4 mb-2" />
                     <div className="p-4 text-center">
                         <h2 className="font-product-sans font-bold text-xl">No of Active Forums</h2>
