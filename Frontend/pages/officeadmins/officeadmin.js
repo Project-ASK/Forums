@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
 
 const OfficeAdmins = ({ username }) => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
+  const [forums, setForums] = useState([]); // State for forums
+  const [selectedForum, setSelectedForum] = useState(''); // State for selected forum
   const node = useRef();
 
   const handleClickOutside = e => { // Add this function
@@ -42,9 +53,27 @@ const OfficeAdmins = ({ username }) => {
       const data = await response.json();
       setName(data.name);
       setEmail(data.email);
+      Cookies.set('officeId', data.officeId);
     };
     fetchDetails();
   }, [username]);
+
+  useEffect(() => {
+    const fetchForums = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllForums`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setForums(data.forums);
+      if (data.forums.length > 0) {
+        setSelectedForum(data.forums[0]);
+      }
+    };
+    fetchForums();
+  }, []);
 
   const handleHomeClick = () => {
     router.reload();
@@ -55,6 +84,25 @@ const OfficeAdmins = ({ username }) => {
     Cookies.remove('officeUsername');
     Cookies.remove('token');
     router.replace('/officeadmins/login');
+  }
+
+  const handleForumSelect = (event) => {
+    setSelectedForum(event.target.value);
+  }
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  }
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  }
+
+  const handleChat = () => {
+    // Store the selected forum in a cookie
+    Cookies.set('selectedForum', selectedForum);
+    // Navigate to the connect page
+    router.push('/officeadmins/connect');
   }
 
   if (!username) {
@@ -98,7 +146,7 @@ const OfficeAdmins = ({ username }) => {
             <img src="/assets/officeadmins/events.png" width={200} alt="Events" />
             <p>Events</p>
           </div>
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
+          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={handleDialogOpen}>
             <img src="/assets/officeadmins/chat.png" width={200} alt="Connect Admins" />
             <p>Connect Admins</p>
           </div>
@@ -108,6 +156,29 @@ const OfficeAdmins = ({ username }) => {
           </div>
         </div>
       </div>
+      {dialogOpen &&
+        <Dialog open={dialogOpen} onClose={handleDialogClose}>
+          <DialogTitle>Select the Forum</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please select forum from the dropdown to connect with.
+            </DialogContentText>
+            <Select value={selectedForum} onChange={handleForumSelect} className="mt-2">
+              {forums.map((forum, index) => (
+                <MenuItem key={index} value={forum}>{forum}</MenuItem>
+              ))}
+            </Select>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose} color="primary" variant="outlined">
+              Cancel
+            </Button>
+            <Button onClick={handleChat} color="primary" variant="contained">
+              Chat
+            </Button>
+          </DialogActions>
+        </Dialog>
+      }
       <footer className="text-gray-600 body-font">
         <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
           <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">

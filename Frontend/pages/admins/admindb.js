@@ -11,6 +11,7 @@ import { Menu, X } from 'react-feather';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import path from 'path'
+import Chat from './Chat/chat'
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -73,6 +74,8 @@ const Dashboard = ({ username }) => {
       setForum(data.forum);
       setName(data.name);
       setEmail(data.email);
+      Cookies.set('adminId', data.adminId);
+      Cookies.set('forum', data.forum);
     };
     fetchForums();
   }, [username]);
@@ -153,6 +156,12 @@ const Dashboard = ({ username }) => {
     setCurrentPage('manageEvents');
   };
 
+  const handleChatClick = () => {
+    toggleMenu();
+    // setCurrentPage('Chat');
+    router.push('/admins/Chat/chat')
+  };
+
   const handleAnalytics = () => {
     router.push('/admins/analytics')
   }
@@ -194,18 +203,6 @@ const Dashboard = ({ username }) => {
     return null;
   }
 
-  useEffect(() => {
-    if (isMenuOpen) {
-        document.addEventListener("mousedown", handleClickOutside);
-    } else {
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-    };
-}, [isMenuOpen]);
-
   return (
     <>
       <div className="flex flex-col min-h-screen">
@@ -219,21 +216,17 @@ const Dashboard = ({ username }) => {
               <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white mr-[1rem]">Logout</button>
             </div>
             {isMenuOpen && (
-              <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 transition-transform ease-in-out duration-500 ${isMenuOpen ? 'animate-slide-in' : '-translate-x-full'}`}>
-                <div className="flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={()=>{setSide('Home')}}>
-                   <img src="/assets/home.svg" className="ml-[30px]" width={20}/>
-                  <p className="font-sans text-md">Home</p>
-                </div>
-                <div className="flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 rounded-lg" onClick={()=>{setSide('Analytics')}}>
-                  <img src="/assets/stats.svg" className="ml-[30px]" width={20}/>
-                  <p className="font-sans text-md">Analytics</p>
-                </div>
-                {/*<ul>
+              <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 ${isMenuOpen ? 'animate-slide-in' : 'animate-slide-out'}`}>
+                <button onClick={toggleMenu} className="mb-4 self-end">
+                  <X size={24} />
+                </button>
+                <ul>
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleHomeClick}>Home</li>
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleAnalytics}>Analytics</li>
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
-                </ul>*/}
+                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleChatClick}>Chat</li>
+                </ul>
               </div>
             )}
           </div>
@@ -300,6 +293,8 @@ const Dashboard = ({ username }) => {
                 )}
               </div>
             </Grid>
+          ) : currentPage === 'Chat' ? (
+            <Chat />
           ) : (
             // If showMembers is false, display the default content
             <>

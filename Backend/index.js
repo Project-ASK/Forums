@@ -221,7 +221,7 @@ router.route('/admin/getForums')
         if (!admin) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ forum: admin.forum, name: admin.name, email: admin.email });
+        res.status(200).send({ forum: admin.forum, name: admin.name, email: admin.email, adminId: admin._id });
     });
 
 const organizationDescriptions = {
@@ -627,7 +627,7 @@ router.route('/office/getDetails')
         if (!officeAdmin) {
             return res.status(400).send({ message: 'Office admin not found' });
         }
-        res.status(200).send({ name: officeAdmin.name, email: officeAdmin.email });
+        res.status(200).send({ name: officeAdmin.name, email: officeAdmin.email, officeId: officeAdmin._id });
     });
 
 router.route('/getAllEvents')
@@ -777,6 +777,146 @@ router.post('/updateEventApproval', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
+router.route('/getAllForums')
+    .post(async (req, res) => {
+        try {
+            const admins = await Admin.find();
+            const forums = admins.map(admin => admin.forum);
+            res.status(200).send({ forums });
+        } catch (error) {
+            res.status(500).send({ message: 'Error fetching forums' });
+        }
+    });
+
+router.route('/getAdminByForum')
+    .post(async (req, res) => {
+        const { forum } = req.body;
+        const admin = await Admin.findOne({ forum });
+        if (!admin) {
+            return res.status(400).send({ message: 'Admin not found' });
+        }
+        res.status(200).send({ name: admin.name, adminId: admin._id });
+    });
+
+const server = app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
+
+// At the top of your backend code, import Socket.io
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "*", // replace with your front-end domain
+        methods: ["GET", "POST"]
+    }
+});
+
+const ChatByDateSchema = new mongoose.Schema({
+    date: { type: Date, required: true },
+    messages: [{
+        sender: { type: String, required: true },
+        receiver: { type: String, required: true },
+        message: { type: String, required: true },
+        timestamp: { type: Date, required: true },
+    }],
+});
+
+// Create a new model for chat messages by date
+const ChatByDate = mongoose.model('ChatByDate', ChatByDateSchema);
+
+// Socket.io event handlers
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.onAny(async (eventName, data) => {
+        const { text, officeId, adminId } = data;
+        const timestamp = new Date();
+
+        if (eventName === `message_${officeId}_${adminId}`) {
+            // console.log("This is a main_admin_message");
+            await saveMessage(officeId, adminId, text);
+        } else if (eventName === `message_${adminId}_${officeId}`) {
+            // console.log("This is a smaller_admin_message");
+            await saveMessage(adminId, officeId, text);
+        }
+
+        // Forward the message to all connected clients
+        io.emit(eventName, { ...data, timestamp }); // Forward event
+    });
+
+    // Handle messages from main admin
+    // socket.on('main_admin_message', async (data) => {
+    //     const { text, officeId, adminId } = data;
+    //     const timestamp = new Date();
+    //     console.log(text, officeId, adminId)
+    //     await saveMessage(officeId, adminId, text);
+    //     // Forward the message to all connected clients
+    //     io.emit('main_admin_message', { ...data, timestamp }); // Forward 'main_admin_message' event
+    // });
+
+    // // Handle messages from smaller admin
+    // socket.on('smaller_admin_message', async (data) => {
+    //     const { text, adminId, officeId } = data;
+    //     const timestamp = new Date();
+    //     console.log(text, adminId, officeId)
+    //     await saveMessage(adminId, officeId, text);
+    //     // Forward the message to all connected clients
+    //     io.emit('smaller_admin_message', { ...data, timestamp }); // Forward 'smaller_admin_message' event
+    // });
+
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+const saveMessage = async (sender, receiver, message) => {
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+    // Find or create a chat document for the current date
+    let chatByDate = await ChatByDate.findOne({ date: currentDate });
+    if (!chatByDate) {
+        chatByDate = new ChatByDate({ date: currentDate, messages: [] });
+    }
+
+    if (!sender || !receiver) {
+        throw new Error('Both sender and receiver must be provided');
+    }
+
+    // Push the new message to the messages array
+    chatByDate.messages.push({
+        sender,
+        receiver,
+        message,
+        timestamp: new Date()
+    });
+
+    // Save the chat document
+    await chatByDate.save();
+};
+
+router.route('/chatHistory')
+    .post(getChatHistory);
+
+async function getChatHistory(req, res) {
+    try {
+        const { officeId, adminId } = req.body;
+        // Get the date from request query or use the current date
+        const requestedDate = req.query.date ? new Date(req.query.date) : new Date();
+        const currentDate = new Date(requestedDate.toISOString().split('T')[0]);
+
+        // Find the chat document for the requested date
+        const chatByDate = await ChatByDate.findOne({ date: currentDate, 'messages.sender': officeId, 'messages.receiver': adminId });
+
+        if (!chatByDate) {
+            return res.status(404).send({ message: 'Chat history not found for the requested date' });
+        }
+
+        const chatHistory = chatByDate.messages.filter(msg => (msg.sender === officeId && msg.receiver === adminId) || (msg.sender === adminId && msg.receiver === officeId));
+
+        // Return the chat history
+        res.status(200).send({ chatHistory });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}
