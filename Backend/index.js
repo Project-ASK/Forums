@@ -533,16 +533,40 @@ function draftToHtml(contentState) {
                 // Check for inline styles
                 if (block.inlineStyleRanges.length > 0) {
                     let styledText = text;
-                    block.inlineStyleRanges.forEach(style => {
-                        const startTag = style.style === 'BOLD' ? '<strong>' : ''; // Use <strong> for bold
-                        const endTag = style.style === 'BOLD' ? '</strong>' : ''; // Use </strong> for bold
-                        styledText = styledText.slice(0, style.offset) + startTag + styledText.slice(style.offset, style.offset + style.length) + endTag + styledText.slice(style.offset + style.length);
+                    block.inlineStyleRanges.sort((a, b) => a.offset - b.offset).forEach(style => {
+                        let startTag = '';
+                        let endTag = '';
+        
+                        switch (style.style) {
+                            case 'BOLD':
+                                startTag = '<span style="font-weight: bold;">';
+                                endTag = '</span>';
+                                break;
+                            case 'LARGE':
+                                startTag = '<span style="font-size: 32px;">';
+                                endTag = '</span>';
+                                break;
+                            case 'MEDIUM':
+                                startTag = '<span style="font-size: 16px;">';
+                                endTag = '</span>';
+                                break;
+                            case 'SMALL':
+                                startTag = '<span style="font-size: 12px;">';
+                                endTag = '</span>';
+                                break;
+                            // ... handle other styles as needed ...
+                        }
+        
+                        const beforeText = styledText.slice(0, style.offset);
+                        const styled = styledText.slice(style.offset, style.offset + style.length);
+                        const afterText = styledText.slice(style.offset + style.length);
+        
+                        styledText = `${beforeText}${startTag}${styled}${endTag}${afterText}`;
                     });
                     blockHtml += `<p>${styledText}</p>`;
                 } else {
                     blockHtml += `<p>${text}</p>`;
                 }
-                break;
         }
 
         return blockHtml;
