@@ -59,12 +59,27 @@ const Chat = () => {
     }, [messages]);
 
     useEffect(() => {
+        const fetchOfficeAdmin = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/officeadminId`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const data = await response.json();
+                setOfficeId(data.officeId);
+            } catch (error) {
+                console.error('Error fetching office admin ID:', error);
+            }
+        };
+        fetchOfficeAdmin();
+    }, []);
+
+    useEffect(() => {
         socket.current = socketIOClient(process.env.NEXT_PUBLIC_BACKEND_URL);
-        const officeID = Cookies.get('officeId');
         const adminID = Cookies.get('adminId');
         const forumName = Cookies.get('forum');
-
-        setOfficeId(officeID);
         setAdminId(adminID);
         setForum(forumName);
         fetchChatHistory();
@@ -163,15 +178,15 @@ const Chat = () => {
                 My ID: {adminId} {forum}
             </Box>
             <Box flexGrow={1} p={2} overflow="auto" display="flex" flexDirection="column" ref={chatContainerRef}>
-                    {Object.entries(messages).map(([date, message]) => (
-                        <React.Fragment key={date}>
-                            <Divider>{date}</Divider>
-                            {message.map((msg, index) => (
-                                <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === adminId} />
-                            ))}
-                        </React.Fragment>
-                    ))}
-                </Box>
+                {Object.entries(messages).map(([date, message]) => (
+                    <React.Fragment key={date}>
+                        <Divider>{date}</Divider>
+                        {message.map((msg, index) => (
+                            <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === adminId} />
+                        ))}
+                    </React.Fragment>
+                ))}
+            </Box>
             <Box p={2} display="flex" className="relative bottom-[2rem]" style={{ zIndex: 1 }}>
                 <TextField
                     variant="outlined"

@@ -53,7 +53,6 @@ const OfficeAdmins = ({ username }) => {
       const data = await response.json();
       setName(data.name);
       setEmail(data.email);
-      Cookies.set('officeId', data.officeId);
     };
     fetchDetails();
   }, [username]);

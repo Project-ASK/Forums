@@ -536,7 +536,7 @@ function draftToHtml(contentState) {
                     block.inlineStyleRanges.sort((a, b) => a.offset - b.offset).forEach(style => {
                         let startTag = '';
                         let endTag = '';
-        
+
                         switch (style.style) {
                             case 'BOLD':
                                 startTag = '<span style="font-weight: bold;">';
@@ -556,11 +556,11 @@ function draftToHtml(contentState) {
                                 break;
                             // ... handle other styles as needed ...
                         }
-        
+
                         const beforeText = styledText.slice(0, style.offset);
                         const styled = styledText.slice(style.offset, style.offset + style.length);
                         const afterText = styledText.slice(style.offset + style.length);
-        
+
                         styledText = `${beforeText}${startTag}${styled}${endTag}${afterText}`;
                     });
                     blockHtml += `<p>${styledText}</p>`;
@@ -944,3 +944,17 @@ async function getChatHistory(req, res) {
         res.status(500).send({ message: 'Internal server error' });
     }
 }
+
+router.route('/officeadminId')
+    .post(async (req, res) => {
+        try {
+            const officeAdmin = await OfficeAdmin.find({});
+            if (!officeAdmin) {
+                return res.status(400).send({ message: 'Office admin not found' });
+            }
+            res.status(200).send({ officeId: officeAdmin[0]._id });
+        } catch (error) {
+            console.error('Error fetching office admin:', error);
+            res.status(500).send({ message: 'Internal server error' });
+        }
+    });
