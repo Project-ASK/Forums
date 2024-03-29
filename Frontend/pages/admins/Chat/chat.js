@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { Box, Typography, TextField, IconButton, Divider } from '@mui/material';
 import socketIOClient from 'socket.io-client';
-import removeScript from '../../components/loadBot';
+import removeScript from '../../../components/loadBot'
 import SendIcon from '@mui/icons-material/Send';
 
 // const ChatBubble = ({ text, timestamp, isUser }) => (
@@ -12,7 +12,7 @@ import SendIcon from '@mui/icons-material/Send';
 //         p={2}
 //         my={1}
 //         alignSelf={isUser ? 'flex-end' : 'flex-start'}
-//         borderRadius={10}
+//         borderRadius={16}
 //         maxWidth="75%"
 //         minWidth="6%"
 //     >
@@ -41,12 +41,12 @@ const ChatBubble = ({ text, timestamp, isUser }) => (
     </Box>
 );
 
-const Connect = () => {
-    const [forum, setForum] = useState('');
-    const [adminId, setAdminId] = useState('');
+const Chat = () => {
     const [officeId, setOfficeId] = useState('');
+    const [adminId, setAdminId] = useState('');
+    const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
-    const [chatMessages, setChatMessages] = useState([]);
+    const [forum, setForum] = useState('');
     removeScript("https://cdn.botpress.cloud/webchat/v1/inject.js");
     const socket = useRef(null);
 
@@ -56,52 +56,34 @@ const Connect = () => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
-    }, [chatMessages]);
-
-    useEffect(() => {
-        const officeID = Cookies.get('officeId');
-        setOfficeId(officeID);
-        const selectedForum = Cookies.get('selectedForum');
-        setForum(selectedForum);
-        const fetchForums = async () => {
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAdminByForum`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ forum: selectedForum }),
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch admin data');
-                }
-                const data = await response.json();
-                setAdminId(data.adminId);
-            } catch (error) {
-                console.error('Error fetching admin data:', error);
-            }
-        };
-        fetchForums();
-    }, []);
+    }, [messages]);
 
     useEffect(() => {
         socket.current = socketIOClient(process.env.NEXT_PUBLIC_BACKEND_URL);
+        const officeID = Cookies.get('officeId');
+        const adminID = Cookies.get('adminId');
+        const forumName = Cookies.get('forum');
 
+        setOfficeId(officeID);
+        setAdminId(adminID);
+        setForum(forumName);
         fetchChatHistory();
         // Listen for incoming messages from the admin
-        socket.current.on(`message_${adminId}_${officeId}`, (data) => {
+        socket.current.on(`message_${officeId}_${adminId}`, (data) => {
+            // const formattedTimestamp = new Date(data.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+            // // Update chat messages with the new message
+            // setMessages(prevMessages => [...prevMessages, { message: data.text, sender: data.sender, timestamp: formattedTimestamp, isUser: false }]);
+
             const formattedTimestamp = new Date(data.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
             const date = new Date(data.timestamp).toLocaleDateString();
             const newMessage = { message: data.text, sender: data.sender, timestamp: formattedTimestamp, isUser: false };
-            setChatMessages(prevMessages => {
+            setMessages(prevMessages => {
                 if (prevMessages[date]) {
                     return { ...prevMessages, [date]: [...prevMessages[date], newMessage] };
                 } else {
                     return { ...prevMessages, [date]: [newMessage] };
                 }
             });
-            // const formattedTimestamp = new Date(data.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });            // Update chat messages with the new message
-            // setChatMessages(prevMessages => [...prevMessages, { message: data.text, sender: data.sender, timestamp: formattedTimestamp, isUser: false }]);
         });
 
         return () => {
@@ -117,7 +99,7 @@ const Connect = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ officeId, adminId }),
+                body: JSON.stringify({ officeId, adminId }), // No need to swap sender and receiver
             });
             if (!response.ok) {
                 throw new Error('Failed to fetch chat history');
@@ -126,12 +108,12 @@ const Connect = () => {
             // const chatHistory = data.chatHistory.map(msg => ({
             //     ...msg,
             //     timestamp: new Date(msg.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }),
-            //     isUser: msg.sender === adminId // Set isUser flag based on the sender
+            //     isUser: msg.sender === officeId // Set isUser flag based on the sender
             // }));
             const chatHistory = data.chatHistory.reduce((acc, msg) => {
                 const date = new Date(msg.timestamp).toLocaleDateString();
                 const formattedTimestamp = new Date(msg.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-                const isUser = msg.sender === adminId;
+                const isUser = msg.sender === officeId;
                 const newMsg = { ...msg, timestamp: formattedTimestamp, isUser };
                 if (acc[date]) {
                     acc[date].push(newMsg);
@@ -140,16 +122,16 @@ const Connect = () => {
                 }
                 return acc;
             }, {});
-            setChatMessages(chatHistory);
+            setMessages(chatHistory);
         } catch (error) {
             console.error('Error fetching chat history:', error);
         }
     };
 
     // const handleSend = () => {
-    //     const newMessage = { message, sender: officeId, receiver: adminId, timestamp: new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) }; // Assuming you always send from office to admin
-    //     setChatMessages(prevMessages => [...prevMessages, newMessage]); // Update local state
-    //     const eventName = `message_${officeId}_${adminId}`;
+    //     const newMessage = { message, sender: adminId, receiver: officeId, timestamp: new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) }; // Assuming you always send from office to admin
+    //     setMessages(prevMessages => [...prevMessages, newMessage]); // Update local state
+    //     const eventName = `message_${adminId}_${officeId}`;
     //     socket.current.emit(eventName, { text: message, officeId, adminId });
     //     setMessage('');
     // };
@@ -157,34 +139,35 @@ const Connect = () => {
     const handleSend = () => {
         const timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
         const date = new Date().toLocaleDateString();
-        const newMessage = { message, sender: officeId, receiver: adminId, timestamp }; // Assuming you always send from office to admin
-        setChatMessages(prevMessages => {
+        const newMessage = { message, sender: adminId, receiver: officeId, timestamp }; // Assuming you always send from office to admin
+        setMessages(prevMessages => {
             if (prevMessages[date]) {
                 return { ...prevMessages, [date]: [...prevMessages[date], newMessage] };
             } else {
                 return { ...prevMessages, [date]: [newMessage] };
             }
         }); // Update local state
-        const eventName = `message_${officeId}_${adminId}`;
+        const eventName = `message_${adminId}_${officeId}`;
         socket.current.emit(eventName, { text: message, officeId, adminId });
         setMessage('');
     };
 
+
     return (
         <Box display="flex" flexDirection="column" height="100vh">
             <Box bgcolor="grey.200" p={2}>
-                Connected to {forum} admin
+                Connected to Office Admin
                 <br />
-                Forum Admin ID: {adminId}
+                ID: {officeId}
                 <br />
-                My ID: {officeId}
+                My ID: {adminId} {forum}
             </Box>
-                <Box flexGrow={1} p={2} overflow="auto" display="flex" flexDirection="column" ref={chatContainerRef}>
-                    {Object.entries(chatMessages).map(([date, messages]) => (
+            <Box flexGrow={1} p={2} overflow="auto" display="flex" flexDirection="column" ref={chatContainerRef}>
+                    {Object.entries(messages).map(([date, message]) => (
                         <React.Fragment key={date}>
                             <Divider>{date}</Divider>
-                            {messages.map((msg, index) => (
-                                <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === officeId} />
+                            {message.map((msg, index) => (
+                                <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === adminId} />
                             ))}
                         </React.Fragment>
                     ))}
@@ -213,4 +196,4 @@ const Connect = () => {
     );
 };
 
-export default Connect;
+export default Chat;
