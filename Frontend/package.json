@@ -19,6 +19,8 @@
     "emailjs": "^4.0.3",
     "framer-motion": "^11.0.3",
     "fs": "^0.0.1-security",
+    "jodit-pro-react": "^4.0.6",
+    "jodit-react": "^4.0.15",
     "js-cookie": "^3.0.5",
     "jspdf": "^2.5.1",
     "next": "14.1.0",
