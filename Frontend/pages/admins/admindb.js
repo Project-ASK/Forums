@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import MenuItem from '@mui/material';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
+import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -12,6 +15,9 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import path from 'path'
 import Chat from './Chat/chat'
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -25,6 +31,9 @@ const Dashboard = ({ username }) => {
   const [currentPage, setCurrentPage] = useState('home');
   const [events, setEvents] = useState([]);
   const [ownEvents, setOwnEvents] = useState([]);
+  const [eventEditModal, setEventEditModal] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const node = useRef();
 
   useEffect(() => {
@@ -190,13 +199,175 @@ const Dashboard = ({ username }) => {
       });
 
       if (response.ok) {
-        console.log('Members appended successfully');
+        toast.success('Members appended successfully', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
       } else {
-        console.log('Failed to append members');
+        toast.error('Failed to append members', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
       }
     };
 
     reader.readAsText(file);
+  };
+
+  const handleEventChange = (field, value) => {
+    setCurrentEvent(prevEvent => {
+      let updatedValue;
+      if (Array.isArray(value)) {
+        updatedValue = value.map(option => option.value);
+      } else if (typeof value === 'object' && value.hasOwnProperty('target')) {
+        updatedValue = value.target.value;
+      } else {
+        updatedValue = value;
+      }
+
+      return {
+        ...prevEvent,
+        [field]: updatedValue,
+      };
+    });
+  };
+
+  const handleCloseModal = () => {
+    setEventEditModal(false);
+  };
+
+  const handleSaveModal = async () => {
+    const eventUpdate = { ...currentEvent };
+    eventUpdate.questions = eventUpdate.questions.map(({ _id, ...question }) => question);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/updateEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(currentEvent),
+    });
+    if (response.ok) {
+      toast.success('Event details updated successfully.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      setEventEditModal(false);
+    } else {
+      toast.error('Failed to update event details.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
+  const handleEditEvent = async (eventId) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/getEventDetails`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ eventId }),
+    });
+    const eventData = await response.json();
+    setCurrentEvent(eventData.event); // Set the current event
+    setQuestions(eventData.event.questions);
+    setEventEditModal(true);
+  };
+
+  const handleQuestionChange = (id, field, value) => {
+    setCurrentEvent(prevEvent => {
+      const updatedQuestions = prevEvent.questions.map(question => {
+        if (question._id === id) {
+          return { ...question, [field]: value };
+        }
+        return question;
+      });
+      return {
+        ...prevEvent,
+        questions: updatedQuestions
+      };
+    });
+  };
+
+  const handleAddQuestion = () => {
+    setCurrentEvent(prevEvent => ({
+      ...prevEvent,
+      questions: [
+        ...prevEvent.questions,
+        { question: '', type: '' }
+      ]
+    }));
+  };
+
+  const handleRemoveQuestion = (id) => {
+    setCurrentEvent(prevEvent => ({
+      ...prevEvent,
+      questions: prevEvent.questions.filter(question => question._id !== id)
+    }));
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/deleteEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ eventId }),
+    });
+
+    if (response.ok) {
+      toast.success('Event deleted successfully.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else {
+      toast.error('Failed to delete event.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
   };
 
   if (!username) {
@@ -205,6 +376,7 @@ const Dashboard = ({ username }) => {
 
   return (
     <>
+      <ToastContainer />
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow">
           <div className="App">
@@ -276,12 +448,12 @@ const Dashboard = ({ username }) => {
                           color={event.isApproved === 'Approved' ? 'success' : event.isApproved === 'Pending' ? 'warning' : 'error'}
                         />
                         <EditOutlinedIcon className="cursor-pointer ml-2" onClick={(e) => {
-                          e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-                          // Add your edit event handler here
+                          e.stopPropagation();
+                          handleEditEvent(event._id);
                         }} />
                         <DeleteRoundedIcon className="cursor-pointer ml-3" onClick={(e) => {
                           e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-                          // Add your delete event handler here
+                          handleDeleteEvent(event._id);
                         }} />
                       </div>
                     </div>
@@ -307,6 +479,146 @@ const Dashboard = ({ username }) => {
                 </div>
               </div>
             </>
+          )}
+          {eventEditModal && (
+            <Dialog open={eventEditModal} onClose={handleCloseModal}>
+              <DialogTitle>Edit Event</DialogTitle>
+              <DialogContent>
+                {currentEvent && (
+                  <>
+                    <TextField
+                      label="Event Name"
+                      fullWidth
+                      value={currentEvent.eventName}
+                      onChange={(event) => handleEventChange('eventName', event)}
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <TextField
+                      label="Event Description"
+                      fullWidth
+                      value={currentEvent.description}
+                      onChange={(event) => handleEventChange('description', event)}
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <TextField
+                      label="Event Date"
+                      type="date"
+                      fullWidth
+                      value={currentEvent.date}
+                      onChange={(event) => handleEventChange('date', event)}
+                      margin="normal"
+                      variant="outlined"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    <TextField
+                      label="Event Time"
+                      type="time"
+                      fullWidth
+                      value={currentEvent.time}
+                      onChange={(event) => handleEventChange('time', event)}
+                      margin="normal"
+                      variant="outlined"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    <TextField
+                      label="Location"
+                      fullWidth
+                      value={currentEvent.location}
+                      onChange={(event) => handleEventChange('location', event)}
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <label className="block mb-2">
+                      Event Venue:
+                      <select
+                        value={currentEvent.eventVenue}
+                        onChange={(event) => handleEventChange('eventVenue', event.target.value)}
+                        className="mt-1 w-full p-2 border rounded"
+                      >
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                      </select>
+                    </label>
+                    <label className="block mb-2">
+                      Tags:
+                      <CreatableSelect
+                        isMulti
+                        name="tags"
+                        options={currentEvent.tags.map(tag => ({ label: tag, value: tag }))}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        onChange={(selectedOptions) => handleEventChange('tags', selectedOptions)}
+                        value={currentEvent.tags ? currentEvent.tags.map(tag => ({ label: tag, value: tag })) : []}
+                      />
+                    </label>
+                    <label className="block mb-2">
+                      Collab Forums:
+                      <CreatableSelect
+                        isMulti
+                        name="forums"
+                        options={currentEvent.collabForums.map(forum => ({ label: forum, value: forum }))}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        onChange={(selectedOptions) => handleEventChange('collabForums', selectedOptions)}
+                        value={currentEvent.tags ? currentEvent.collabForums.map(collabForums => ({ label: collabForums, value: collabForums })) : []}
+                      />
+                    </label>
+                    {currentEvent && (
+                      currentEvent.questions.map((question, index) => (
+                        <div key={question._id} className="w-full p-4 border rounded-lg mb-4 mt-6 flex flex-col items-center">
+                          <TextField
+                            label={`Question ${index + 1}`}
+                            fullWidth
+                            value={question.question}
+                            onChange={event => handleQuestionChange(question._id, 'question', event.target.value)}
+                            margin="normal"
+                            variant="outlined"
+                          />
+                          <label className="block mb-2">
+                            Response Type:
+                            <select
+                              name={`type-${index}`}
+                              value={question.type}
+                              onChange={event => handleQuestionChange(question._id, 'type', event.target.value)}
+                              className="mt-1 w-full p-2 border rounded mb-2"
+                            >
+                              <option value="">Select type</option>
+                              <option value="text">Text</option>
+                              <option value="number">Number</option>
+                              <option value="date">Date</option>
+                            </select>
+                          </label>
+                          <Chip label="Remove Question" color="error" onClick={() => handleRemoveQuestion(question._id)} />
+                        </div>
+                      ))
+                    )}
+                    <Chip label="Add Question" color="success" onClick={handleAddQuestion} />
+                    <TextField
+                      label="Amount"
+                      fullWidth
+                      value={currentEvent.amount}
+                      onChange={(event) => handleEventChange('amount', event)}
+                      margin="normal"
+                      variant="outlined"
+                    />
+                  </>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseModal} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveModal} color="primary">
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
           )}
         </div>
         <footer className="text-gray-600 body-font">

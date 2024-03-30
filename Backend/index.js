@@ -958,3 +958,59 @@ router.route('/officeadminId')
             res.status(500).send({ message: 'Internal server error' });
         }
     });
+
+router.route('/admin/updateEvent')
+    .post(async (req, res) => {
+        const { eventId, eventName, date, location, time, description, amount, eventVenue, questions, tags, collabForums } = req.body;
+        try {
+            const event = await Event.findOne({ eventId });
+            if (!event) {
+                return res.status(404).send({ message: 'Event not found' });
+            }
+            event.eventName = eventName;
+            event.date = date;
+            event.location = location;
+            event.description = description;
+            event.amount = amount;
+            event.eventVenue = eventVenue;
+            event.questions = questions;
+            event.tags = tags;
+            event.collabForums = collabForums;
+            await event.save();
+            res.status(200).send({ message: 'Event updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: 'An error occurred' });
+        }
+    });
+
+router.route('/admin/deleteEvent')
+    .post(async (req, res) => {
+        const { eventId } = req.body;
+        try {
+            const event = await Event.findById(eventId);
+            if (!event) {
+                return res.status(404).send({ message: 'Event not found' });
+            }
+
+            // Define the path of the folder to delete
+            const dirPath = path.join(__dirname, 'events', event.forumName, event.eventName);
+
+            // Delete the folder
+            // Use fs.rmdir(prone to deprecation) or fs.rm
+            fs.rmdir(dirPath, { recursive: true }, (err) => {
+                if (err) {
+                    console.error(`Error while deleting directory ${dirPath}: ${err}`);
+                } else {
+                    console.log(`Directory ${dirPath} has been deleted!`);
+                }
+            });
+
+            await Event.deleteOne({ _id: eventId });
+            res.status(200).send({ message: 'Event and corresponding directory deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: 'An error occurred' });
+        }
+    });
+
