@@ -53,6 +53,7 @@ const OfficeAdmins = ({ username }) => {
       const data = await response.json();
       setName(data.name);
       setEmail(data.email);
+      Cookies.set('officeId',data.officeId);
     };
     fetchDetails();
   }, [username]);
@@ -172,7 +173,7 @@ const OfficeAdmins = ({ username }) => {
             <Button onClick={handleDialogClose} color="primary" variant="outlined">
               Cancel
             </Button>
-            <Button onClick={handleChat} color="primary" variant="contained">
+            <Button onClick={handleChat} color="primary" variant="outlined">
               Chat
             </Button>
           </DialogActions>

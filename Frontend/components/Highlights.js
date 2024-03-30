@@ -204,7 +204,6 @@ export default function Highlights() {
               prevEl: '.swiper-button-prev',
             }}
             autoplay={{ delay: 2000 }}
-            disableOnInteraction={true}
           >
             {events.map((event, index) => (
               <SwiperSlide key={index}>
