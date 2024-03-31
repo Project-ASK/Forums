@@ -867,26 +867,6 @@ io.on('connection', (socket) => {
         io.emit(eventName, { ...data, timestamp }); // Forward event
     });
 
-    // Handle messages from main admin
-    // socket.on('main_admin_message', async (data) => {
-    //     const { text, officeId, adminId } = data;
-    //     const timestamp = new Date();
-    //     console.log(text, officeId, adminId)
-    //     await saveMessage(officeId, adminId, text);
-    //     // Forward the message to all connected clients
-    //     io.emit('main_admin_message', { ...data, timestamp }); // Forward 'main_admin_message' event
-    // });
-
-    // // Handle messages from smaller admin
-    // socket.on('smaller_admin_message', async (data) => {
-    //     const { text, adminId, officeId } = data;
-    //     const timestamp = new Date();
-    //     console.log(text, adminId, officeId)
-    //     await saveMessage(adminId, officeId, text);
-    //     // Forward the message to all connected clients
-    //     io.emit('smaller_admin_message', { ...data, timestamp }); // Forward 'smaller_admin_message' event
-    // });
-
     // Handle disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected');
@@ -1014,3 +994,68 @@ router.route('/admin/deleteEvent')
         }
     });
 
+router.route('/admin/chatHistory')
+    .post(getChats);
+
+async function getChats(req, res) {
+    try {
+        const { adminId } = req.body;
+        const chatByDate = await ChatByDate.find(); // Fetch all chat data
+
+        // Filter messages where the receiver is adminId
+        const filteredChats = chatByDate.map(chat => ({
+            ...chat.toObject(),
+            messages: chat.messages.filter(msg => msg.receiver === adminId)
+        }));
+
+        res.status(200).send({ chatByDate: filteredChats });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+}
+
+const chatSchema = new mongoose.Schema({
+    date: { type: String, required: true },
+    messages: [{
+        message: { type: String, required: true },
+        timestamp: { type: String, required: true }
+    }]
+});
+
+const Posts = mongoose.model('Chat', chatSchema);
+
+router.post('/postMessages', async (req, res) => {
+    try {
+        const { date, messages } = req.body;
+
+        // Find existing chat document or create a new one
+        let chat = await Posts.findOne({ date });
+
+        if (!chat) {
+            // If chat document doesn't exist, create a new one
+            chat = new Posts({ date, messages });
+        } else {
+            // If chat document exists, append new messages to the existing array
+            chat.messages.push(...messages);
+        }
+
+        // Save the updated chat document to the database
+        await chat.save();
+
+        res.status(200).send({ message: 'Messages stored successfully' });
+    } catch (error) {
+        console.error('Error storing messages:', error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+});
+
+router.get('/fetchPosts', async (req, res) => {
+    try {
+        const posts = await Posts.find();
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+});

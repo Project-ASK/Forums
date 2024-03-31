@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MenuItem from '@mui/material';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
@@ -34,7 +32,33 @@ const Dashboard = ({ username }) => {
   const [eventEditModal, setEventEditModal] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [adminId, setAdminId] = useState('');
+  const [messages, setMessages] = useState([]);
   const node = useRef();
+
+  const nodeNotifications = useRef(); // Create a new useRef for notifications
+
+  const handleClickOutsideNotifications = e => { // Define handleClickOutsideNotifications function
+    if (nodeNotifications.current.contains(e.target)) {
+      // inside click
+      return;
+    }
+    // outside click 
+    setIsOpen(false);
+  };
+
+  useEffect(() => { // Add useEffect for notifications
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutsideNotifications);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutsideNotifications);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideNotifications);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const page = Cookies.get('currentPage'); // Get the currentPage from the cookie
@@ -47,7 +71,16 @@ const Dashboard = ({ username }) => {
 
   const handleClickOutside = e => { // Add this function
     if (node.current.contains(e.target)) {
-      // inside click
+      // inside clickconst nodeNotifications = useRef(); // Create a new useRef for notifications
+
+      const handleClickOutsideNotifications = e => { // Define handleClickOutsideNotifications function
+        if (nodeNotifications.current.contains(e.target)) {
+          // inside click
+          return;
+        }
+        // outside click 
+        setIsOpen(false);
+      };
       return;
     }
     // outside click 
@@ -84,10 +117,36 @@ const Dashboard = ({ username }) => {
       setName(data.name);
       setEmail(data.email);
       Cookies.set('adminId', data.adminId);
+      setAdminId(Cookies.get('adminId'));
       Cookies.set('forum', data.forum);
     };
     fetchForums();
   }, [username]);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/chatHistory`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ adminId }),
+      });
+      const data = await response.json();
+
+      const allMessages = data.chatByDate.reduce((accumulator, current) => {
+        return accumulator.concat(current.messages);
+      }, []);
+
+      // Flatten the array of message texts and timestamps
+      const flattenedMessages = allMessages.map(message => ({
+        text: message.message,
+        timestamp: message.timestamp,
+      }));
+      setMessages(flattenedMessages);
+    };
+    fetchChats();
+  }, [adminId]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -103,7 +162,6 @@ const Dashboard = ({ username }) => {
         setOwnEvents(dataEvents.events);
       }
     };
-
     fetchEvents();
   }, [forum]);
 
@@ -122,7 +180,6 @@ const Dashboard = ({ username }) => {
         setEvents([...ownEvents, ...collabEvents]);
       }
     };
-
     fetchEvents();
   }, [forum]);
 
@@ -370,6 +427,10 @@ const Dashboard = ({ username }) => {
     }
   };
 
+  const handlePost = () => {
+    router.push('/admins/post');
+  }
+
   if (!username) {
     return null;
   }
@@ -384,7 +445,20 @@ const Dashboard = ({ username }) => {
               <button onClick={toggleMenu} className="p-4">
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer' />
+              <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative left-[2rem] xs:left-[0.5rem] cursor-pointer" />
+              {isOpen && (
+                <div ref={nodeNotifications} className="absolute left-[3rem] top-[4rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[30%]">
+                  {messages
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort messages in descending order of time
+                    .map((message, index) => (
+                      <div key={index} onClick={() => { router.push('/admins/Chat/chat') }} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">
+                        <p className="font-semibold">{message.text}</p>
+                        <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+                      </div>
+                    ))}
+                </div>
+              )}
+              <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer mx-auto' />
               <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white mr-[1rem]">Logout</button>
             </div>
             {isMenuOpen && (
@@ -397,7 +471,8 @@ const Dashboard = ({ username }) => {
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleAnalytics}>Analytics</li>
                   <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleChatClick}>Chat</li>
+                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleChatClick}>Office Chat</li>
+                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handlePost}>Post Messages</li>
                 </ul>
               </div>
             )}
