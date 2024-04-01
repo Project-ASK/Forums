@@ -62,6 +62,47 @@ const Dashboard = ({ username }) => {
     const [recommendedEvents, setRecommendedEvents] = useState([]);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const [posts, setPosts] = useState([]);
+
+    const nodeNotifications = useRef(); // Create a new useRef for notifications
+
+    const handleClickOutsideNotifications = e => { // Define handleClickOutsideNotifications function
+        if (nodeNotifications.current.contains(e.target)) {
+            // inside click
+            return;
+        }
+        // outside click 
+        setIsOpen(false);
+    };
+
+    useEffect(() => { // Add useEffect for notifications
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutsideNotifications);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutsideNotifications);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideNotifications);
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchPosts`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch posts');
+                }
+                const data = await response.json();
+                setPosts(data);
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+        };
+
+        fetchPosts();
+    }, []);
 
     useEffect(() => {
         const fetchRecommendedEvents = async () => {
@@ -403,19 +444,6 @@ const Dashboard = ({ username }) => {
                 transition: Bounce,
             });
         }
-        // else{
-        //     toast(`Welcome User`, {
-        //         position: "top-center",
-        //         autoClose: 5000,
-        //         hideProgressBar: false,
-        //         closeOnClick: true,
-        //         pauseOnHover: true,
-        //         draggable: true,
-        //         progress: undefined,
-        //         theme: "light",
-        //         transition: Bounce,
-        //     });
-        // }
     }, [name])
 
     const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
@@ -618,10 +646,21 @@ const Dashboard = ({ username }) => {
                 <div className="relative flex items-center">
                     <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative right-[2rem] cursor-pointer" />
                     {isOpen && (
-                        <div className="absolute right-[6rem] top-[3rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[90%]">
-                            <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 1</a>
-                            <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 2</a>
-                            <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 3</a>
+                        <div ref={nodeNotifications} className="absolute right-[6rem] top-[3rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[130%]">
+                            {/* Map over posts and render each post as a notification */}
+                            {posts.map(post => (
+                                <div key={post._id}>
+                                    {post.messages.map(message => (
+                                        <>
+                                            <p key={message._id} className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 font-semibold rounded hover:bg-purple-500 hover:text-white mb-1">
+                                                {message.message}
+                                                <br />
+                                                <p className="text-gray-500 font-light text-sm hover:text-white">{message.timestamp}</p>
+                                            </p>
+                                        </>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                     )}
                     <p className="relative right-[1rem] font-product-sans font-semibold">{name}</p>
