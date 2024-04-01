@@ -54,8 +54,13 @@ const EventReport = () => {
                         value={content}
                         onChange={setContent}
                         config={{
+                            height: 500,
                             showCharsCounter: true, // Hide character counter
                             showWordsCounter: true, // Hide word counter
+                            uploader: {
+                                insertImageAsBase64URI: true, // Enable inserting images as Base64 URIs
+                                insertVideoAsBase64URI: true, // Enable inserting videos as Base64 URIs
+                            },
                         }}
                         tabIndex={1} // tabIndex of textarea
                         style={{

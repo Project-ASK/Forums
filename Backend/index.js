@@ -1059,3 +1059,68 @@ router.get('/fetchPosts', async (req, res) => {
         res.status(500).send({ message: 'Internal server error' });
     }
 });
+
+const guestSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
+    },
+    college: {
+        type: String,
+        required: true
+    },
+    eventName: {
+        type: String,
+        required: true
+    },
+    eventId: {
+        type: String,
+        required: true
+    }
+});
+
+const Guest = mongoose.model('Guest', guestSchema);
+
+router.post('/guest/register', async (req, res) => {
+    try {
+        const { name, email, phone, college, eventName, eventId } = req.body;
+
+        // Check if all required fields are provided
+        if (!name || !email || !phone || !college || !eventName || !eventId) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Check if the guest already exists based on email or phone number
+        const existingGuest = await Guest.findOne({ $or: [{ email }, { phone }] });
+        if (existingGuest) {
+            return res.status(400).json({ message: 'Guest with this email or phone number already exists' });
+        }
+
+        // Create a new guest
+        const newGuest = new Guest({
+            name,
+            email,
+            phone,
+            college,
+            eventName,
+            eventId
+        });
+
+        // Save the new guest to the database
+        await newGuest.save();
+
+        // Respond with success message
+        return res.status(201).json({ message: 'Guest registered successfully' });
+    } catch (error) {
+        console.error('Error registering guest:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
