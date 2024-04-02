@@ -13,6 +13,8 @@ const Dashboard = ({ username }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [members, setMembers] = useState([]);
+  const [guestUsers,setGuestUsers] = useState([]);
+  const [participants,setParticipants] = useState([]);
 
   const eventId = Cookies.get('eventId');
   const forum = Cookies.get('forum');
@@ -35,6 +37,24 @@ const Dashboard = ({ username }) => {
     }
   }, [eventId]);
 
+  useEffect(() => {
+    const fetchGuestUsers = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getGuestUsers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ eventId }),
+      });
+      const data = await response.json();
+      setGuestUsers(data.guestUsers)
+    };
+
+    if (eventId) {
+      fetchGuestUsers();
+    }
+  }, [eventId]);
+  
   useEffect(() => {
     const fetchUsers = async () => {
       if (eventDetails) {
@@ -61,9 +81,11 @@ const Dashboard = ({ username }) => {
             isAttended
           };
         }));
+        const mergedParticipants = [...members, ...guestUsers];
+        setParticipants(mergedParticipants);
       }
     };
-
+    
     fetchUsers();
   }, [eventDetails]);
 
@@ -193,6 +215,52 @@ const Dashboard = ({ username }) => {
     }
   };
 
+  const deleteGuestMember = async (index) => {
+    // Get the member to be deleted
+    const member = guestUsers[index];
+
+    // Remove the member from the event in the backend
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/removeGuestFromEvent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: member.name, event: eventDetails.eventName }),
+    });
+
+    const data = await response.json();
+
+    // If the user was removed successfully, remove the member from the members array
+    if (data.success) {
+      const newMembers = [...guestUsers];
+      newMembers.splice(index, 1);
+      setGuestUsers(newMembers);
+      toast.success('User removed successfully', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else {
+      toast.error('Failed to remove user', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
   useEffect(() => {
     const handleBackButtonEvent = (e) => {
       e.preventDefault();
@@ -211,9 +279,14 @@ const Dashboard = ({ username }) => {
     return null;
   }
 
+  useEffect(() => {
+    const mergedParticipants = [...members, ...guestUsers];
+    setParticipants(mergedParticipants);
+  }, [members, guestUsers]);
+
   const downloadMembers = () => {
     // Convert the members array to CSV data
-    const csvData = members.map(member => `${member.name},${member.phoneNumber}`).join('\n');
+    const csvData = participants.map(member => `${member.name},${member.phoneNumber}`).join('\n');
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     return url;
@@ -264,6 +337,50 @@ const Dashboard = ({ username }) => {
     }
   };
 
+  const handleGuestAttendanceChange = async (index, attended) => {
+    // Get the member whose attendance status has changed
+    const member = guestUsers[index];
+    // Send a request to the backend to update the user's attendance status
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateGuestAttendanceStatus`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: member.name, event: eventDetails.eventName, attended }),
+    });
+
+    const data = await response.json();
+
+    // If the user's attendance status was updated successfully, update the members array
+    if (data.success) {
+      const newMembers = [...guestUsers];
+      newMembers[index].isAttended = attended;
+      setGuestUsers(newMembers);
+      toast.success('Attendance updated successfully', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } else {
+      toast.error('Failed to update attendance status', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
 
   const handleback = () => {
     router.back();
@@ -279,19 +396,19 @@ const Dashboard = ({ username }) => {
       </div>
       <div className="w-full flex flex-col items-center mt-10">
         {eventDetails &&
-          <div className="w-1/2 p-4 border rounded-lg mb-4 bg-gray-300 flex">
-            <div className="w-1/6 pr-2">
+          <div className="w-[80%] md:w-3/4 lg:w-2/3 p-4 border rounded-lg mb-4 bg-gray-300 flex flex-col md:flex-row items-center">
+            <div className="md:w-1/6 pr-2">
               <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, eventDetails.imagePath)} alt={eventDetails.eventName} width={100} height={100} layout="responsive" />
             </div>
-            <div className="w-1/2 ml-[1rem]">
+            <div className="xs:mt-2 lg:mt-0 md:w-3/4 md:ml-[1rem]">
               <h2 className="text-lg font-bold">Name: {eventDetails.eventName}</h2>
               <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{eventDetails.date}</p>
               <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{eventDetails.time}</p>
               <p className="text-md text-gray-500"><span className='font-bold'>Location: </span>{eventDetails.location}</p>
               <p className="text-md text-gray-500"><span className='font-bold'>Description: </span>{eventDetails.description}</p>
-              <p className="text-md text-gray-500"><span className='font-bold'>Number of Participants: </span>{members.length}</p>
+              <p className="text-md text-gray-500"><span className='font-bold'>Number of Participants: </span>{participants.length}</p>
               {eventDetails.collabForums.filter(forumName => forumName !== forum).length > 0 && (
-                <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{eventDetails.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
+                <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
               )}
             </div>
           </div>
@@ -299,11 +416,11 @@ const Dashboard = ({ username }) => {
       </div>
       <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
-        <div className="w-full flex justify-center items-center mb-5">
-          <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem]">Add Members</button>
+        <div className="w-full flex justify-center items-center mb-5 lg:flex-row xs:flex-col xs:space-y-3 lg:space-y-0">
+          <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem]">Add Members</button>
           <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] cursor-pointer">Import</label>
-          <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem]">Download List</a>
+          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem] cursor-pointer">Import</label>
+          <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem]">Download List</a>
           <button onClick={() => { Cookies.set('eventId', eventDetails._id); router.push('./eventReport') }} className="p-2.5 bg-blue-500 rounded-full text-white">Generate Event Report</button>
         </div>
         {isFormOpen && (
@@ -317,7 +434,7 @@ const Dashboard = ({ username }) => {
           </div>
         )}
         {members.map((member, index) => (
-          <div key={index} className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
+          <div key={index} className="lg:w-1/2 xs:w-full p-4 border rounded mb-4 flex justify-between items-center xs:mx-auto">
             <div>
               <span style={{ marginRight: '70px' }}>{member.name}</span>
               <span>{member.phoneNumber}</span>
@@ -326,6 +443,19 @@ const Dashboard = ({ username }) => {
               <label htmlFor={`attendance-${index}`} className="mr-[1rem]">Check In</label>
               <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
               <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
+            </div>
+          </div>
+        ))}
+        {guestUsers && guestUsers.map((member, index) => (
+          <div key={index} className="lg:w-1/2 xs:w-full p-4 border rounded mb-4 flex justify-between items-center">
+            <div>
+              <span style={{ marginRight: '70px' }}>{member.name} (Guest)</span>
+              <span>{member.phoneNumber}</span>
+            </div>
+            <div>
+              <label htmlFor={`attendance-${index}`} className="mr-[1rem]">Check In</label>
+              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleGuestAttendanceChange(index, e.target.checked)} />
+              <button onClick={() => deleteGuestMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
             </div>
           </div>
         ))}

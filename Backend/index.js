@@ -1069,7 +1069,7 @@ const guestSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    phone: {
+    phoneNumber: {
         type: String,
         required: true
     },
@@ -1084,6 +1084,14 @@ const guestSchema = new mongoose.Schema({
     eventId: {
         type: String,
         required: true
+    },
+    type: {
+        type: String,
+        required: true
+    },
+    isAttended: {
+        type: Boolean,
+        required: true
     }
 });
 
@@ -1091,7 +1099,7 @@ const Guest = mongoose.model('Guest', guestSchema);
 
 router.post('/guest/register', async (req, res) => {
     try {
-        const { name, email, phone, college, eventName, eventId } = req.body;
+        const { name, email, phone, college, eventName, eventId, type, isAttended } = req.body;
 
         // Check if all required fields are provided
         if (!name || !email || !phone || !college || !eventName || !eventId) {
@@ -1108,10 +1116,12 @@ router.post('/guest/register', async (req, res) => {
         const newGuest = new Guest({
             name,
             email,
-            phone,
+            phoneNumber:phone,
             college,
             eventName,
-            eventId
+            eventId,
+            type,
+            isAttended
         });
 
         // Save the new guest to the database
@@ -1124,3 +1134,45 @@ router.post('/guest/register', async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+router.post('/getGuestUsers', async (req, res) => {
+    try {
+        const { eventId } = req.body;
+
+        // Fetch users from the user database
+        const guestUsers = await Guest.find({ eventId });
+
+        // Respond with the combined array of users
+        return res.status(200).json({ guestUsers });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.route('/updateGuestAttendanceStatus')
+    .post(async (req, res) => {
+        const { name, event, attended } = req.body;
+        const guestUser = await Guest.findOne({ name, eventName: event });
+
+        if (guestUser) {
+            guestUser.isAttended = attended;
+            await guestUser.save();
+            res.status(200).send({ success: true });
+        } else {
+            res.status(200).send({ success: false });
+        }
+    });
+
+router.route('/removeGuestFromEvent')
+    .post(async (req, res) => {
+        const { name, event } = req.body;
+        const guestUser = await Guest.findOne({ name, eventName: event });
+
+        if (guestUser) {
+            await Guest.deleteOne({ name, eventName: event });
+            res.status(200).send({ success: true });
+        } else {
+            res.status(200).send({ success: false });
+        }
+    });

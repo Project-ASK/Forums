@@ -14,8 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import SendIcon from '@mui/icons-material/Send';
+import Chip from '@mui/material/Chip';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from 'swiper/modules';
 import emailjs from '@emailjs/browser';
@@ -194,7 +193,9 @@ export default function Highlights() {
           phone,
           college,
           eventName,
-          eventId
+          eventId,
+          type:"Guest",
+          isAttended:false
         }),
       });
 
@@ -434,9 +435,11 @@ export default function Highlights() {
                   <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Email</label>
                   <Stack direction="row" spacing={2} className='mt-2'>
                     <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <button className="bg-blue-200 rounded-lg w-[20%] cursor-pointer p-1.3" onClick={sendEmail}>
+                    {/* <button className="bg-blue-200 rounded-lg w-[20%] cursor-pointer p-1.3" onClick={sendEmail}>
                       Send OTP
-                    </button>
+                    </button> */}
+                    <Chip label="Send OTP" color="info" onClick={sendEmail} />
+
                   </Stack>
                 </div>
                 {showOtpField && (
@@ -444,9 +447,10 @@ export default function Highlights() {
                     <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">OTP</label>
                     <Stack direction="row" spacing={2} className='mt-2'>
                       <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" type="text" value={otp} onChange={(e) => setOtp(e.target.value)} />
-                      <button className="bg-green-200 rounded-lg w-[20%] cursor-pointer p-1.3" onClick={verifyOtp}>
+                      {/* <button className="bg-green-200 rounded-lg w-[20%] cursor-pointer p-1.3" onClick={verifyOtp}>
                         Verify
-                      </button>
+                      </button> */}
+                      <Chip label="Verify" color="success" onClick={verifyOtp} />
                     </Stack>
                   </>
                 )}
