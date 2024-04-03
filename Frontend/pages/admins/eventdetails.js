@@ -13,8 +13,8 @@ const Dashboard = ({ username }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [members, setMembers] = useState([]);
-  const [guestUsers,setGuestUsers] = useState([]);
-  const [participants,setParticipants] = useState([]);
+  const [guestUsers, setGuestUsers] = useState([]);
+  const [participants, setParticipants] = useState([]);
 
   const eventId = Cookies.get('eventId');
   const forum = Cookies.get('forum');
@@ -54,7 +54,7 @@ const Dashboard = ({ username }) => {
       fetchGuestUsers();
     }
   }, [eventId]);
-  
+
   useEffect(() => {
     const fetchUsers = async () => {
       if (eventDetails) {
@@ -85,7 +85,7 @@ const Dashboard = ({ username }) => {
         setParticipants(mergedParticipants);
       }
     };
-    
+
     fetchUsers();
   }, [eventDetails]);
 
@@ -407,8 +407,8 @@ const Dashboard = ({ username }) => {
               <p className="text-md text-gray-500"><span className='font-bold'>Location: </span>{eventDetails.location}</p>
               <p className="text-md text-gray-500"><span className='font-bold'>Description: </span>{eventDetails.description}</p>
               <p className="text-md text-gray-500"><span className='font-bold'>Number of Participants: </span>{participants.length}</p>
-              {eventDetails.collabForums.filter(forumName => forumName !== forum).length > 0 && (
-                <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
+              {eventDetails && eventDetails.collabForums.filter(forumName => forumName !== forum).length > 0 && (
+                <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{eventDetails.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
               )}
             </div>
           </div>
@@ -416,7 +416,7 @@ const Dashboard = ({ username }) => {
       </div>
       <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
-        <div className="w-full flex justify-center items-center mb-5 lg:flex-row xs:flex-col xs:space-y-3 lg:space-y-0">
+        <div className="w-full flex justify-center items-center mb-5 lg:flex-row xs:space-y-3 lg:space-y-0">
           <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem]">Add Members</button>
           <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
           <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem] cursor-pointer">Import</label>
@@ -433,32 +433,58 @@ const Dashboard = ({ username }) => {
             </div>
           </div>
         )}
-        {members.map((member, index) => (
-          <div key={index} className="lg:w-1/2 xs:w-full p-4 border rounded mb-4 flex justify-between items-center xs:mx-auto">
-            <div>
-              <span style={{ marginRight: '70px' }}>{member.name}</span>
-              <span>{member.phoneNumber}</span>
-            </div>
-            <div>
-              <label htmlFor={`attendance-${index}`} className="mr-[1rem]">Check In</label>
-              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
-              <button onClick={() => deleteMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
-            </div>
-          </div>
-        ))}
-        {guestUsers && guestUsers.map((member, index) => (
-          <div key={index} className="lg:w-1/2 xs:w-full p-4 border rounded mb-4 flex justify-between items-center">
-            <div>
-              <span style={{ marginRight: '70px' }}>{member.name} (Guest)</span>
-              <span>{member.phoneNumber}</span>
-            </div>
-            <div>
-              <label htmlFor={`attendance-${index}`} className="mr-[1rem]">Check In</label>
-              <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleGuestAttendanceChange(index, e.target.checked)} />
-              <button onClick={() => deleteGuestMember(index)} className="p-2.5 bg-red-500 rounded-full text-white ml-[1rem]">Delete</button>
-            </div>
-          </div>
-        ))}
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg lg:w-[50%] xs:w-full mt-[2rem]">
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead className="text-xs text-gray-900 border-b uppercase bg-gray-50 ">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Phone Number
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Check In
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member, index) => (
+                <tr key={index} className="bg-white border-b  dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300">
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    {member.name}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">{member.phoneNumber}</td>
+                  <td className="px-6 py-4">
+                    <label htmlFor={`attendance-${index}`} className="mr-[1rem] text-gray-700">Check In</label>
+                    <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
+                  </td>
+                  <td className="px-6 py-4 text-left">
+                    <button onClick={() => deleteMember(index)} className="font-medium text-blue-600 dark:text-blue hover:underline">Delete</button>
+                  </td>
+                </tr>
+              ))}
+              {guestUsers && guestUsers.map((member, index) => (
+                <tr key={index} className="bg-white border-b  dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300">
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    {member.name} (Guest)
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">{member.phoneNumber}</td>
+                  <td className="px-6 py-4">
+                    <label htmlFor={`attendance-${index}`} className="mr-[1rem] text-gray-700">Check In</label>
+                    <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleGuestAttendanceChange(index, e.target.checked)} />
+                  </td>
+                  <td className="px-6 py-4 text-left">
+                    <button onClick={() => deleteGuestMember(index)} className="font-medium text-blue-600 dark:text-blue hover:underline">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
