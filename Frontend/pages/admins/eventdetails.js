@@ -416,13 +416,33 @@ const Dashboard = ({ username }) => {
       </div>
       <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
-        <div className="w-full flex justify-center items-center mb-5 lg:flex-row xs:space-y-3 lg:space-y-0">
-          <button onClick={() => setIsFormOpen(true)} className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem]">Add Members</button>
+        <div classname="rounded-md shadow-sm" role="group">
+          <button
+            type="button"
+            className="p-2.5 bg-blue-700 rounded-full text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            onClick={() => setIsFormOpen(true)}
+          >
+            Add Members
+          </button>
           <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-          <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem] cursor-pointer">Import</label>
-          <a href={downloadMembers()} download="members.csv" className="p-2.5 bg-blue-500 rounded-full text-white lg:mr-[1rem]">Download List</a>
-          <button onClick={() => { Cookies.set('eventId', eventDetails._id); router.push('./eventReport') }} className="p-2.5 bg-blue-500 rounded-full text-white">Generate Event Report</button>
+          <label htmlFor="fileUpload" className="p-2.5 bg-green-700 rounded-full text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 cursor-pointer">
+            Import
+          </label>
+          <button
+            type="button"
+            className="p-2.5 bg-red-700 rounded-full text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            <a href={downloadMembers()} download="members.csv">Download List</a>
+          </button>
+          <button
+            type="button"
+            className="p-2.5 bg-purple-700 rounded-full text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+            onClick={() => { Cookies.set('eventId', eventDetails._id); router.push('./eventReport') }}
+          >
+            Generate Event Report
+          </button>
         </div>
+
         {isFormOpen && (
           <div className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
             <input type="text" value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Name" />
