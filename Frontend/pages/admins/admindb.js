@@ -435,6 +435,18 @@ const Dashboard = ({ username }) => {
     return null;
   }
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Function to handle changes in the search input field
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Filter the members array based on the search query
+  const filteredMembers = members.filter((member) =>
+    member.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <ToastContainer />
@@ -479,17 +491,89 @@ const Dashboard = ({ username }) => {
           </div>
 
           {currentPage === 'memberList' ? (
-            // If showMembers is true, display the list of members
-            <div className="w-full flex flex-col items-center mt-10">
-              <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-              <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] mb-[1rem] cursor-pointer w-[6rem] text-center">Import</label>
-              <h2 className="text-2xl font-bold mb-5">Members of {forum}:</h2>
-              {members.map((member, index) => (
-                <div key={index} className="w-1/2 p-4 border rounded mb-4">
-                  {member.name}
+            <div>
+              <h2 className="text-2xl font-bold mb-5 text-center mt-[4rem]">Members of {forum}:</h2>
+              <div className="mx-auto flex justify-center">
+                <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
+                <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] mb-[1rem] cursor-pointer w-[6rem] text-center">Import</label>
+              </div>
+              <div className="relative overflow-x-auto shadow-md mx-auto sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
+                <div className="pb-3 bg-white">
+                  <div className="relative mt-1">
+                    <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                      <svg
+                        className="w-4 h-4 text-gray-500"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      id="table-search"
+                      className="block pt-3 pb-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Search for members"
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                    />
+                  </div>
                 </div>
-              ))}
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                  <thead className="text-xs text-gray-900 border-b uppercase bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        Name
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Email
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Phone Number
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Year of Join
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredMembers.map((member, index) => (
+                      <tr
+                        key={index}
+                        className="bg-white border-b dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300"
+                      >
+                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                          {member.name}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">{member.email}</td>
+                        <td className="px-6 py-4 text-gray-700">{member.phoneNumber}</td>
+                        <td className="px-6 py-4 text-gray-700">{member.yearOfJoin}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+            // If showMembers is true, display the list of members
+            // <div className="w-full flex flex-col items-center mt-10">
+            //   <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
+            //   <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] mb-[1rem] cursor-pointer w-[6rem] text-center">Import</label>
+            //   <h2 className="text-2xl font-bold mb-5">Members of {forum}:</h2>
+            //   {members.map((member, index) => (
+            //     <div key={index} className="w-1/2 p-4 border rounded mb-4">
+            //       {member.name}
+            //     </div>
+            //   ))}
+            // </div>
+
           ) : currentPage === 'manageEvents' ? (
             <Grid item xs={12}>
               <div className="lg:w-full flex flex-col items-center mt-10 xs:w-[70%] mx-auto">

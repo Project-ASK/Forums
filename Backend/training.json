@@ -7,7 +7,11 @@
       "name": "Karthik Vijay",
       "username": "karthik1801",
       "about": "MERN Stack Developer,React Native App Developer,Networking Enthusiast",
-      "topics": ["Cybersecurity", "Web Development", "App Development"]
+      "topics": [
+        "Cybersecurity",
+        "Web Development",
+        "App Development"
+      ]
     },
     {
       "_id": {
@@ -16,7 +20,10 @@
       "name": "R Ashwin",
       "username": "ashwinr7603",
       "about": "oru rasam",
-      "topics": ["Cybersecurity", "Cloud"]
+      "topics": [
+        "Cybersecurity",
+        "Cloud"
+      ]
     },
     {
       "_id": {
@@ -25,7 +32,9 @@
       "name": "Sanjay Mathew",
       "username": "m3bionix",
       "about": "HI I AM SANJAY MATHEW....",
-      "topics": ["Personality"]
+      "topics": [
+        "Personality"
+      ]
     }
   ],
   "events": [
@@ -35,7 +44,10 @@
       },
       "eventName": "YIP Marathon",
       "eventDate": "2024-03-30",
-      "tags": ["Personality", "AI"]
+      "tags": [
+        "Personality",
+        "AI"
+      ]
     },
     {
       "_id": {
@@ -43,7 +55,9 @@
       },
       "eventName": "CodeVerse",
       "eventDate": "2024-04-04",
-      "tags": ["Web Development"]
+      "tags": [
+        "Web Development"
+      ]
     },
     {
       "_id": {
@@ -51,7 +65,9 @@
       },
       "eventName": "PiCraft",
       "eventDate": "2024-04-12",
-      "tags": ["Cybersecurity"]
+      "tags": [
+        "Cybersecurity"
+      ]
     }
   ]
 }

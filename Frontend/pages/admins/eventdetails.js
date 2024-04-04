@@ -386,6 +386,22 @@ const Dashboard = ({ username }) => {
     router.back();
   }
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Function to handle changes in the search input field
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Filter the members array based on the search query
+  const filteredMembers = members.filter((member) =>
+    member.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredGuestMembers = guestUsers.filter((member) =>
+    member.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <ToastContainer />
@@ -414,9 +430,9 @@ const Dashboard = ({ username }) => {
           </div>
         }
       </div>
-      <div className="w-full flex flex-col items-center mt-10 overflow-auto" style={{ maxHeight: '300px' }}>
+      <div className="w-full flex flex-col items-center mt-10 overflow-auto">
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
-        <div classname="rounded-md shadow-sm" role="group">
+        <div className="rounded-md shadow-sm flex items-center" role="group">
           <button
             type="button"
             className="p-2.5 bg-blue-700 rounded-full text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -442,7 +458,6 @@ const Dashboard = ({ username }) => {
             Generate Event Report
           </button>
         </div>
-
         {isFormOpen && (
           <div className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
             <input type="text" value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder="Name" />
@@ -453,7 +468,36 @@ const Dashboard = ({ username }) => {
             </div>
           </div>
         )}
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg lg:w-[50%] xs:w-full mt-[2rem]">
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
+          <div className="pb-3 bg-white">
+            <div className="relative mt-1">
+              <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                id="table-search"
+                className="block pt-3 pb-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search for members"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+              />
+            </div>
+          </div>
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-900 border-b uppercase bg-gray-50 ">
               <tr>
@@ -472,7 +516,7 @@ const Dashboard = ({ username }) => {
               </tr>
             </thead>
             <tbody>
-              {members.map((member, index) => (
+              {filteredMembers.map((member, index) => (
                 <tr key={index} className="bg-white border-b  dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     {member.name}
@@ -487,7 +531,7 @@ const Dashboard = ({ username }) => {
                   </td>
                 </tr>
               ))}
-              {guestUsers && guestUsers.map((member, index) => (
+              {guestUsers && filteredGuestMembers.map((member, index) => (
                 <tr key={index} className="bg-white border-b  dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     {member.name} (Guest)

@@ -22,23 +22,28 @@ import SendIcon from '@mui/icons-material/Send';
 // );
 
 const ChatBubble = ({ text, timestamp, isUser }) => (
-    <Box
-        bgcolor={isUser ? 'primary.main' : 'secondary.main'}
-        color={isUser ? 'primary.contrastText' : 'secondary.contrastText'}
-        p={1.8}
-        my={1}
-        alignSelf={isUser ? 'flex-end' : 'flex-start'}
-        borderRadius={20} // Increase the border radius for a more rounded shape
-        boxShadow={3} // Add a shadow for depth
-        maxWidth="75%"
-        minWidth="6%"
-        sx={{ // Add custom CSS styles
-            wordBreak: 'break-word', // Break long words into multiple lines
-        }}
-    >
-        <Typography>{text}</Typography>
-        <Typography variant="caption" color="textSecondary">{timestamp}</Typography>
-    </Box>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-3.5 mb-4`}>
+        <div className={` ${isUser ? 'bg-blue-600' : 'bg-orange-400'} flex flex-col w-[60%] max-w-[320px] leading-1.5 p-2.5 border-gray-200 rounded-e-xl rounded-es-xl`}>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                {!isUser && (
+                    <span className="text-md font-bold text-gray-900 dark:text-white">
+                        Forum Admin
+                    </span>
+                )}
+                {isUser && (
+                    <span className="text-md font-bold text-gray-900 dark:text-white">
+                        Office Admin
+                    </span>
+                )}
+                <span className="text-md font-normal text-white">
+                    {timestamp}
+                </span>
+            </div>
+            <p className="text-md font-normal py-2.5 text-white">
+                {text}
+            </p>
+        </div>
+    </div>
 );
 
 const Connect = () => {
@@ -179,16 +184,16 @@ const Connect = () => {
                 <br />
                 My ID: {officeId}
             </Box>
-                <Box flexGrow={1} p={2} overflow="auto" display="flex" flexDirection="column" ref={chatContainerRef}>
-                    {Object.entries(chatMessages).map(([date, messages]) => (
-                        <React.Fragment key={date}>
-                            <Divider>{date}</Divider>
-                            {messages.map((msg, index) => (
-                                <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === officeId} />
-                            ))}
-                        </React.Fragment>
-                    ))}
-                </Box>
+            <Box flexGrow={1} p={2} overflow="auto" display="flex" flexDirection="column" ref={chatContainerRef}>
+                {Object.entries(chatMessages).map(([date, messages]) => (
+                    <React.Fragment key={date}>
+                        <Divider>{date}</Divider>
+                        {messages.map((msg, index) => (
+                            <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === officeId} />
+                        ))}
+                    </React.Fragment>
+                ))}
+            </Box>
             <Box p={2} display="flex" className="relative bottom-[2rem]" style={{ zIndex: 1 }}>
                 <TextField
                     variant="outlined"
