@@ -971,6 +971,31 @@ router.route('/admin/updateEvent')
         }
     });
 
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// app.post('/create-checkout-session', async (req, res) => {
+//     const session = await stripe.checkout.sessions.create({
+//       line_items: [
+//         {
+//           price_data: {
+//             currency: 'rs',
+//             product_data: {
+//             },
+//             unit_amount: amount, // Use the amount variable here
+//           },
+//           quantity: 1,
+//         },
+//       ],
+//       mode: 'payment',
+//       success_url: 'http://localhost:4242/success',
+//       cancel_url: 'http://localhost:4242/cancel',
+//     });
+  
+//     res.redirect(303, session.url);
+//   });
+
+
+// Stripe Payment module ends here  
+
 router.route('/admin/deleteEvent')
     .post(async (req, res) => {
         const { eventId } = req.body;
