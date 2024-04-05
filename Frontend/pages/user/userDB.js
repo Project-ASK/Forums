@@ -633,6 +633,18 @@ const Dashboard = ({ username }) => {
         }
     };
 
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Function to handle changes in the search input field
+    const handleSearchInputChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    // Filter the members array based on the search query
+    const filteredEvents = events.filter((event) =>
+        event.eventName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // If username is not available, don't render anything
     if (!username) {
         return null;
@@ -714,75 +726,103 @@ const Dashboard = ({ username }) => {
                 </div>
             </div>
             <div className={`relative top-[6rem] pt-[4rem] ${isSmallScreen ? 'text-center mx-auto' : 'ml-[5rem]'}`}>
-                <h2 className="font-product-sans font-semibold text-2xl">Events</h2>
+                <h2 className="font-product-sans font-semibold text-2xl relative top-12">Events</h2>
+                <div className="relative top-12 pb-3 flex justify-center">
+                    <div className="relative mt-1">
+                        <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg
+                                className="w-4 h-4 text-gray-500"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                                />
+                            </svg>
+                        </div>
+                        <input
+                            type="text"
+                            id="table-search"
+                            className="block pt-3 pb-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Search for events"
+                            value={searchQuery}
+                            onChange={handleSearchInputChange}
+                        />
+                    </div>
+                </div>
             </div>
             <div className="flex flex-wrap justify-center items-center h-screen shadow-lg rounded-lg bg-blue-100 mt-[2rem] w-[96%] mx-auto">
                 {isSmallScreen ? (
                     <Carousel className="w-full h-[70%]" indicatorContainerProps={{ style: { display: 'none' } }}>
-                        {events &&
-                            events.map((event, index) => (
-                                <Grid container spacing={15} className="justify-center items-center" key={index}>
-                                    <Grid item xs={9.5} md={3} >
-                                        <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 mt-[20px]">
-                                            <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
-                                                <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
-                                                {recommendedEvents.some(recommendedEvent => recommendedEvent.eventName === event.eventName) && (
-                                                    <div className="absolute top-0 right-0 bg-green-600 text-white px-2 py-1 font-bold text-sm rounded-full">
-                                                        Recommended
-                                                    </div>
-                                                )}
-                                                {new Date(event.date) > today && (
-                                                    <div className="absolute top-0 left-0 bg-blue-600 text-white px-2 py-1 font-bold text-sm rounded-full">
-                                                        New
-                                                    </div>
-                                                )}
+                        {filteredEvents.map((event, index) => (
+                            <Grid container spacing={15} className="justify-center items-center" key={index}>
+                                <Grid item xs={9.5} md={3} >
+                                    <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 mt-[20px]">
+                                        <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
+                                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
+                                            {recommendedEvents.some(recommendedEvent => recommendedEvent.eventName === event.eventName) && (
+                                                <div className="absolute top-0 right-0 bg-green-600 text-white px-2 py-1 font-bold text-sm rounded-full">
+                                                    Recommended
+                                                </div>
+                                            )}
+                                            {new Date(event.date) > today && (
+                                                <div className="absolute top-0 left-0 bg-blue-600 text-white px-2 py-1 font-bold text-sm rounded-full">
+                                                    New
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="block font-bold text-xl">{event.eventName}</p>
                                             </div>
-                                            <div className="p-6">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <p className="block font-bold text-xl">{event.eventName}</p>
+                                            <div className="flex items-center space-x-5 mb-2">
+                                                <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-red-300 rounded-xl">
+                                                    <img src="/assets/queue.png" height={20} width={20} />
+                                                    <p>{event.forumName}</p>
                                                 </div>
-                                                <div className="flex items-center space-x-5 mb-2">
-                                                    <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-red-300 rounded-xl">
-                                                        <img src="/assets/queue.png" height={20} width={20} />
-                                                        <p>{event.forumName}</p>
-                                                    </div>
-                                                    <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-amber-200 rounded-xl">
-                                                        <img src="/assets/time.png" height={20} width={22} />
-                                                        <p className="text-zinc-600">{event.date}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex p-2 text-xs text-white font-bold justify-between items-center bg-emerald-300 rounded-xl">
-                                                    <img src="/assets/pin.png" height={20} width={20} />
-                                                    <p>{event.location}</p>
+                                                <div className="flex p-2 text-sm text-white font-bold items-center justify-center space-x-2 bg-amber-200 rounded-xl">
+                                                    <img src="/assets/time.png" height={20} width={22} />
+                                                    <p className="text-zinc-600">{event.date}</p>
                                                 </div>
                                             </div>
-                                            <div className="p-6 pt-0">
-                                                {joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName && joinedEvent.isAttended) ? (
-                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-red-200 cursor-not-allowed">
-                                                        Participated
-                                                    </p>
-                                                ) : new Date(event.date) < today ? (
-                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-red-200 cursor-not-allowed">
-                                                        Ended
-                                                    </p>
-                                                ) : (
-                                                    joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName) ? (
-                                                        <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-100 hover:bg-green-200">
-                                                            Already Joined
-                                                        </p>
-                                                    ) : (
-                                                        <button
-                                                            className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
-                                                            type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
-                                                            Join Event
-                                                        </button>
-                                                    )
-                                                )}
+                                            <div className="flex p-2 text-xs text-white font-bold justify-between items-center bg-emerald-300 rounded-xl">
+                                                <img src="/assets/pin.png" height={20} width={20} />
+                                                <p>{event.location}</p>
                                             </div>
                                         </div>
-                                    </Grid>
+                                        <div className="p-6 pt-0">
+                                            {joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName && joinedEvent.isAttended) ? (
+                                                <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-red-200 cursor-not-allowed">
+                                                    Participated
+                                                </p>
+                                            ) : new Date(event.date) < today ? (
+                                                <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-red-200 cursor-not-allowed">
+                                                    Ended
+                                                </p>
+                                            ) : (
+                                                joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName) ? (
+                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-green-100 hover:bg-green-200">
+                                                        Already Joined
+                                                    </p>
+                                                ) : (
+                                                    <button
+                                                        className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-green-100"
+                                                        type="button" onClick={() => { setSelectedEvent(event); fetchQuestions(event); setJoinEventModal(true); }}>
+                                                        Join Event
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
                                 </Grid>
-                            ))
+                            </Grid>
+                        ))
                         }
                     </Carousel>
                 ) : (
@@ -795,7 +835,7 @@ const Dashboard = ({ username }) => {
                             }}
                             autoplay={{ delay: 2000 }}
                         >
-                            {events.map((event, index) => (
+                            {filteredEvents.map((event, index) => (
                                 <SwiperSlide key={index}>
                                     <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 h-[90%] overflow-auto mt-[20px]">
                                         <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">

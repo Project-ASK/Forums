@@ -194,8 +194,8 @@ export default function Highlights() {
           college,
           eventName,
           eventId,
-          type:"Guest",
-          isAttended:false
+          type: "Guest",
+          isAttended: false
         }),
       });
 
@@ -297,7 +297,7 @@ export default function Highlights() {
             </Carousel>
           ) : (
             // <Grid container spacing={2.5}>
-            <Swiper {...sliderSettings} className="w-[100%] mx-auto"
+            <Swiper {...sliderSettings} className="w-[100%] mx-auto relative"
               modules={[Navigation, Autoplay]}
               navigation={{
                 nextEl: '.swiper-button-next',
@@ -322,7 +322,7 @@ export default function Highlights() {
                       borderColor: '#4287f5',
                       background: 'transparent',
                       backgroundColor: 'grey.400',
-                      margin: "auto"
+                      margin: "auto",
                     }}
                   >
                     <Box sx={{ opacity: '100%' }}>
