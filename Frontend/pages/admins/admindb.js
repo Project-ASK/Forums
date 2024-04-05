@@ -648,6 +648,7 @@ const Dashboard = ({ username }) => {
                     <TextField
                       label="Event Name"
                       fullWidth
+                      required
                       value={currentEvent.eventName}
                       onChange={(event) => handleEventChange('eventName', event)}
                       margin="normal"
@@ -656,6 +657,7 @@ const Dashboard = ({ username }) => {
                     <TextField
                       label="Event Description"
                       fullWidth
+                      required
                       value={currentEvent.description}
                       onChange={(event) => handleEventChange('description', event)}
                       margin="normal"
@@ -665,6 +667,7 @@ const Dashboard = ({ username }) => {
                       label="Event Date"
                       type="date"
                       fullWidth
+                      required
                       value={currentEvent.date}
                       onChange={(event) => handleEventChange('date', event)}
                       margin="normal"
@@ -677,6 +680,7 @@ const Dashboard = ({ username }) => {
                       label="Event Time"
                       type="time"
                       fullWidth
+                      required
                       value={currentEvent.time}
                       onChange={(event) => handleEventChange('time', event)}
                       margin="normal"
@@ -688,6 +692,7 @@ const Dashboard = ({ username }) => {
                     <TextField
                       label="Location"
                       fullWidth
+                      required
                       value={currentEvent.location}
                       onChange={(event) => handleEventChange('location', event)}
                       margin="normal"
@@ -761,8 +766,17 @@ const Dashboard = ({ username }) => {
                     <TextField
                       label="Amount"
                       fullWidth
+                      required
                       value={currentEvent.amount}
                       onChange={(event) => handleEventChange('amount', event)}
+                      margin="normal"
+                      variant="outlined"
+                    />
+                    <TextField
+                      label="Certificate Link"
+                      fullWidth
+                      value={currentEvent.certificateLink}
+                      onChange={(event) => handleEventChange('certificateLink', event)}
                       margin="normal"
                       variant="outlined"
                     />

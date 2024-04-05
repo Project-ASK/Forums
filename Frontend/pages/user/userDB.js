@@ -19,6 +19,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Link } from '@mui/material';
 
 const Dashboard = ({ username }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
@@ -63,6 +64,8 @@ const Dashboard = ({ username }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const [posts, setPosts] = useState([]);
+    const [isFeedback, setIsFeedback] = useState(false);
+    const [feedback, setFeedback] = useState('');
 
     const nodeNotifications = useRef(); // Create a new useRef for notifications
 
@@ -650,6 +653,39 @@ const Dashboard = ({ username }) => {
         return null;
     }
 
+    const handleFeedbackDialog = () => {
+        setIsFeedback(true);
+    }
+
+    const handleCloseFeedback = () => {
+        setIsFeedback(false);
+    }
+
+    const handleSubmitFeedback = async (eventId, feedback) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/submitFeedback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, eventId, feedback }),
+        });
+        if (response.ok) {
+            setIsFeedback(false);
+            setFeedback('');
+            toast.success('Feedback submitted successfully', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    }
+
     return (
         <>
             <ToastContainer />
@@ -798,9 +834,42 @@ const Dashboard = ({ username }) => {
                                         </div>
                                         <div className="p-6 pt-0">
                                             {joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName && joinedEvent.isAttended) ? (
-                                                <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-red-200 cursor-not-allowed">
-                                                    Participated
-                                                </p>
+                                                <>
+                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-orange-200 cursor-not-allowed" onClick={handleFeedbackDialog}>
+                                                        Submit Feedback
+                                                    </p>
+                                                    {isFeedback && (
+                                                        <Dialog open={isFeedback} onClose={handleCloseFeedback}>
+                                                            <DialogTitle>Feedback Form</DialogTitle>
+                                                            <DialogContent>
+                                                                {event.certificateLink && (
+                                                                    <Typography component="h6" variant="h7">
+                                                                        Certificate Link:&nbsp;
+                                                                        <Link href={event.certificateLink} variant="body2">
+                                                                            {event.certificateLink}
+                                                                        </Link>
+                                                                    </Typography>
+                                                                )}
+                                                                <TextField
+                                                                    label="Feedback"
+                                                                    fullWidth
+                                                                    value={feedback}
+                                                                    onChange={(e) => setFeedback(e.target.value)}
+                                                                    margin="normal"
+                                                                    variant="outlined"
+                                                                />
+                                                            </DialogContent>
+                                                            <DialogActions>
+                                                                <Button onClick={handleCloseFeedback} color="primary">
+                                                                    Cancel
+                                                                </Button>
+                                                                <Button onClick={() => handleSubmitFeedback(event._id, feedback)}>
+                                                                    Submit
+                                                                </Button>
+                                                            </DialogActions>
+                                                        </Dialog>
+                                                    )}
+                                                </>
                                             ) : new Date(event.date) < today ? (
                                                 <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:bg-red-200 cursor-not-allowed">
                                                     Ended
@@ -872,9 +941,43 @@ const Dashboard = ({ username }) => {
                                         </div>
                                         <div className="p-6 pt-0">
                                             {joinedEvents.find(joinedEvent => joinedEvent.eventName === event.eventName && joinedEvent.isAttended) ? (
-                                                <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-red-200 cursor-not-allowed">
-                                                    Participated
-                                                </p>
+                                                <>
+                                                    <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-orange-200 cursor-pointer" onClick={handleFeedbackDialog}>
+                                                        {/* Participated */}
+                                                        Sumbit Feedback
+                                                    </p>
+                                                    {isFeedback && (
+                                                        <Dialog open={isFeedback} onClose={handleCloseFeedback}>
+                                                            <DialogTitle>Feedback Form</DialogTitle>
+                                                            <DialogContent>
+                                                                {event.certificateLink && (
+                                                                    <Typography component="h6" variant="h7">
+                                                                        Certificate Link:&nbsp;
+                                                                        <Link href={event.certificateLink} variant="body2">
+                                                                            {event.certificateLink}
+                                                                        </Link>
+                                                                    </Typography>
+                                                                )}
+                                                                <TextField
+                                                                    label="Feedback"
+                                                                    fullWidth
+                                                                    value={feedback}
+                                                                    onChange={(e) => setFeedback(e.target.value)}
+                                                                    margin="normal"
+                                                                    variant="outlined"
+                                                                />
+                                                            </DialogContent>
+                                                            <DialogActions>
+                                                                <Button onClick={handleCloseFeedback} color="primary">
+                                                                    Cancel
+                                                                </Button>
+                                                                <Button onClick={() => handleSubmitFeedback(event._id, feedback)}>
+                                                                    Submit
+                                                                </Button>
+                                                            </DialogActions>
+                                                        </Dialog>
+                                                    )}
+                                                </>
                                             ) :
                                                 new Date(event.date) < today ? (
                                                     <p className="align-middle select-none font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100 bg-gray-100 hover:hover:bg-red-200 cursor-not-allowed">

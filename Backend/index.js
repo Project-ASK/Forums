@@ -282,7 +282,12 @@ const EventSchema = new mongoose.Schema({
     tags: [String],
     collabForums: [String],
     amount: Number,
-    isApproved: String
+    isApproved: String,
+    certificateLink: String,
+    feedbacks: [{
+        feedback: String,
+        name: String
+    }]
 });
 
 const Event = mongoose.model('Event', EventSchema);
@@ -941,7 +946,7 @@ router.route('/officeadminId')
 
 router.route('/admin/updateEvent')
     .post(async (req, res) => {
-        const { eventId, eventName, date, location, time, description, amount, eventVenue, questions, tags, collabForums } = req.body;
+        const { eventId, eventName, date, location, time, description, amount, eventVenue, questions, tags, collabForums, certificateLink } = req.body;
         try {
             const event = await Event.findOne({ eventId });
             if (!event) {
@@ -949,6 +954,7 @@ router.route('/admin/updateEvent')
             }
             event.eventName = eventName;
             event.date = date;
+            event.time = time;
             event.location = location;
             event.description = description;
             event.amount = amount;
@@ -956,6 +962,7 @@ router.route('/admin/updateEvent')
             event.questions = questions;
             event.tags = tags;
             event.collabForums = collabForums;
+            event.certificateLink = certificateLink;
             await event.save();
             res.status(200).send({ message: 'Event updated successfully' });
         } catch (error) {
@@ -1116,7 +1123,7 @@ router.post('/guest/register', async (req, res) => {
         const newGuest = new Guest({
             name,
             email,
-            phoneNumber:phone,
+            phoneNumber: phone,
             college,
             eventName,
             eventId,
@@ -1176,3 +1183,22 @@ router.route('/removeGuestFromEvent')
             res.status(200).send({ success: false });
         }
     });
+
+router.route('/submitFeedback')
+    .post(async (req, res) => {
+        const { name, eventId, feedback } = req.body;
+        try {
+            const event = await Event.findById(eventId);
+            if (!event) {
+                return res.status(404).send({ message: 'Event not found' });
+            }
+            // Append feedback and username to the event's feedbacks array
+            event.feedbacks.push({ feedback, name });
+            await event.save();
+            return res.status(200).send({ success: true });
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            return res.status(500).send({ message: 'Internal server error' });
+        }
+    });
+

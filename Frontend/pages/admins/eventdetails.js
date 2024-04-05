@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import Image from 'next/image';
 import path from 'path'
 import { ToastContainer, Bounce, toast } from 'react-toastify';
+import { Box, Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = ({ username }) => {
@@ -15,6 +16,8 @@ const Dashboard = ({ username }) => {
   const [members, setMembers] = useState([]);
   const [guestUsers, setGuestUsers] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [feedbacks, setFeedbacks] = useState(false);
+  const [eventFeedbacks, setEventFeedbacks] = useState(null);
 
   const eventId = Cookies.get('eventId');
   const forum = Cookies.get('forum');
@@ -30,6 +33,7 @@ const Dashboard = ({ username }) => {
       });
       const data = await response.json();
       setEventDetails(data.event);
+      setEventFeedbacks(data.event.feedbacks);
     };
 
     if (eventId) {
@@ -430,7 +434,7 @@ const Dashboard = ({ username }) => {
           </div>
         }
       </div>
-      <div className="w-full flex flex-col items-center mt-10 overflow-auto">
+      <div className="w-full flex flex-col flex-wrap items-center mt-10 overflow-auto">
         <h2 className="text-2xl font-bold mb-5">Participants List</h2>
         <div className="rounded-md shadow-sm flex items-center" role="group">
           <button
@@ -457,6 +461,13 @@ const Dashboard = ({ username }) => {
           >
             Generate Event Report
           </button>
+          <button
+            type="button"
+            className="ml-2 p-2.5 bg-blue-700 rounded-full text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium text-sm px-5 py-2.5 text-center mb-2 dark:focus:ring-purple-900"
+            onClick={() => { setFeedbacks(true) }}
+          >
+            Feedbacks
+          </button>
         </div>
         {isFormOpen && (
           <div className="w-1/2 p-4 border rounded mb-4 flex justify-between items-center">
@@ -468,6 +479,39 @@ const Dashboard = ({ username }) => {
             </div>
           </div>
         )}
+        {feedbacks && (
+          <Dialog
+            open={feedbacks}
+            onClose={() => { setFeedbacks(false) }}
+            PaperProps={{
+              style: {
+                backgroundColor: '#f5f5f5',
+                borderRadius: '15px',
+              },
+            }}
+          >
+            <DialogTitle style={{ textAlign: 'center', color: '#3f51b5' }}>Feedbacks</DialogTitle>
+            <DialogContent>
+              {eventFeedbacks && eventFeedbacks.map((feedback, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    border: '1px solid #ddd', // Border around the feedback
+                    borderRadius: '5px', // Rounded corners for the feedback box
+                    padding: '10px', // Padding inside the feedback box
+                    marginBottom: '10px', // Space between feedback boxes
+                    overflow: 'auto', // Set overflow to auto
+                  }}
+                >
+                  <Typography component="p" variant="body1" style={{ fontStyle: 'italic' }}>
+                    "{feedback.feedback}" - <strong>{feedback.name}</strong>
+                  </Typography>
+                </Box>
+              ))}
+            </DialogContent>
+          </Dialog>
+        )}
+
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
           <div className="pb-3 bg-white">
             <div className="relative mt-1">
