@@ -20,8 +20,11 @@ import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Link } from '@mui/material';
+import { loadStripe } from '@stripe/stripe-js';
 
-const Dashboard = ({ username }) => {
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+
+const Dashboard = ({ username, pay }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [forums, setForums] = useState([]);
@@ -66,6 +69,7 @@ const Dashboard = ({ username }) => {
     const [posts, setPosts] = useState([]);
     const [isFeedback, setIsFeedback] = useState(false);
     const [feedback, setFeedback] = useState('');
+    const [paymentError, setPaymentError] = useState(null);
 
     const nodeNotifications = useRef(); // Create a new useRef for notifications
 
@@ -686,6 +690,105 @@ const Dashboard = ({ username }) => {
         }
     }
 
+    const paymentCheckOut = async () => {
+        try {
+            // Fetch checkout session from server
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: selectedEvent.amount,
+                    eventName: selectedEvent.eventName
+                })
+            });
+
+            const { sessionId } = await response.json();
+            Cookies.set('sessionId', sessionId);
+            Cookies.set('eventDetails', JSON.stringify({
+                eventName: selectedEvent.eventName,
+                forumName: selectedEvent.forumName,
+                questions: selectedEvent.questions,
+                responses
+            }));
+
+            const stripe = await stripePromise;
+            const { error } = await stripe.redirectToCheckout({
+                sessionId
+            });
+
+            if (error) {
+                console.error('Payment failed:', error);
+                setPaymentError('Payment failed. Please try again.');
+            } else {
+                console.log('Payment succeeded!');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setPaymentError('An error occurred. Please try again later.');
+        }
+    };
+
+    const [sessionId, setSessionId] = useState(Cookies.get('sessionId'));
+    const [hasJoined, setHasJoined] = useState(false);
+
+    useEffect(() => {
+        const checkPaymentStatus = async () => {
+            if (sessionId && !hasJoined) {
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/payment/check-payment-status`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            sessionId
+                        })
+                    });
+
+                    const { paymentStatus } = await response.json();
+
+                    if (paymentStatus === 'paid') {
+                        const eventDetails = JSON.parse(Cookies.get('eventDetails'));
+                        joinPaidEvent(eventDetails);
+                        setHasJoined(true);
+                        const urlWithoutSessionId = window.location.pathname;
+                        router.replace(urlWithoutSessionId, undefined, { shallow: true });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        };
+
+        checkPaymentStatus();
+    }, [sessionId, hasJoined]);
+
+    function joinPaidEvent(eventDetails) {
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/joinEvent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                event: eventDetails.eventName,
+                forumName: eventDetails.forumName,
+                questions: eventDetails.questions,
+                responses: eventDetails.responses
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Cookies.remove('sessionId');
+                    Cookies.remove('eventDetails');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
     return (
         <>
             <ToastContainer />
@@ -1038,7 +1141,7 @@ const Dashboard = ({ username }) => {
                                 {selectedEvent.amount > 0 && (
                                     <div className="mt-4">
                                         <p className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Amount</p>
-                                        <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" value={selectedEvent.amount} readOnly/>
+                                        <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" value={selectedEvent.amount} readOnly />
                                     </div>
                                 )}
                             </div>
@@ -1047,7 +1150,7 @@ const Dashboard = ({ username }) => {
                                     Cancel
                                 </button>
                                 <button type="button" className={`bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm`} onClick={() => selectedEvent.amount > 0 ? paymentCheckOut() : joinEvent()}>
-                                    {selectedEvent.amount > 0 ? 'Pay and Join' : 'Join Event' }
+                                    {selectedEvent.amount > 0 ? 'Pay and Join' : 'Join Event'}
                                 </button>
                             </div>
                         </div>
@@ -1313,7 +1416,9 @@ export async function getServerSideProps(context) {
     }
     // If username is available, pass it as a prop
     return {
-        props: { username }, // will be passed to the page component as props
+        props: {
+            username
+        }
     }
 }
 

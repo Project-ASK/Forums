@@ -10,7 +10,6 @@ const cors = require('cors');
 const multer = require('multer'); // Add this
 const path = require('path'); // Add this
 const fs = require('fs');
-const htmlToPdf = require('html-pdf');
 const os = require('os');
 const exec = require('child_process').exec;
 const cron = require('node-cron');
@@ -366,13 +365,18 @@ router.route('/joinEvent')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        const questionResponsePairs = questions.map((question) => ({
-            question: question.question,
-            response: responses[question.question]
-        }));
-        user.joinedEvents.push({ eventName: event, forumName, questions: questionResponsePairs });
-        await user.save();
-        res.status(200).send({ success: true });
+        const hasJoined = user.joinedEvents.some(joinedEvent => joinedEvent.eventName === event);
+        if (!hasJoined) {
+            const questionResponsePairs = questions.map((question) => ({
+                question: question.question,
+                response: responses[question.question]
+            }));
+            user.joinedEvents.push({ eventName: event, forumName, questions: questionResponsePairs });
+            await user.save();
+            res.status(200).send({ success: true });
+        }else{
+            res.status(200).send({ message: 'User has already joined this event' });
+        }
     });
 
 router.route('/getJoinedEvents')
@@ -481,104 +485,6 @@ router.route('/updateUser')
         await user.save();
         res.status(200).send({ message: 'User Updated' });
     })
-
-router.post('/generateHtmlPdf', async (req, res) => {
-    const { richTextContent } = req.body;
-
-    if (!richTextContent || richTextContent.trim() === '') {
-        return res.status(400).json({ error: 'Rich text content is empty' });
-    }
-
-    // Create an HTML file with the rich text content
-    const contentState = JSON.parse(richTextContent);
-
-    // Convert Draft.js content state to HTML
-    const htmlContent = draftToHtml(contentState);
-    const htmlFilename = 'output.html';
-    fs.writeFileSync(htmlFilename, htmlContent);
-
-    // Convert HTML to PDF
-    htmlToPdf.create(htmlContent, {}).toBuffer((err, buffer) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Failed to generate PDF' });
-        } else {
-            const base64String = buffer.toString('base64');
-            res.status(200).json({ pdf: base64String });
-        }
-
-        // Delete HTML file
-        fs.unlinkSync(htmlFilename);
-    });
-});
-
-function draftToHtml(contentState) {
-    const blocks = contentState.blocks.map(block => {
-        let text = block.text;
-        let blockHtml = '';
-
-        switch (block.type) {
-            case 'unordered-list-item':
-                blockHtml += '<ul>';
-                blockHtml += `<li>${text}</li>`;
-                blockHtml += '</ul>';
-                break;
-            case 'ordered-list-item':
-                blockHtml += '<ol>';
-                blockHtml += `<li>${text}</li>`;
-                blockHtml += '</ol>';
-                break;
-            case 'header-one':
-                blockHtml += `<h1>${text}</h1>`;
-                break;
-            case 'header-two':
-                blockHtml += `<h2>${text}</h2>`;
-                break;
-            default:
-                // Check for inline styles
-                if (block.inlineStyleRanges.length > 0) {
-                    let styledText = text;
-                    block.inlineStyleRanges.sort((a, b) => a.offset - b.offset).forEach(style => {
-                        let startTag = '';
-                        let endTag = '';
-
-                        switch (style.style) {
-                            case 'BOLD':
-                                startTag = '<span style="font-weight: bold;">';
-                                endTag = '</span>';
-                                break;
-                            case 'LARGE':
-                                startTag = '<span style="font-size: 32px;">';
-                                endTag = '</span>';
-                                break;
-                            case 'MEDIUM':
-                                startTag = '<span style="font-size: 16px;">';
-                                endTag = '</span>';
-                                break;
-                            case 'SMALL':
-                                startTag = '<span style="font-size: 12px;">';
-                                endTag = '</span>';
-                                break;
-                            // ... handle other styles as needed ...
-                        }
-
-                        const beforeText = styledText.slice(0, style.offset);
-                        const styled = styledText.slice(style.offset, style.offset + style.length);
-                        const afterText = styledText.slice(style.offset + style.length);
-
-                        styledText = `${beforeText}${startTag}${styled}${endTag}${afterText}`;
-                    });
-                    blockHtml += `<p>${styledText}</p>`;
-                } else {
-                    blockHtml += `<p>${text}</p>`;
-                }
-        }
-
-        return blockHtml;
-    });
-
-    return blocks.join('');
-}
 
 router.route('/checkAndUpdateUser')
     .post(async (req, res) => {
@@ -969,32 +875,7 @@ router.route('/admin/updateEvent')
             console.error(error);
             res.status(500).send({ message: 'An error occurred' });
         }
-    });
-
-// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-// app.post('/create-checkout-session', async (req, res) => {
-//     const session = await stripe.checkout.sessions.create({
-//       line_items: [
-//         {
-//           price_data: {
-//             currency: 'rs',
-//             product_data: {
-//             },
-//             unit_amount: amount, // Use the amount variable here
-//           },
-//           quantity: 1,
-//         },
-//       ],
-//       mode: 'payment',
-//       success_url: 'http://localhost:4242/success',
-//       cancel_url: 'http://localhost:4242/cancel',
-//     });
-  
-//     res.redirect(303, session.url);
-//   });
-
-
-// Stripe Payment module ends here  
+    }); 
 
 router.route('/admin/deleteEvent')
     .post(async (req, res) => {
@@ -1226,4 +1107,40 @@ router.route('/submitFeedback')
             return res.status(500).send({ message: 'Internal server error' });
         }
     });
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+router.post('/create-checkout-session', async (req, res) => {
+    const { amount, eventName } = req.body;
+    const finalAmount = amount * 100;
+
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'inr',
+                    product_data: {
+                        name: eventName,
+                    },
+                    unit_amount: finalAmount,
+                },
+                quantity: 1,
+            }],
+            mode: 'payment',
+            success_url: `${process.env.FRONTEND_URL}/user/userDB?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/user/userDB`,
+        });
+
+        res.status(200).json({ sessionId: session.id });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post('/payment/check-payment-status', async (req, res) => {
+    const { sessionId } = req.body;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.send({ paymentStatus: session.payment_status });
+});
 
