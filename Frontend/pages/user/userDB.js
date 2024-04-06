@@ -1035,13 +1035,19 @@ const Dashboard = ({ username }) => {
                                         <option value="purple">Purple Theme</option>
                                     </select>
                                 </div>
+                                {selectedEvent.amount > 0 && (
+                                    <div className="mt-4">
+                                        <p className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">Amount</p>
+                                        <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" value={selectedEvent.amount} readOnly/>
+                                    </div>
+                                )}
                             </div>
                             <div className="mt-8 text-right">
                                 <button type="button" className="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm mr-2" onClick={() => { setJoinEventModal(false); setQuestions([]); }}>
                                     Cancel
                                 </button>
-                                <button type="button" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm" onClick={joinEvent}>
-                                    Join Event
+                                <button type="button" className={`bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded-lg shadow-sm`} onClick={() => selectedEvent.amount > 0 ? paymentCheckOut() : joinEvent()}>
+                                    {selectedEvent.amount > 0 ? 'Pay and Join' : 'Join Event' }
                                 </button>
                             </div>
                         </div>
