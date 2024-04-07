@@ -9,16 +9,17 @@ const ChatBubble = ({ text, timestamp }) => (
     <Box
         bgcolor={'primary.main'}
         color={'primary.contrastText'}
-        p={1.8}
+        p={2}
         my={1}
         alignSelf={'flex-end'}
-        borderRadius={20} // Increase the border radius for a more rounded shape
+        borderRadius={10} // Increase the border radius for a more rounded shape
         boxShadow={3} // Add a shadow for depth
         maxWidth="75%"
         minWidth="6%"
         sx={{ // Add custom CSS styles
             wordBreak: 'break-word', // Break long words into multiple lines
         }}
+        
     >
         <Typography>{text}</Typography>
         <Typography variant="caption" color="textSecondary">{timestamp}</Typography>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, LineChart, Line, Cell } from 'recharts';
 import Cookies from 'js-cookie';
 
 const Analytics = () => {
@@ -218,6 +218,8 @@ const Analytics = () => {
         setEndMonth(e.target.value);
     }
 
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
+
     return (
         <>
             {!isMobileView ? (
@@ -267,10 +269,16 @@ const Analytics = () => {
                                     cy={200}
                                     labelLine={false}
                                     label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
-                                    outerRadius={80}
+                                    color="#000000"
+                                    outerRadius={120} 
                                     fill="#8884d8"
                                     dataKey="value"
-                                />
+                                >
+                                {
+                                    pieData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
+                                }
+                                </Pie>
+
                                 <Tooltip />
                                 <Legend />
                             </PieChart>
@@ -285,9 +293,15 @@ const Analytics = () => {
                                     labelLine={false}
                                     label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
                                     outerRadius={80}
-                                    fill="rgb(12, 92, 33)"
+                                    fill="#8884d8"
+                                    color="#000000"
                                     dataKey="value"
-                                />
+                                >
+                                {
+                                    topicData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
+                                }
+                                </Pie>
+
                                 <Tooltip />
                                 <Legend />
                             </PieChart>
@@ -308,7 +322,7 @@ const Analytics = () => {
                             <XAxis dataKey="name" interval={0} angle={-10} textAnchor="middle" />
                             <YAxis />
                             <Tooltip />
-                            <Line type="monotone" dataKey="events" stroke="#8884d8" activeDot={{ r: 8 }} />
+                            <Line type="monotone" dataKey="events"  stroke="#FF0000" activeDot={{ r: 8 }} />
                         </LineChart>
                     </div>
 

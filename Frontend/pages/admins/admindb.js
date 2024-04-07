@@ -471,7 +471,10 @@ const Dashboard = ({ username }) => {
                 </div>
               )}
               <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer mx-auto' />
-              <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white mr-[1rem]">Logout</button>
+              <button onClick={handleLogout} className="Btn mr-[50px]">
+                <div class="sign"><svg viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path></svg></div>
+                <div class="text">Logout</div>
+              </button>
             </div>
             {isMenuOpen && (
               <div ref={node} className={`absolute top-0 left-0 lg:w-1/6 xs:w-full h-full bg-white flex flex-col p-4 ${isMenuOpen ? 'animate-slide-in' : 'animate-slide-out'}`}>
@@ -479,12 +482,30 @@ const Dashboard = ({ username }) => {
                   <X size={24} />
                 </button>
                 <ul>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleHomeClick}>Home</li>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleMemberListClick}>Member List</li>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleAnalytics}>Analytics</li>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleManageEventsClick}>Manage Events</li>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handleChatClick}>Office Chat</li>
-                  <li className="p-2 border rounded mb-2 cursor-pointer" onClick={handlePost}>Post Messages</li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleHomeClick}>
+                    <img src="/assets/home.svg" className="ml-[30px]" width={20}/>
+                    <p className="font-sans text-md">Home</p>
+                  </li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleMemberListClick}>
+                    <img src="/assets/people.svg" className="ml-[30px]" width={20}/>
+                    <p className="font-sans text-md">Members</p>
+                  </li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleAnalytics}>
+                    <img src="/assets/stats.svg" className="ml-[30px]" width={20}/>
+                    <p className="font-sans text-md">Analytics</p>
+                  </li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleManageEventsClick}>
+                    <img src="/assets/events.svg" className="ml-[30px]" width={20}/>
+                    <p className="font-sans text-md">Events</p>
+                  </li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleChatClick}>
+                    <img src="/assets/chat.svg" className="ml-[30px]" width={20}/>
+                    <p className="font-sans text-md">Office Chat</p>
+                  </li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handlePost}>
+                    <img src="/assets/message.svg" className="ml-[30px]" width={20}/>
+                    <p className="font-sans text-md">Post Messages</p>
+                  </li>
                 </ul>
               </div>
             )}
@@ -492,14 +513,17 @@ const Dashboard = ({ username }) => {
 
           {currentPage === 'memberList' ? (
             <div>
-              <h2 className="text-2xl font-bold mb-5 text-center mt-[4rem]">Members of {forum}:</h2>
+              <h2 className="text-2xl font-product-sans font-medium mb-5 text-center mt-[4rem]">Members of {forum}:</h2>
               <div className="mx-auto flex justify-center">
                 <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-                <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] mb-[1rem] cursor-pointer w-[6rem] text-center">Import</label>
+                <label htmlFor="fileUpload" className="cssbuttons-io-button flex space-x-5">
+                  <img src="/assets/upload.svg" width={20}/>
+                  <p className="font-product-sans text-sm font-normal">Import</p>
+                </label>
               </div>
               <div className="relative overflow-x-auto shadow-md mx-auto sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
                 <div className="pb-3 bg-white">
-                  <div className="relative mt-1">
+                  <div className="relative mt-1 ml-[30px]">
                     <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                       <svg
                         className="w-4 h-4 text-gray-500"
@@ -527,7 +551,7 @@ const Dashboard = ({ username }) => {
                     />
                   </div>
                 </div>
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 mt-[10px]">
                   <thead className="text-xs text-gray-900 border-b uppercase bg-gray-50">
                     <tr>
                       <th scope="col" className="px-6 py-3">

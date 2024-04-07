@@ -43,7 +43,7 @@ import SendIcon from '@mui/icons-material/Send';
 
 const ChatBubble = ({ text, timestamp, isUser, forum }) => (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-3.5 mb-4`}>
-        <div className={` ${isUser ? 'bg-blue-600' : 'bg-orange-400'} flex flex-col w-[60%] max-w-[320px] leading-1.5 p-2.5 border-gray-200 rounded-e-xl rounded-es-xl`}>
+        <div className={` ${isUser ?  'bg-blue-500' : 'bg-orange-400'} flex flex-col w-[60%] max-w-[320px] leading-1.5 p-2.5 border-gray-200 rounded-e-xl rounded-es-xl`}>
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
                 {!isUser && (
                     <span className="text-md font-bold text-gray-900 dark:text-white">
@@ -51,15 +51,15 @@ const ChatBubble = ({ text, timestamp, isUser, forum }) => (
                     </span>
                 )}
                 {isUser && (
-                    <span className="text-md font-bold text-gray-900 dark:text-white">
+                    <span className="text-md font-product-sans font-bold text-gray-900 dark:text-white">
                         Office Admin
                     </span>
                 )}
-                <span className="text-md font-normal text-white">
+                <span className="text-md font-product-sans font-normal text-white">
                     {timestamp}
                 </span>
             </div>
-            <p className="text-md font-normal py-2.5 text-white">
+            <p className="text-md font-product-sans font-normal py-2.5 text-white">
                 {text}
             </p>
         </div>
