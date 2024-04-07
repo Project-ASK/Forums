@@ -1194,7 +1194,8 @@ router.post('/genAI/prompt', async (req, res) => {
 
     const result = await chat.sendMessage(content);
     const response = result.response;
-    const aiPrompt = response.text();
+    // const aiPrompt = response.text();
+    const aiPrompt = response.text().replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
 
     res.status(200).json({ text: aiPrompt }); // Send the generated text back as the response
 });
