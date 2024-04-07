@@ -1164,7 +1164,7 @@ router.post('/genAI/prompt', async (req, res) => {
         temperature: 0.9,
         topK: 1,
         topP: 1,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 4096,
     };
 
     const safetySettings = [
@@ -1194,8 +1194,10 @@ router.post('/genAI/prompt', async (req, res) => {
 
     const result = await chat.sendMessage(content);
     const response = result.response;
-    // const aiPrompt = response.text();
-    const aiPrompt = response.text().replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    // const aiPrompt = response.text().replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    const aiPrompt = response.text()
+        .replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>') // Replace **...** with <strong>...</strong>
+        .replace(/\n+/g, '<br>'); // Replace consecutive newline characters with <br>
 
     res.status(200).json({ text: aiPrompt }); // Send the generated text back as the response
 });
