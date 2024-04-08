@@ -1,25 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
-import { Box, Typography, TextField, IconButton, Divider } from '@mui/material';
+import { Box, TextField, IconButton, Divider } from '@mui/material';
 import socketIOClient from 'socket.io-client';
 import removeScript from '../../components/loadBot';
 import SendIcon from '@mui/icons-material/Send';
-
-// const ChatBubble = ({ text, timestamp, isUser }) => (
-//     <Box
-//         bgcolor={isUser ? 'primary.main' : 'secondary.main'}
-//         color={isUser ? 'primary.contrastText' : 'secondary.contrastText'}
-//         p={2}
-//         my={1}
-//         alignSelf={isUser ? 'flex-end' : 'flex-start'}
-//         borderRadius={10}
-//         maxWidth="75%"
-//         minWidth="6%"
-//     >
-//         <Typography>{text}</Typography>
-//         <Typography variant="caption" color="textSecondary">{timestamp}</Typography>
-//     </Box>
-// );
 
 const ChatBubble = ({ text, timestamp, isUser }) => (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-3.5 mb-4`}>
@@ -105,8 +89,6 @@ const Connect = () => {
                     return { ...prevMessages, [date]: [newMessage] };
                 }
             });
-            // const formattedTimestamp = new Date(data.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });            // Update chat messages with the new message
-            // setChatMessages(prevMessages => [...prevMessages, { message: data.text, sender: data.sender, timestamp: formattedTimestamp, isUser: false }]);
         });
 
         return () => {
@@ -128,21 +110,14 @@ const Connect = () => {
                 throw new Error('Failed to fetch chat history');
             }
             const data = await response.json();
-            // const chatHistory = data.chatHistory.map(msg => ({
-            //     ...msg,
-            //     timestamp: new Date(msg.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }),
-            //     isUser: msg.sender === adminId // Set isUser flag based on the sender
-            // }));
-            const chatHistory = data.chatHistory.reduce((acc, msg) => {
-                const date = new Date(msg.timestamp).toLocaleDateString();
-                const formattedTimestamp = new Date(msg.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-                const isUser = msg.sender === adminId;
-                const newMsg = { ...msg, timestamp: formattedTimestamp, isUser };
-                if (acc[date]) {
-                    acc[date].push(newMsg);
-                } else {
-                    acc[date] = [newMsg];
-                }
+            const chatHistory = data.chatByDate.reduce((acc, day) => {
+                const date = new Date(day.date).toLocaleDateString();
+                const messages = day.messages.map(msg => {
+                    const formattedTimestamp = new Date(msg.timestamp).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                    const isUser = msg.sender === adminId;
+                    return { ...msg, timestamp: formattedTimestamp, isUser };
+                });
+                acc[date] = messages;
                 return acc;
             }, {});
             setChatMessages(chatHistory);
@@ -150,14 +125,6 @@ const Connect = () => {
             console.error('Error fetching chat history:', error);
         }
     };
-
-    // const handleSend = () => {
-    //     const newMessage = { message, sender: officeId, receiver: adminId, timestamp: new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) }; // Assuming you always send from office to admin
-    //     setChatMessages(prevMessages => [...prevMessages, newMessage]); // Update local state
-    //     const eventName = `message_${officeId}_${adminId}`;
-    //     socket.current.emit(eventName, { text: message, officeId, adminId });
-    //     setMessage('');
-    // };
 
     const handleSend = () => {
         const timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -187,7 +154,7 @@ const Connect = () => {
             <Box flexGrow={1} p={2} overflow="auto" display="flex" flexDirection="column" ref={chatContainerRef}>
                 {Object.entries(chatMessages).map(([date, messages]) => (
                     <React.Fragment key={date}>
-                        <Divider>{date}</Divider>
+                        <Divider>{new Date(date).toLocaleDateString('en-US', {year: 'numeric',month: 'long',day: 'numeric'})}</Divider>
                         {messages.map((msg, index) => (
                             <ChatBubble key={index} text={msg.message} timestamp={msg.timestamp} isUser={msg.sender === officeId} />
                         ))}

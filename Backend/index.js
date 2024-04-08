@@ -815,21 +815,23 @@ router.route('/chatHistory')
 async function getChatHistory(req, res) {
     try {
         const { officeId, adminId } = req.body;
-        // Get the date from request query or use the current date
-        const requestedDate = req.query.date ? new Date(req.query.date) : new Date();
-        const currentDate = new Date(requestedDate.toISOString().split('T')[0]);
 
         // Find the chat document for the requested date
-        const chatByDate = await ChatByDate.findOne({ date: currentDate, 'messages.sender': officeId, 'messages.receiver': adminId });
-
+        const chatByDate = await ChatByDate.find({
+            $or: [
+                { $and: [{ 'messages.sender': adminId }, { 'messages.receiver': officeId }] },
+                { $and: [{ 'messages.sender': officeId }, { 'messages.receiver': adminId }] }
+            ]
+        });
+        // console.log(chatByDate[1].messages[0]);
         if (!chatByDate) {
             return res.status(404).send({ message: 'Chat history not found for the requested date' });
         }
 
-        const chatHistory = chatByDate.messages.filter(msg => (msg.sender === officeId && msg.receiver === adminId) || (msg.sender === adminId && msg.receiver === officeId));
+        // const chatHistory = chatByDate.messages.filter(msg => (msg.sender === officeId && msg.receiver === adminId) || (msg.sender === adminId && msg.receiver === officeId));
 
         // Return the chat history
-        res.status(200).send({ chatHistory });
+        res.status(200).send({ chatByDate });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Internal server error' });

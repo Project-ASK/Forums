@@ -5,6 +5,8 @@ import TextField from '@mui/material/TextField'
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import { ToastContainer, Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Editor = dynamic(
     () => import('jodit-pro-react').then((mod) => mod.default),
@@ -42,26 +44,42 @@ const EventReport = () => {
     }
 
     const handleRephraseWithAI = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/genAI/prompt`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ content: prompt }),
-            })
-            const data = await response.json();
-            setContent(data.text);
-        } catch (error) {
-            console.error(error);
+        if(prompt!='')
+        {
+            setLoading(true);
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/genAI/prompt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: prompt }),
+                })
+                const data = await response.json();
+                setContent(data.text);
+            } catch (error) {
+                console.error(error);
+            }
+            setLoading(false);
+            setPrompt('');
+        }else{
+            toast.error('Prompt text can\'t be empty.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
-        setLoading(false);
-        setPrompt('');
     }
 
     return (
         <>
+            <ToastContainer/>
             <div className="shadow-lg">
                 <div className="flex bg-white w-full justify-between items-center">
                     <img src="/assets/logo.png" width={160} onClick={handleback} className='cursor-pointer' />
