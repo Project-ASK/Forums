@@ -107,7 +107,7 @@ const CreateEvent = () => {
                 method: 'POST',
                 body: formData,
             });
-            if (response.status === 200) {
+            if (response.ok) {
                 toast.success('Event approval sent successfully', {
                     position: "top-right",
                     autoClose: 5000,

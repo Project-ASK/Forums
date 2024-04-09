@@ -14,7 +14,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import path from 'path'
 import Chat from './Chat/chat'
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button, TextField } from '@mui/material';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
@@ -39,6 +39,7 @@ const Dashboard = ({ username }) => {
   const [messages, setMessages] = useState([]);
   const [currentImage, setCurrentImage] = useState('');
   const [open, setOpen] = useState(false);
+  const [deleteModal,setDeleteModal] = useState(false);
   const node = useRef();
 
   const nodeNotifications = useRef(); // Create a new useRef for notifications
@@ -395,7 +396,7 @@ const Dashboard = ({ username }) => {
     }));
   };
 
-  const handleDeleteEvent = async (eventId) => {
+  const handleDeleteEvent = async (eventId, callback) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/deleteEvent`, {
       method: 'POST',
       headers: {
@@ -416,6 +417,8 @@ const Dashboard = ({ username }) => {
         theme: "light",
         transition: Bounce,
       });
+      callback();
+      setDeleteModal(false);
     } else {
       toast.error('Failed to delete event.', {
         position: "top-right",
@@ -433,6 +436,14 @@ const Dashboard = ({ username }) => {
 
   const handlePost = () => {
     router.push('/admins/post');
+  }
+
+  const handleReportUpload = () => {
+    router.push('/admins/uploadReports');
+  }
+
+  const handleDeleteModalClose = () => {
+    setDeleteModal(false);
   }
 
   if (!username) {
@@ -529,6 +540,10 @@ const Dashboard = ({ username }) => {
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handlePost}>
                     <img src="/assets/message.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Post Messages</p>
+                  </li>
+                  <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleReportUpload}>
+                    <img src="/assets/uploadReport.svg" className="ml-[30px]" width={20} />
+                    <p className="font-sans text-md">Upload Reports</p>
                   </li>
                 </ul>
               </div>
@@ -628,14 +643,14 @@ const Dashboard = ({ username }) => {
                 <button className="p-2.5 bg-blue-500 rounded-full text-white mb-4" onClick={() => { router.push('createEvent') }}>Create Event</button>
                 {events && events.length > 0 ? (
                   events.map((event, index) => (
-                    <div key={index} className="w-full md:w-3/4 lg:w-2/3 p-4 border rounded-lg mb-4 bg-gray-300 flex flex-col md:flex-row items-center" onClick={() => {
-                      Cookies.set('eventId', event._id); // Set the event id as a cookie
-                      router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
-                    }}>
+                    <div key={index} className="w-full md:w-3/4 lg:w-2/3 p-4 border rounded-lg mb-4 bg-gray-300 flex flex-col md:flex-row items-center" >
                       <div className="md:w-1/6 pr-2">
-                        <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.eventImagePath)} alt={event.eventName} width={100} height={100} layout="responsive" />
+                        <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.eventImagePath)} alt={event.eventName} width={100} height={100} layout="responsive" className="cursor-pointer" onClick={() => {
+                          Cookies.set('eventId', event._id); // Set the event id as a cookie
+                          router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
+                        }}/>
                       </div>
-                      <div className="xs:mt-2 lg:mt-0 md:w-3/4 cursor-pointer md:ml-[1rem]">
+                      <div className="xs:mt-2 lg:mt-0 md:w-3/4 md:ml-[1rem]">
                         <h2 className="text-lg font-bold">{event.eventName}</h2>
                         <p className="text-md text-gray-500"><span className='font-bold'>Date: </span>{event.date}</p>
                         <p className="text-md text-gray-500"><span className='font-bold'>Time: </span>{event.time}</p>
@@ -644,40 +659,6 @@ const Dashboard = ({ username }) => {
                           <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
                         )}
                       </div>
-                      {/* <div className="w-full md:w-1/4 flex justify-end items-center mt-4 md:mt-0 gap-x-1">
-                        <Chip
-                            icon={<VisibilityIcon />}
-                            label="View Letter"
-                            clickable
-                            color="success"
-                            variant="outlined"
-                            onClick={(e) => {
-                                e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-                                if(event.approvalImagePath)
-                                {
-                                    handleOpen(event.approvalImagePath);
-                                }
-                            }}
-                            style={{ width: '50%' }}
-                        />
-                        <Chip
-                          icon={
-                            event.isApproved === 'Approved' ? <CheckCircleIcon /> :
-                              event.isApproved === 'Pending' ? <HourglassBottomIcon /> :
-                                <CancelIcon />
-                          }
-                          label={event.isApproved}
-                          color={event.isApproved === 'Approved' ? 'success' : event.isApproved === 'Pending' ? 'warning' : 'error'}
-                        />
-                        <EditOutlinedIcon className="cursor-pointer ml-2" onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditEvent(event._id);
-                        }} />
-                        <DeleteRoundedIcon className="cursor-pointer ml-3" onClick={(e) => {
-                          e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-                          handleDeleteEvent(event._id);
-                        }} />
-                      </div> */}
                       <div className="w-full md:w-1/4 flex flex-wrap justify-end items-center mt-4 md:mt-0 gap-4">
                         <div className="w-full flex lg:flex-nowrap xs:flex-wrap justify-end mt-2 gap-x-2 gap-y-2">
                           <Chip
@@ -737,14 +718,32 @@ const Dashboard = ({ username }) => {
                           }} />
                           <DeleteRoundedIcon className="cursor-pointer ml-3" onClick={(e) => {
                             e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-                            handleDeleteEvent(event._id);
+                            setDeleteModal(true);
                           }} />
+                          {deleteModal && (
+                            <Dialog
+                              open={deleteModal}
+                              onClose={handleDeleteModalClose}
+                              aria-describedby="alert-dialog-slide-description"
+                            >
+                              <DialogTitle>{"Do you really want to delete the event?"}</DialogTitle>
+                              <DialogContent>
+                                <DialogContentText id="alert-dialog-slide-description">
+                                  Deleting this event will completely remove this event.
+                                </DialogContentText>
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={handleDeleteModalClose} className="hover:bg-red-200">No</Button>
+                                <Button onClick={() => handleDeleteEvent(event._id, handleClose)} className="hover:bg-green-200">Yes</Button>
+                              </DialogActions>
+                            </Dialog>
+                          )}
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="w-full p-4 border rounded mb-4 bg-gray-300">
+                  <div className="w-[60%] p-4 border rounded mb-4 bg-gray-300">
                     No events
                   </div>
                 )}

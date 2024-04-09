@@ -275,6 +275,7 @@ const EventSchema = new mongoose.Schema({
     eventImagePath: String,
     approvalImagePath: String,
     principalApprovalImagePath: String,
+    reportPath: String,
     forumName: String,
     questions: [{
         question: { type: String },
@@ -1228,4 +1229,63 @@ router.post('/updatePrincipalApprovalImage', upload.single('principalApprovalIma
 
     // Send the updated event as the response
     res.status(200).send(event);
+});
+
+const reportStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const forumName = req.query.forumName;
+        const year = new Date().getFullYear(); // get the current year
+        const dir = `./events/${forumName}/report-${year}`; // use the year in the directory path
+
+        fs.exists(dir, exist => {
+            if (!exist) {
+                return fs.mkdir(dir, { recursive: true }, error => cb(error, dir))
+            }
+            return cb(null, dir);
+        })
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${file.originalname}`)
+    }
+})
+
+const reportUpload = multer({ storage: reportStorage })
+
+router.post('/updloadAnnualReport', reportUpload.single('annualReport'), async (req, res) => {
+    res.status(200).json({ message: "Success" });
+});
+
+const eventReportStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const forumName = req.query.forumName;
+        const eventName = req.query.eventName;
+        const dir = `./events/${forumName}/${eventName}`; // use the year in the directory path
+
+        fs.exists(dir, exist => {
+            if (!exist) {
+                return fs.mkdir(dir, { recursive: true }, error => cb(error, dir))
+            }
+            return cb(null, dir);
+        })
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${file.originalname}`)
+    }
+})
+
+const eventReportUpload = multer({ storage: eventReportStorage })
+
+router.post('/updloadEventReport', eventReportUpload.single('eventReport'), async (req, res) => {
+    const eventName = req.query.eventName;
+    const eventReport = req.file.path.replace(/\\/g, '/');
+    const event = await Event.findOne({ eventName });
+
+    // Check if the event exists
+    if (!event) {
+        return res.status(404).send({ message: 'Event not found' });
+    }
+    event.reportPath = eventReport;
+
+    await event.save();
+    res.status(200).json({ message: "Success" });
 });
