@@ -428,7 +428,7 @@ const Dashboard = ({ username }) => {
             {events && events.map((event, index) => (
               <div key={index} className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 mt-[20px]">
                 <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
-                  <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
+                  <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`} alt="card-image" className="object-cover w-full h-full" />
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">

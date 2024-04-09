@@ -267,10 +267,10 @@ export default function Highlights() {
                   }}
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
-                  onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`)}
+                  onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`)}
                 >
                   <Box sx={{ opacity: '100%' }}>
-                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" />
+                    <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" />
                     {new Date(event.date) > today && (
                       <div className="absolute top-1 left-5 bg-blue-600 text-white px-2 py-1 font-bold text-sm rounded-full">
                         New
@@ -326,7 +326,7 @@ export default function Highlights() {
                     }}
                   >
                     <Box sx={{ opacity: '100%' }}>
-                      <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`)} />
+                      <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`} alt="event-image" className="object-cover w-full h-72 rounded-lg" onClick={() => handleImageClick(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`)} />
                       {new Date(event.date) > today && (
                         <div className="absolute top-1 left-5 bg-blue-600 text-white px-2 py-1 font-bold text-sm rounded-full">
                           New

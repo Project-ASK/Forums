@@ -418,7 +418,7 @@ const Dashboard = ({ username }) => {
         {eventDetails &&
           <div className="w-[80%] md:w-3/4 lg:w-2/3 p-4 border rounded-lg mb-4 bg-gray-300 flex flex-col md:flex-row items-center">
             <div className="md:w-1/6 pr-2">
-              <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, eventDetails.imagePath)} alt={eventDetails.eventName} width={100} height={100} layout="responsive" />
+              <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, eventDetails.eventImagePath)} alt={eventDetails.eventName} width={100} height={100} layout="responsive" />
             </div>
             <div className="xs:mt-2 lg:mt-0 md:w-3/4 md:ml-[1rem]">
               <h2 className="text-lg font-bold">Name: {eventDetails.eventName}</h2>

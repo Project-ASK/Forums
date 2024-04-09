@@ -27,7 +27,7 @@ dotenv.config();
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const eventName = req.body.eventName;
+        const eventName = req.query.eventName || req.body.eventName;           //req.body.eventName
         const forumName = req.query.forumName;
         const dir = `./events/${forumName}/${eventName}`;
 
@@ -272,7 +272,9 @@ const EventSchema = new mongoose.Schema({
     description: String,
     location: String,
     eventVenue: String,
-    imagePath: String,
+    eventImagePath: String,
+    approvalImagePath: String,
+    principalApprovalImagePath: String,
     forumName: String,
     questions: [{
         question: { type: String },
@@ -291,15 +293,16 @@ const EventSchema = new mongoose.Schema({
 
 const Event = mongoose.model('Event', EventSchema);
 
-router.post('/admin/events', upload.single('image'), async (req, res) => {
+router.post('/admin/events', upload.fields([{ name: 'eventImage', maxCount: 1 }, { name: 'approvalImage', maxCount: 1 }]), async (req, res) => {
     const { eventName, date, time, location, description, includesPayment, amount, eventVenue } = req.body;
     const forumName = req.query.forumName;
     const questions = JSON.parse(req.body.questions);
     const tags = JSON.parse(req.body.tags);
     const collabForums = JSON.parse(req.body.collabForums);
-    const imagePath = req.file.path.replace(/\\/g, '/');
+    const eventImagePath = req.files['eventImage'][0].path.replace(/\\/g, '/');
+    const approvalImagePath = req.files['approvalImage'][0].path.replace(/\\/g, '/');
     const event = new Event({
-        eventName, date, time, location, eventVenue, description, imagePath, forumName, questions, tags, collabForums, includesPayment, amount, isApproved: 'Pending'
+        eventName, date, time, location, eventVenue, description, eventImagePath, approvalImagePath, forumName, questions, tags, collabForums, includesPayment, amount, isApproved: 'Pending'
     });
     //Used for testing
     // questions.forEach(question => {
@@ -374,7 +377,7 @@ router.route('/joinEvent')
             user.joinedEvents.push({ eventName: event, forumName, questions: questionResponsePairs });
             await user.save();
             res.status(200).send({ success: true });
-        }else{
+        } else {
             res.status(200).send({ message: 'User has already joined this event' });
         }
     });
@@ -877,7 +880,7 @@ router.route('/admin/updateEvent')
             console.error(error);
             res.status(500).send({ message: 'An error occurred' });
         }
-    }); 
+    });
 
 router.route('/admin/deleteEvent')
     .post(async (req, res) => {
@@ -1202,4 +1205,27 @@ router.post('/genAI/prompt', async (req, res) => {
         .replace(/\n+/g, '<br>'); // Replace consecutive newline characters with <br>
 
     res.status(200).json({ text: aiPrompt }); // Send the generated text back as the response
+});
+
+router.post('/updatePrincipalApprovalImage', upload.single('principalApprovalImage'), async (req, res) => {
+    // Get the event id, forum name, event name and file from the request
+    const eventId = req.body.eventId;
+    const principalApprovalImagePath = req.file.path.replace(/\\/g, '/');
+
+    // Find the event in the database
+    const event = await Event.findById(eventId);
+
+    // Check if the event exists
+    if (!event) {
+        return res.status(404).send({ message: 'Event not found' });
+    }
+
+    // Update the principalApprovalImagePath of the event
+    event.principalApprovalImagePath = principalApprovalImagePath;
+
+    // Save the event
+    await event.save();
+
+    // Send the updated event as the response
+    res.status(200).send(event);
 });

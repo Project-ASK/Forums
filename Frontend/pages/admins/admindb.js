@@ -8,6 +8,7 @@ import CreatableSelect from 'react-select/creatable';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import CancelIcon from '@mui/icons-material/Cancel';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Menu, X } from 'react-feather';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -16,6 +17,7 @@ import Chat from './Chat/chat'
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Modal from '@mui/material/Modal';
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -35,6 +37,8 @@ const Dashboard = ({ username }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [adminId, setAdminId] = useState('');
   const [messages, setMessages] = useState([]);
+  const [currentImage, setCurrentImage] = useState('');
+  const [open, setOpen] = useState(false);
   const node = useRef();
 
   const nodeNotifications = useRef(); // Create a new useRef for notifications
@@ -447,9 +451,29 @@ const Dashboard = ({ username }) => {
     member.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleOpen = (imagePath) => {
+    setCurrentImage(imagePath);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       <ToastContainer />
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px' }}>
+          <h2 id="simple-modal-title">Approval Letter</h2>
+          <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, currentImage)} alt="Approval Letter" width={500} height={500} layout="responsive" />
+        </div>
+      </Modal>
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow">
           <div className="App">
@@ -471,7 +495,7 @@ const Dashboard = ({ username }) => {
                 </div>
               )}
               <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer mx-auto' />
-              <button onClick={handleLogout} className="Btn mr-[50px]">
+              <button onClick={handleLogout} className="Btn mr-[30px]">
                 <div className="sign"><svg viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path></svg></div>
                 <div className="text">Logout</div>
               </button>
@@ -483,27 +507,27 @@ const Dashboard = ({ username }) => {
                 </button>
                 <ul>
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleHomeClick}>
-                    <img src="/assets/home.svg" className="ml-[30px]" width={20}/>
+                    <img src="/assets/home.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Home</p>
                   </li>
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleMemberListClick}>
-                    <img src="/assets/people.svg" className="ml-[30px]" width={20}/>
+                    <img src="/assets/people.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Members</p>
                   </li>
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleAnalytics}>
-                    <img src="/assets/stats.svg" className="ml-[30px]" width={20}/>
+                    <img src="/assets/stats.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Analytics</p>
                   </li>
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleManageEventsClick}>
-                    <img src="/assets/events.svg" className="ml-[30px]" width={20}/>
+                    <img src="/assets/events.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Events</p>
                   </li>
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handleChatClick}>
-                    <img src="/assets/chat.svg" className="ml-[30px]" width={20}/>
+                    <img src="/assets/chat.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Office Chat</p>
                   </li>
                   <li className="mb-2 cursor-pointer flex space-x-5 items-center p-3 hover:bg-gray-100 hover:transition-colors hover:ease-in-out hover:duration-500 mt-[30px] rounded-lg" onClick={handlePost}>
-                    <img src="/assets/message.svg" className="ml-[30px]" width={20}/>
+                    <img src="/assets/message.svg" className="ml-[30px]" width={20} />
                     <p className="font-sans text-md">Post Messages</p>
                   </li>
                 </ul>
@@ -517,7 +541,7 @@ const Dashboard = ({ username }) => {
               <div className="mx-auto flex justify-center">
                 <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
                 <label htmlFor="fileUpload" className="cssbuttons-io-button flex space-x-5">
-                  <img src="/assets/upload.svg" width={20}/>
+                  <img src="/assets/upload.svg" width={20} />
                   <p className="font-product-sans text-sm font-normal">Import</p>
                 </label>
               </div>
@@ -609,7 +633,7 @@ const Dashboard = ({ username }) => {
                       router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
                     }}>
                       <div className="md:w-1/6 pr-2">
-                        <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.imagePath)} alt={event.eventName} width={100} height={100} layout="responsive" />
+                        <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.eventImagePath)} alt={event.eventName} width={100} height={100} layout="responsive" />
                       </div>
                       <div className="xs:mt-2 lg:mt-0 md:w-3/4 cursor-pointer md:ml-[1rem]">
                         <h2 className="text-lg font-bold">{event.eventName}</h2>
@@ -620,7 +644,22 @@ const Dashboard = ({ username }) => {
                           <p className="text-md text-gray-500"><span className='font-bold'>Collaborating Forums: </span>{event.collabForums.filter(forumName => forumName !== forum).join(', ')}</p>
                         )}
                       </div>
-                      <div className="w-full md:w-1/4 flex justify-end items-center mt-4 md:mt-0">
+                      {/* <div className="w-full md:w-1/4 flex justify-end items-center mt-4 md:mt-0 gap-x-1">
+                        <Chip
+                            icon={<VisibilityIcon />}
+                            label="View Letter"
+                            clickable
+                            color="success"
+                            variant="outlined"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+                                if(event.approvalImagePath)
+                                {
+                                    handleOpen(event.approvalImagePath);
+                                }
+                            }}
+                            style={{ width: '50%' }}
+                        />
                         <Chip
                           icon={
                             event.isApproved === 'Approved' ? <CheckCircleIcon /> :
@@ -638,6 +677,69 @@ const Dashboard = ({ username }) => {
                           e.stopPropagation(); // Prevent the click event from bubbling up to the parent
                           handleDeleteEvent(event._id);
                         }} />
+                      </div> */}
+                      <div className="w-full md:w-1/4 flex flex-wrap justify-end items-center mt-4 md:mt-0 gap-4">
+                        <div className="w-full flex lg:flex-nowrap xs:flex-wrap justify-end mt-2 gap-x-2 gap-y-2">
+                          <Chip
+                            icon={<VisibilityIcon />}
+                            label="Staff Letter"
+                            clickable
+                            color="success"
+                            variant="outlined"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+                              if (event.approvalImagePath) {
+                                handleOpen(event.approvalImagePath);
+                              }
+                            }}
+                            style={{ width: '50%' }}
+                          />
+                          <Chip
+                            icon={<VisibilityIcon />}
+                            label="Office"
+                            clickable
+                            color="info"
+                            variant="outlined"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+                              if (event.principalApprovalImagePath) {
+                                handleOpen(event.principalApprovalImagePath);
+                              } else {
+                                toast.error('Letter not found', {
+                                  position: "top-right",
+                                  autoClose: 5000,
+                                  hideProgressBar: false,
+                                  closeOnClick: true,
+                                  pauseOnHover: true,
+                                  draggable: true,
+                                  progress: undefined,
+                                  theme: "light",
+                                  transition: Bounce,
+                                });
+                              }
+                            }}
+                            style={{ width: '50%' }}
+                          />
+                          <Chip
+                            icon={
+                              event.isApproved === 'Approved' ? <CheckCircleIcon /> :
+                                event.isApproved === 'Pending' ? <HourglassBottomIcon /> :
+                                  <CancelIcon />
+                            }
+                            label={event.isApproved}
+                            color={event.isApproved === 'Approved' ? 'success' : event.isApproved === 'Pending' ? 'warning' : 'error'}
+                          />
+                        </div>
+                        <div className="w-full flex justify-end gap-x-2">
+                          <EditOutlinedIcon className="cursor-pointer ml-2" onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditEvent(event._id);
+                          }} />
+                          <DeleteRoundedIcon className="cursor-pointer ml-3" onClick={(e) => {
+                            e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+                            handleDeleteEvent(event._id);
+                          }} />
+                        </div>
                       </div>
                     </div>
                   ))

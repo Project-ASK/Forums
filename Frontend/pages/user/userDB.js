@@ -904,7 +904,7 @@ const Dashboard = ({ username, pay }) => {
                                 <Grid item xs={9.5} md={3} >
                                     <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 mt-[20px]">
                                         <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
-                                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
+                                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`} alt="card-image" className="object-cover w-full h-full" />
                                             {recommendedEvents.some(recommendedEvent => recommendedEvent.eventName === event.eventName) && (
                                                 <div className="absolute top-0 right-0 bg-green-600 text-white px-2 py-1 font-bold text-sm rounded-full">
                                                     Recommended
@@ -1011,7 +1011,7 @@ const Dashboard = ({ username, pay }) => {
                                 <SwiperSlide key={index}>
                                     <div className="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-72 h-[90%] overflow-auto mt-[20px]">
                                         <div className="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-72">
-                                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.imagePath}`} alt="card-image" className="object-cover w-full h-full" />
+                                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${event.eventImagePath}`} alt="card-image" className="object-cover w-full h-full" />
                                             {recommendedEvents.some(recommendedEvent => recommendedEvent.eventName === event.eventName) && (
                                                 <div className="absolute top-0 right-0 bg-green-600 text-white px-2 py-1 font-bold text-sm rounded-full">
                                                     Recommended
