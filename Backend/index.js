@@ -86,12 +86,18 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+const reportSchema = new mongoose.Schema({
+    year: String,
+    path: String
+});
+
 const adminSchema = new mongoose.Schema({
     name: String,
     email: String,
     username: String,
     password: String,
-    forum: String
+    forum: String,
+    reports: [reportSchema]
 });
 
 const Admin = mongoose.model('Admin', adminSchema);
@@ -1252,6 +1258,18 @@ const reportStorage = multer.diskStorage({
 const reportUpload = multer({ storage: reportStorage })
 
 router.post('/updloadAnnualReport', reportUpload.single('annualReport'), async (req, res) => {
+    const forumName = req.query.forumName;
+    const year = new Date().getFullYear(); // get the current year
+    const filePath = `./events/${forumName}/report-${year}/${req.file.originalname}`;
+    const admin = await Admin.findOne({ forum: forumName });
+    if (admin) {
+        const report = {
+            year: `${year}`,
+            path: filePath
+        };
+        admin.reports.push(report);
+        await admin.save();
+    }
     res.status(200).json({ message: "Success" });
 });
 
@@ -1288,4 +1306,60 @@ router.post('/updloadEventReport', eventReportUpload.single('eventReport'), asyn
 
     await event.save();
     res.status(200).json({ message: "Success" });
+});
+
+router.route('/getReportYears')
+    .post(async (req, res) => {
+        const { forum } = req.body;
+        const admin = await Admin.findOne({ forum });
+        if (!admin) {
+            return res.status(400).send({ message: 'Admin not found' });
+        }
+        const years = admin.reports.map(report => report.year);
+        res.status(200).send({ years });
+    });
+
+router.get('/getReport', async (req, res) => {
+    const { forum, year } = req.query;
+    const dir = `./events/${forum}/report-${year}`;
+
+    fs.readdir(dir, (err, files) => {
+        if (err) {
+            return res.status(500).send({ message: 'Unable to read directory' });
+        }
+
+        const reportFile = files.find(file => path.extname(file) === '.pdf');
+
+        if (!reportFile) {
+            return res.status(404).send({ message: 'Report not found' });
+        }
+
+        res.download(path.join(dir, reportFile));
+    });
+});
+
+router.route('/getAllEventsByForum')
+    .get(async (req, res) => {
+        const { forum } = req.query;
+        const events = await Event.find({ isApproved: 'Approved', forumName: forum });
+        res.status(200).send({ events });
+    });
+
+router.get('/getEventReport', async (req, res) => {
+    const { forum, eventName } = req.query;
+    const dir = `./events/${forum}/${eventName}`;
+
+    fs.readdir(dir, (err, files) => {
+        if (err) {
+            return res.status(500).send({ message: 'Unable to read directory' });
+        }
+
+        const reportFile = files.find(file => path.extname(file) === '.pdf');
+
+        if (!reportFile) {
+            return res.status(404).send({ message: 'Report not found' });
+        }
+
+        res.download(path.join(dir, reportFile));
+    });
 });

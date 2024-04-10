@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-import Image from 'next/image';
-import path from 'path'
+import { Dialog, DialogTitle, DialogContent, Select, MenuItem } from '@mui/material';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
-import { Box, Dialog, DialogTitle, DialogContent, Typography, Select, MenuItem } from '@mui/material';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
 
 const Dashboard = ({ username }) => {
     const router = useRouter();
     const [ownEvents, setOwnEvents] = useState([]);
-    const [annualReportModal,setAnnualReportModal] = useState(false);
-    const [eventSelectModal,setEventSelectModal] = useState(false);
+    const [annualReportModal, setAnnualReportModal] = useState(false);
+    const [eventSelectModal, setEventSelectModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState('Select Event');
-    const [eventReportModal,setEventReportModal] = useState(false);
+    const [eventReportModal, setEventReportModal] = useState(false);
     const forum = Cookies.get('forum');
 
     useEffect(() => {
@@ -79,8 +77,7 @@ const Dashboard = ({ username }) => {
             method: 'POST',
             body: formData,
         });
-        if(response.ok)
-        {
+        if (response.ok) {
             toast.success('Report uploaded successfully.', {
                 position: "top-right",
                 autoClose: 5000,
@@ -214,11 +211,11 @@ const Dashboard = ({ username }) => {
             )}
             <footer className="text-gray-600 body-font absolute bottom-0 w-full">
                 <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-                <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
-                    <img src="/assets/authlogo.png" width={90} />
-                    <span className="ml-3 text-xl">Forums CEC</span>
-                </div>
-                <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
+                    <div className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+                        <img src="/assets/authlogo.png" width={90} />
+                        <span className="ml-3 text-xl">Forums CEC</span>
+                    </div>
+                    <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
                 </div>
             </footer>
         </>
@@ -228,7 +225,6 @@ const Dashboard = ({ username }) => {
 export async function getServerSideProps(context) {
     // Get username from cookies
     const username = context.req.cookies.adminUsername;
-    const eventId = context.req.cookies.eventId;
 
     // If username is not available, redirect to login
     if (!username) {
@@ -242,7 +238,7 @@ export async function getServerSideProps(context) {
 
     // If username is available, pass it as a prop
     return {
-        props: { username, eventId },
+        props: { username },
     }
 }
 
