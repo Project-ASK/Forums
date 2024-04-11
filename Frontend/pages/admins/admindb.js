@@ -39,7 +39,7 @@ const Dashboard = ({ username }) => {
   const [messages, setMessages] = useState([]);
   const [currentImage, setCurrentImage] = useState('');
   const [open, setOpen] = useState(false);
-  const [deleteModal,setDeleteModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const node = useRef();
 
   const nodeNotifications = useRef(); // Create a new useRef for notifications
@@ -625,17 +625,6 @@ const Dashboard = ({ username }) => {
                 </table>
               </div>
             </div>
-            // If showMembers is true, display the list of members
-            // <div className="w-full flex flex-col items-center mt-10">
-            //   <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-            //   <label htmlFor="fileUpload" className="p-2.5 bg-blue-500 rounded-full text-white mr-[1rem] mb-[1rem] cursor-pointer w-[6rem] text-center">Import</label>
-            //   <h2 className="text-2xl font-bold mb-5">Members of {forum}:</h2>
-            //   {members.map((member, index) => (
-            //     <div key={index} className="w-1/2 p-4 border rounded mb-4">
-            //       {member.name}
-            //     </div>
-            //   ))}
-            // </div>
 
           ) : currentPage === 'manageEvents' ? (
             <Grid item xs={12}>
@@ -648,7 +637,7 @@ const Dashboard = ({ username }) => {
                         <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.eventImagePath)} alt={event.eventName} width={100} height={100} layout="responsive" className="cursor-pointer" onClick={() => {
                           Cookies.set('eventId', event._id); // Set the event id as a cookie
                           router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
-                        }}/>
+                        }} />
                       </div>
                       <div className="xs:mt-2 lg:mt-0 md:w-3/4 md:ml-[1rem]">
                         <h2 className="text-lg font-bold">{event.eventName}</h2>

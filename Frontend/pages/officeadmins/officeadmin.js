@@ -53,7 +53,7 @@ const OfficeAdmins = ({ username }) => {
       const data = await response.json();
       setName(data.name);
       setEmail(data.email);
-      Cookies.set('officeId',data.officeId);
+      Cookies.set('officeId', data.officeId);
     };
     fetchDetails();
   }, [username]);
@@ -134,7 +134,7 @@ const OfficeAdmins = ({ username }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0.5 p-2 h-screen mt-[2rem] w-[80%] mx-auto">
-          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { }}>
+          <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { router.push('/officeadmins/getForums'); Cookies.set("name", name) }}>
             <img src="/assets/logo.png" width={200} alt="Forums" />
             <p>Forums</p>
           </div>

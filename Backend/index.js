@@ -1363,3 +1363,25 @@ router.get('/getEventReport', async (req, res) => {
         res.download(path.join(dir, reportFile));
     });
 });
+
+router.post('/officeadmin/createNewAdmin', async (req, res) => {
+    const { name, email, username, password, forum } = req.body;
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const admin = new Admin({
+            name,
+            email,
+            username,
+            password: hashedPassword,
+            forum
+        });
+
+        await admin.save();
+        res.status(200).send({ message: 'Admin created successfully' });
+    } catch (error) {
+        console.error('Error creating admin:', error);
+        res.status(500).send({ message: 'Error creating admin' });
+    }
+});
