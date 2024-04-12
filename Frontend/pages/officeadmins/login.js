@@ -110,6 +110,7 @@ const OfficeLoginPage = () => {
             setIsVerified(true);
             setModalIsOpen(false);
             Cookies.set('officeUsername', username);
+            Cookies.set('officeId', data._id);
             Cookies.set('token', data.token);
             router.replace('/officeadmins/officeadmin');
         } else {

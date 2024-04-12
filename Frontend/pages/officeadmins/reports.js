@@ -134,7 +134,7 @@ const OfficeAdmins = ({ username }) => {
   }
 
   const handleHomeClick = () => {
-    router.reload();
+    router.back();
   }
 
   const handleLogout = () => {
@@ -168,25 +168,12 @@ const OfficeAdmins = ({ username }) => {
     <>
       <ToastContainer />
       <div className="App">
-        <div className="flex flex-row items-center bg-white justify-center w-full">
+        <div className="flex flex-row items-center bg-white justify-center w-full relative right-[1rem]">
           <img src="/assets/logo.png" width={150} onClick={handleHomeClick} className='cursor-pointer xs:w-[7.9rem]' />
           <div className="w-[40%] flex flex-col items-center bg-[#FFFFFF] border-cyan-800 border-2 rounded-[40px] p-[20px] mt-[30px] mb-4">
             <p className="font-product-sans font-bold text-center md:text-2xl xs:text-lg">Welcome, {name}</p>
           </div>
-          <div className="relative">
-            <button onClick={() => setIsOpen(!isOpen)} className="p-2.5 rounded-3xl text-white">
-              <img src="/assets/officeadmins/notifications.png" width={40} alt="Notifications" />
-            </button>
-            {isOpen && (
-              <div className="absolute right-0 mt-2 py-2 bg-white border rounded shadow-xl overflow-auto max-h-64 z-30">
-                <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 1</a>
-                <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 2</a>
-                <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 3</a>
-                {/* ... more notifications ... */}
-              </div>
-            )}
-          </div>
-          <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white">Logout</button>
+          <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white ml-4">Logout</button>
         </div>
 
         <div className="flex items-center justify-center mt-20">

@@ -18,10 +18,13 @@ const OfficeAdmins = ({ username }) => {
   const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
   const [forums, setForums] = useState([]); // State for forums
   const [selectedForum, setSelectedForum] = useState(''); // State for selected forum
-  const node = useRef();
+  const [messages, setMessages] = useState([]);
+  const officeId = Cookies.get('officeId');
 
-  const handleClickOutside = e => { // Add this function
-    if (node.current.contains(e.target)) {
+  const nodeNotifications = useRef(); // Create a new useRef for notifications
+
+  const handleClickOutsideNotifications = e => { // Define handleClickOutsideNotifications function
+    if (nodeNotifications.current.contains(e.target)) {
       // inside click
       return;
     }
@@ -29,15 +32,15 @@ const OfficeAdmins = ({ username }) => {
     setIsOpen(false);
   };
 
-  useEffect(() => { // Add this useEffect
+  useEffect(() => { // Add useEffect for notifications
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutsideNotifications);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutsideNotifications);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutsideNotifications);
     };
   }, [isOpen]);
 
@@ -74,6 +77,31 @@ const OfficeAdmins = ({ username }) => {
     };
     fetchForums();
   }, []);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/chatHistory`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ adminId: officeId }),
+      });
+      const data = await response.json();
+      console.log(data.chatByDate)
+      const allMessages = data.chatByDate.reduce((accumulator, current) => {
+        return accumulator.concat(current.messages);
+      }, []);
+
+      // Flatten the array of message texts and timestamps
+      const flattenedMessages = allMessages.map(message => ({
+        text: message.message,
+        timestamp: message.timestamp,
+      }));
+      setMessages(flattenedMessages);
+    };
+    fetchChats();
+  }, [officeId]);
 
   const handleHomeClick = () => {
     router.reload();
@@ -122,11 +150,16 @@ const OfficeAdmins = ({ username }) => {
               <img src="/assets/officeadmins/notifications.png" width={40} alt="Notifications" />
             </button>
             {isOpen && (
-              <div className="absolute right-0 mt-2 py-2 bg-white border rounded shadow-xl overflow-auto max-h-64 z-30">
-                <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 1</a>
-                <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 2</a>
-                <a href="#" className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">Notification 3</a>
-                {/* ... more notifications ... */}
+              <div ref={nodeNotifications} className="absolute left-[1rem] top-[4rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[20rem]">
+                {messages
+                  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort messages in descending order of time
+                  .map((message, index) => (
+                    <div key={index} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">
+                      <p className="font-semibold">{message.text}</p>
+                      <p className="font-semibold">{message.forumName}</p>
+                      <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+                    </div>
+                  ))}
               </div>
             )}
           </div>

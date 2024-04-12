@@ -278,7 +278,7 @@ const events = ({ username }) => {
                                                 e.stopPropagation(); // Prevent the click event from bubbling up to the parent
                                                 if (event.approvalImagePath) {
                                                     handleOpen(event.approvalImagePath);
-                                                }else{
+                                                } else {
                                                     toast.error('Letter not found', {
                                                         position: "top-right",
                                                         autoClose: 5000,

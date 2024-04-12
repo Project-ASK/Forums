@@ -12,6 +12,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -37,6 +44,13 @@ const getForums = () => {
         hasSpecialChar: false,
         isBetween6And20: false,
     });
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     useEffect(() => {
         const storedName = Cookies.get("name");
@@ -305,21 +319,33 @@ const getForums = () => {
                                     margin="normal"
                                     variant="outlined"
                                 />
-                                <TextField
-                                    label="Password"
-                                    fullWidth
-                                    required
-                                    value={adminPassword}
-                                    // onChange={(e) => setAdminPassword(e.target.value)}
-                                    onChange={(e) => {
-                                        setAdminPassword(e.target.value);
-                                        checkPasswordStrength(e.target.value);
-                                    }}
-                                    margin="normal"
-                                    variant="outlined"
-                                    type="password"
-                                />
-                                <div>
+                                <FormControl className="w-[100%] mt-4" size="large" variant="outlined" required>
+                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                    <OutlinedInput
+                                        id="outlined-adornment-password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={adminPassword}
+                                        required
+                                        onChange={(e) => {
+                                            setAdminPassword(e.target.value);
+                                            checkPasswordStrength(e.target.value);
+                                        }}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                        label="Password"
+                                    />
+                                </FormControl>
+                                <div className="mt-2">
                                     Password strength:
                                     <ul className="ml-2">
                                         <li>Contains upper case: {passwordStrength.hasUpperCase ? <CheckCircleIcon color="success" /> : <CancelIcon color="error" />}</li>
@@ -360,6 +386,26 @@ const getForums = () => {
             </div>
         </>
     );
+}
+
+export async function getServerSideProps(context) {
+    // Get username from cookies
+    const username = context.req.cookies.officeUsername;
+
+    // If username is not available, redirect to login
+    if (!username) {
+        return {
+            redirect: {
+                destination: '/officeadmins/login',
+                permanent: false,
+            },
+        }
+    }
+
+    // If username is available, pass it as a prop
+    return {
+        props: { username },
+    }
 }
 
 export default getForums;
