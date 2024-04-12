@@ -305,6 +305,12 @@ const getForums = () => {
                                     label="Email"
                                     fullWidth
                                     required
+                                    error={adminEmail && !adminEmail.endsWith('@ceconline.edu')}
+                                    helperText={
+                                        adminEmail && !adminEmail.endsWith('@ceconline.edu')
+                                            ? 'Email must end with @ceconline.edu'
+                                            : ''
+                                    }
                                     value={adminEmail}
                                     onChange={(e) => setAdminEmail(e.target.value)}
                                     margin="normal"
@@ -357,16 +363,22 @@ const getForums = () => {
                                 </div>
                                 <Button
                                     disabled={
+                                        !adminName ||
+                                        !adminForum ||
+                                        !adminEmail ||
+                                        !adminUserName ||
+                                        !adminPassword ||
                                         !passwordStrength.hasUpperCase ||
                                         !passwordStrength.hasLowerCase ||
                                         !passwordStrength.hasDigit ||
                                         !passwordStrength.hasSpecialChar ||
-                                        !passwordStrength.isBetween6And20
+                                        !passwordStrength.isBetween6And20 ||
+                                        !adminEmail.endsWith('@ceconline.edu')
                                     }
                                     onClick={createNewAdmin}
                                     variant="outlined"
                                     color="primary"
-                                    className="mt-6 hover:bg-green-200"
+                                    className={`mt-6 hover:bg-green-200 ${(!adminName || !adminForum || !adminEmail || !adminUserName || !adminPassword) && 'hidden'}`}
                                 >
                                     Create Admin
                                 </Button>

@@ -88,7 +88,6 @@ const OfficeAdmins = ({ username }) => {
         body: JSON.stringify({ adminId: officeId }),
       });
       const data = await response.json();
-      console.log(data.chatByDate)
       const allMessages = data.chatByDate.reduce((accumulator, current) => {
         return accumulator.concat(current.messages);
       }, []);

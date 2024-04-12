@@ -167,6 +167,7 @@ const Connect = () => {
                     focused
                     label="Message"
                     placeholder="Type a message"
+                    inputProps={{ style: { backgroundColor: '#faf8f7' } }}
                     fullWidth
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
