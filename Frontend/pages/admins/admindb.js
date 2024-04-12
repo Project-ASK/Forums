@@ -494,15 +494,26 @@ const Dashboard = ({ username }) => {
               </button>
               <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative left-[2rem] xs:left-[0.5rem] cursor-pointer" />
               {isOpen && (
-                <div ref={nodeNotifications} className="absolute left-[3rem] top-[4rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[30%]">
-                  {messages
-                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort messages in descending order of time
-                    .map((message, index) => (
-                      <div key={index} onClick={() => { router.push('/admins/Chat/chat') }} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">
-                        <p className="font-semibold">{message.text}</p>
-                        <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
-                      </div>
-                    ))}
+                <div ref={nodeNotifications} className="absolute left-[3rem] top-[4.5rem] bg-white border rounded shadow-xl z-30 w-[20rem] max-h-64 overflow-y-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                  <style jsx>{`
+                  .absolute::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                  <div className="p-4">
+                    <h2 className="text-xl font-bold mb-4 sticky top-0 bg-white">Notifications</h2>
+                    <div className="overflow-y-auto max-h-[calc(100% - 3rem)]">
+                      {messages
+                        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort messages in descending order of time
+                        .map((message, index) => (
+                          <div key={index} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-blue-300 hover:text-white mb-2">
+                            <p className="font-semibold">{message.text}</p>
+                            <p className="font-semibold">{message.forumName}</p>
+                            <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               )}
               <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer mx-auto' />

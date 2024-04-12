@@ -12,6 +12,7 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import LinearProgress from '@mui/material/LinearProgress';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -30,6 +31,7 @@ const SignUpPage = () => {
     const [isMobileView, setIsMobileView] = useState(false);
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState(0);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -51,6 +53,18 @@ const SignUpPage = () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    const calculatePasswordStrength = (password) => {
+        // Logic to calculate password strength
+        // Example: Consider length and complexity
+        const lengthScore = password.length / 10; // Normalize length to a score out of 10
+        const complexityScore = /[a-zA-Z]/.test(password) && /\d/.test(password) ? 1 : 0; // If password contains both letters and numbers, complexity score is 1, else 0
+        return lengthScore * 0.5 + complexityScore * 0.5; // Equal weightage to length and complexity
+    };
+
+    useEffect(() => {
+        setPasswordStrength(calculatePasswordStrength(password)); // Update password strength score
+    }, [password]);
 
     useEffect(() => {
         let timer;
@@ -282,6 +296,19 @@ const SignUpPage = () => {
                                         label="Password"
                                     />
                                 </FormControl>
+                                <div className="w-[20%] mt-2 relative top-4">
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={Math.min(passwordStrength, 1) * 100}
+                                        color={passwordStrength < 0.3 ? "error" : passwordStrength < 0.7 ? "warning" : "success"}
+                                        sx={{
+                                            height: 8, // Increase the thickness of the progress bar
+                                            borderRadius: 10, // Make the sides curved
+                                            overflow: 'hidden', // Hide overflow to prevent sharp corners
+                                        }}
+                                    />
+                                    <p className="text-xs mt-1">{passwordStrength < 0.3 ? "Weak" : passwordStrength < 0.7 ? "Moderate" : "Strong"}</p>
+                                </div>
                                 {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
                                 <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                             </div>
@@ -372,6 +399,19 @@ const SignUpPage = () => {
                                             label="Password"
                                         />
                                     </FormControl>
+                                    <div className="w-[40%] mt-2">
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={Math.min(passwordStrength, 1) * 100}
+                                            color={passwordStrength < 0.3 ? "error" : passwordStrength < 0.7 ? "warning" : "success"}
+                                            sx={{
+                                                height: 8, // Increase the thickness of the progress bar
+                                                borderRadius: 10, // Make the sides curved
+                                                overflow: 'hidden', // Hide overflow to prevent sharp corners
+                                            }}
+                                        />
+                                        <p className="text-xs mt-1">{passwordStrength < 0.3 ? "Weak" : passwordStrength < 0.7 ? "Moderate" : "Strong"}</p>
+                                    </div>
                                     {/* <label htmlFor="password" className="block text-gray-600 text-sm mb-2">Password</label>
                                         <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                 </div>

@@ -19,6 +19,7 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import LinearProgress from '@mui/material/LinearProgress';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -45,6 +46,7 @@ const getForums = () => {
         isBetween6And20: false,
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrengthInd, setPasswordStrengthInd] = useState(0);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -194,6 +196,18 @@ const getForums = () => {
     const handleCloseAdminCreateModal = () => {
         setAdminCreateModal(false);
     }
+
+    const calculatePasswordStrength = (password) => {
+        // Logic to calculate password strength
+        // Example: Consider length and complexity
+        const lengthScore = password.length / 10; // Normalize length to a score out of 10
+        const complexityScore = /[a-zA-Z]/.test(password) && /\d/.test(password) ? 1 : 0; // If password contains both letters and numbers, complexity score is 1, else 0
+        return lengthScore * 0.5 + complexityScore * 0.5; // Equal weightage to length and complexity
+    };
+
+    useEffect(() => {
+        setPasswordStrengthInd(calculatePasswordStrength(adminPassword)); // Update password strength score
+    }, [adminPassword]);
 
     const checkPasswordStrength = (password) => {
         setPasswordStrength({
@@ -351,6 +365,35 @@ const getForums = () => {
                                         label="Password"
                                     />
                                 </FormControl>
+                                <div>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        className="mt-4 w-[20%]"
+                                        sx={{
+                                            height: 8, // Increase the thickness of the progress bar
+                                            borderRadius: 10, // Make the sides curved
+                                            overflow: 'hidden', // Hide overflow to prevent sharp corners
+                                        }}
+                                        value={
+                                            (passwordStrength.hasUpperCase +
+                                                passwordStrength.hasLowerCase +
+                                                passwordStrength.hasDigit +
+                                                passwordStrength.hasSpecialChar +
+                                                passwordStrength.isBetween6And20) *
+                                            20
+                                        }
+                                        color={
+                                            passwordStrength.hasUpperCase &&
+                                                passwordStrength.hasLowerCase &&
+                                                passwordStrength.hasDigit &&
+                                                passwordStrength.hasSpecialChar &&
+                                                passwordStrength.isBetween6And20
+                                                ? "success"
+                                                : "error"
+                                        }
+                                    />
+                                    <p className="text-xs mt-1">{passwordStrengthInd < 0.3 ? "Weak" : passwordStrengthInd < 0.7 ? "Moderate" : "Strong"}</p>
+                                </div>
                                 <div className="mt-2">
                                     Password strength:
                                     <ul className="ml-2">
@@ -373,6 +416,7 @@ const getForums = () => {
                                         !passwordStrength.hasDigit ||
                                         !passwordStrength.hasSpecialChar ||
                                         !passwordStrength.isBetween6And20 ||
+                                        passwordStrengthInd < 0.3 ||
                                         !adminEmail.endsWith('@ceconline.edu')
                                     }
                                     onClick={createNewAdmin}

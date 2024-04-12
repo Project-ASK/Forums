@@ -149,22 +149,31 @@ const OfficeAdmins = ({ username }) => {
               <img src="/assets/officeadmins/notifications.png" width={40} alt="Notifications" />
             </button>
             {isOpen && (
-              <div ref={nodeNotifications} className="absolute left-[1rem] top-[4rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[20rem]">
-                {messages
-                  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort messages in descending order of time
-                  .map((message, index) => (
-                    <div key={index} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-purple-500 hover:text-white">
-                      <p className="font-semibold">{message.text}</p>
-                      <p className="font-semibold">{message.forumName}</p>
-                      <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
-                    </div>
-                  ))}
+              <div ref={nodeNotifications} className="absolute left-[1rem] top-[4rem] bg-white border rounded shadow-xl z-30 w-[20rem] max-h-64 overflow-y-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                <style jsx>{`
+                  .absolute::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                <div className="p-4">
+                  <h2 className="text-xl font-bold mb-4 sticky top-0 bg-white">Notifications</h2>
+                  <div className="overflow-y-auto max-h-[calc(100% - 3rem)]">
+                    {messages
+                      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort messages in descending order of time
+                      .map((message, index) => (
+                        <div key={index} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-blue-300 hover:text-white mb-2">
+                          <p className="font-semibold">{message.text}</p>
+                          <p className="font-semibold">{message.forumName}</p>
+                          <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
           <button onClick={handleLogout} className="p-2.5 bg-blue-500 rounded-3xl text-white">Logout</button>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0.5 p-2 h-screen mt-[2rem] w-[80%] mx-auto">
           <div className="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-200 bg-gray-50 mb-4 sm:mb-0" onClick={() => { router.push('/officeadmins/getForums'); Cookies.set("name", name) }}>
             <img src="/assets/logo.png" width={200} alt="Forums" />
