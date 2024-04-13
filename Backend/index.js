@@ -472,7 +472,7 @@ router.route('/getUser')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
-        res.status(200).send({ name: user.name });
+        res.status(200).send({ user });
 
     })
 
@@ -486,7 +486,7 @@ router.route('/updateUser')
         if (user.name !== name) {
             user.name = name;
         }
-        user.reg = reg;
+        user.regNo = reg;
         user.phoneNumber = phone;
         user.yearOfJoin = year;
         user.branch = branch;

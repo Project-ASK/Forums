@@ -1,1 +1,1 @@
-[{"_id": {"$oid": "65f31aea26229aba0b1170f9"}, "eventName": "PiCraft", "eventDate": "2024-04-12", "tags": ["Cybersecurity"]}, {"_id": {"$oid": "65e33f1d89a19e70dcd2c42a"}, "eventName": "YIP Marathon", "eventDate": "2024-05-07", "tags": ["Personality", "AI"]}]
+[{"_id": {"$oid": "66154e7a52d91cdfb11a3259"}, "eventName": "PyCEC", "eventDate": "2024-04-17", "tags": ["Coding"]}]

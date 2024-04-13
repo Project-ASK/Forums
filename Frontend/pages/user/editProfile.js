@@ -35,7 +35,13 @@ export default function forms() {
                 body: JSON.stringify({ userName }),
             });
             const data = await response.json();
-            setName(data.name);
+            setName(data.user.name);
+            setReg(data.user.regNo);
+            setPhone(data.user.phoneNumber);
+            setYear(data.user.yearOfJoin);
+            setBranch(data.user.branch);
+            setAbout(data.user.about);
+            setTopics(data.user.topics);
         };
 
         if (userName) {
@@ -44,6 +50,20 @@ export default function forms() {
     }, [userName]);
 
     const handleUpdate = async (e) => {
+        if (!name || !reg || !phone || !year || !branch || !about || !topics.length) {
+            toast.error('Please fill in all the fields', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
         e.preventDefault();
         setIsLoading(true);
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateUser`, {
@@ -103,7 +123,7 @@ export default function forms() {
             </div>
             <div className="flex flex-col items-center min-h-screen py-2 mt-[2rem] xs:w-[80%] xs:mx-auto">
                 <div className="flex flex-col items-center justify-center w-full text-center">
-                    <h1 className="text-4xl font-bold text-blue-600">Edit Profile</h1>
+                    <h1 className="text-4xl font-bold text-blue-600">My Profile</h1>
                 </div>
                 <form className='w-full max-w-md mt-5'>
                     <div className="flex flex-wrap -mx-3 mb-6">

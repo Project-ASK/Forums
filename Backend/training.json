@@ -40,33 +40,32 @@
   "events": [
     {
       "_id": {
-        "$oid": "65e33f1d89a19e70dcd2c42a"
+        "$oid": "66154e7a52d91cdfb11a3259"
       },
-      "eventName": "YIP Marathon",
-      "eventDate": "2024-05-07",
+      "eventName": "PyCEC",
+      "eventDate": "2024-04-17",
       "tags": [
-        "Personality",
+        "Coding"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "66154f6152d91cdfb11a3279"
+      },
+      "eventName": "Clash of Tycoons",
+      "eventDate": "2024-05-14",
+      "tags": [
         "AI"
       ]
     },
     {
       "_id": {
-        "$oid": "65f2bc02e11a7a9a99a47041"
+        "$oid": "66154fc652d91cdfb11a3299"
       },
-      "eventName": "CodeVerse",
-      "eventDate": "2024-04-04",
+      "eventName": "YIP Idea Marathon",
+      "eventDate": "2024-05-23",
       "tags": [
-        "Web Development"
-      ]
-    },
-    {
-      "_id": {
-        "$oid": "65f31aea26229aba0b1170f9"
-      },
-      "eventName": "PiCraft",
-      "eventDate": "2024-04-12",
-      "tags": [
-        "Cybersecurity"
+        "Cloud"
       ]
     }
   ]

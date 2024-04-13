@@ -20,6 +20,8 @@ import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Link } from '@mui/material';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
@@ -795,44 +797,58 @@ const Dashboard = ({ username, pay }) => {
             <div className="flex bg-white w-full shadow-lg justify-between items-center rounded-lg">
                 <img src="/assets/logo.png" width={160} />
                 <div className="relative flex items-center">
-                    <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative right-[2rem] cursor-pointer" />
+                    <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative right-[1rem] cursor-pointer" />
                     {isOpen && (
-                        <div ref={nodeNotifications} className="absolute right-[6rem] top-[3rem] py-2 bg-white border rounded shadow-xl overflow-y-auto max-h-64 z-30 w-[130%]">
-                            {/* Map over posts and render each post as a notification */}
-                            {posts.map(post => (
-                                <div key={post._id}>
-                                    {post.messages.map(message => (
-                                        <>
-                                            <p key={message._id} className="transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 font-semibold rounded hover:bg-purple-500 hover:text-white mb-1">
-                                                {message.message}
-                                                <br />
-                                                <p className="text-gray-500 font-light text-sm hover:text-white">{message.timestamp}</p>
-                                            </p>
-                                        </>
+                        <div ref={nodeNotifications} className="absolute right-[3rem] top-[3.5rem] bg-white border rounded shadow-xl z-30 w-[20rem] max-h-64 overflow-y-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                            <style jsx>{`
+                                .absolute::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            `}</style>
+                            <div className="p-4">
+                                <h2 className="text-xl font-bold mb-4 sticky top-0 bg-white">Notifications</h2>
+                                <div className="overflow-y-auto max-h-[calc(100% - 3rem)]">
+                                    {/* Map over posts and render each post as a notification */}
+                                    {posts.map(post => (
+                                        <div key={post._id}>
+                                            {post.messages.map((message, index) => (
+                                                <div key={index} className="cursor-pointer transition-colors duration-200 block px-4 py-2 text-normal text-gray-900 rounded hover:bg-blue-300 hover:text-white mb-2">
+                                                    <p className="font-semibold">{message.message}</p>
+                                                    <p className="font-semibold">{message.forumName}</p>
+                                                    <p className="text-xs text-gray-500">{message.timestamp}</p>
+                                                </div>
+                                            ))}
+                                        </div>
                                     ))}
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     )}
-                    <p className="relative right-[1rem] font-product-sans font-semibold">{name}</p>
-                    <img
-                        src="/assets/profile.svg" width={40}
-                        className="self-center mr-[2rem] cursor-pointer"
-                        onClick={() => setDropdownVisible(!dropdownVisible)} // Toggle the dropdown when the image is clicked
-                    />
+                    <div className="flex items-center bg-blue-100 hover:bg-blue-200 mr-2 p-1.5 rounded-xl cursor-pointer" onClick={() => setDropdownVisible(!dropdownVisible)}>
+                        <div className="flex items-center gap-x-4">
+                            <p className="font-product-sans font-semibold ml-1">{name}</p>
+                            <img
+                                src="/assets/profile.svg"
+                                width={40}
+                                className="ml-2"
+                            />
+                        </div>
+                    </div>
                     {dropdownVisible && ( // Only show the dropdown if dropdownVisible is true
-                        <div ref={node} className="absolute mt-36 right-2 w-48 bg-white border border-gray-200 rounded-lg py-2 shadow-xl z-50">
+                        <div ref={node} className="absolute mt-44 right-2 w-48 bg-white border border-gray-200 rounded-lg py-2 shadow-xl z-50">
                             <button
                                 onClick={handleProfileEdit}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left rounded-md"
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left rounded-md"
                             >
-                                Edit Profile
+                                <ManageAccountsIcon />
+                                <span className="ml-2">My Profile</span>
                             </button>
                             <button
                                 onClick={handleLogout}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left rounded-md"
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white w-full text-left rounded-md"
                             >
-                                Logout
+                                <ExitToAppIcon />
+                                <span className="ml-2">Logout</span>
                             </button>
                         </div>
                     )}
@@ -896,7 +912,7 @@ const Dashboard = ({ username, pay }) => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-wrap justify-center items-center h-screen shadow-lg rounded-lg bg-blue-100 mt-[2rem] w-[96%] mx-auto">
+            <div className="flex flex-wrap justify-center items-center h-screen shadow-lg rounded-lg bg-blue-100 mt-[1rem] w-[96%] mx-auto">
                 {isSmallScreen ? (
                     <Carousel className="w-full h-[70%]" indicatorContainerProps={{ style: { display: 'none' } }}>
                         {filteredEvents.map((event, index) => (
