@@ -477,19 +477,15 @@ const Dashboard = ({ username }) => {
 
 // Function to convert JSON to CSV
 const convertToCSV = (objArray) => {
-  const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
   let str = '';
 
-  for (let i = 0; i < array.length; i++) {
-    let line = '';
-    for (let index in array[i]) {
-      if (line !== '') line += ','
-      
-      line += array[i][index];
-    }
+  // Header
+  str += 'Name,Email,Phone Number,Year of Join\r\n';
 
-    str += line + '\r\n';
-  }
+  // Data
+  objArray.forEach((member) => {
+    str += `${member.name},${member.email},${member.phoneNumber},${member.yearOfJoin}\r\n`;
+  });
 
   return str;
 }
@@ -613,8 +609,11 @@ const downloadCSV = (args) => {
                   <img src="/assets/upload.svg" width={20} />
                   <p className="font-product-sans text-sm font-normal">Import</p>
                 </label>
-                <button onClick={() => downloadCSV({ filename: "member-data.csv", data: filteredMembers })}>Generate CSV</button>
-                {/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
+                <button 
+                 onClick={() => downloadCSV({ filename: "member-data.csv", data: filteredMembers })}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ease-in-out">
+                    Generate CSV
+                  </button>                {/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
               </div>
               <div className="relative overflow-x-auto shadow-md mx-auto sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
                 <div className="pb-3 bg-white">
