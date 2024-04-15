@@ -18,7 +18,6 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, B
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
-import { saveAs } from 'file-saver';
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -605,15 +604,16 @@ const downloadCSV = (args) => {
               <h2 className="text-2xl font-product-sans font-medium mb-5 text-center mt-[4rem]">Members of {forum}:</h2>
               <div className="mx-auto flex justify-center">
                 <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-                <label htmlFor="fileUpload" className="cssbuttons-io-button flex space-x-5">
+                <label htmlFor="fileUpload" className="cssbuttons-io-button flex space-x-5 mr-3">
                   <img src="/assets/upload.svg" width={20} />
                   <p className="font-product-sans text-sm font-normal">Import</p>
                 </label>
                 <button 
-                 onClick={() => downloadCSV({ filename: "member-data.csv", data: filteredMembers })}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ease-in-out">
-                    Generate CSV
-                  </button>                {/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
+                  onClick={() => downloadCSV({ filename: "member-data.csv", data: filteredMembers })}
+                  className="cssbuttons-io-button flex space-x-5 bg-blue-500 hover:bg-blue-600 transition-colors duration-300 ease-in-out text-white px-4 py-2 rounded-md shadow-md">
+                  Generate CSV
+                </button>
+{/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
               </div>
               <div className="relative overflow-x-auto shadow-md mx-auto sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
                 <div className="pb-3 bg-white">
