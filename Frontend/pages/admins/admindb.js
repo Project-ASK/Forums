@@ -18,6 +18,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, B
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
+import { saveAs } from 'file-saver';
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -41,6 +42,7 @@ const Dashboard = ({ username }) => {
   const [open, setOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const node = useRef();
+
 
   const nodeNotifications = useRef(); // Create a new useRef for notifications
 
@@ -91,6 +93,7 @@ const Dashboard = ({ username }) => {
     // outside click 
     setIsMenuOpen(false);
   };
+
 
   useEffect(() => { // Add this useEffect
     if (isMenuOpen) {
@@ -199,6 +202,7 @@ const Dashboard = ({ username }) => {
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   }
+
 
   const handleMemberListClick = async () => {
     toggleMenu();
@@ -471,6 +475,45 @@ const Dashboard = ({ username }) => {
     setOpen(false);
   };
 
+// Function to convert JSON to CSV
+const convertToCSV = (objArray) => {
+  const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+  let str = '';
+
+  for (let i = 0; i < array.length; i++) {
+    let line = '';
+    for (let index in array[i]) {
+      if (line !== '') line += ','
+      
+      line += array[i][index];
+    }
+
+    str += line + '\r\n';
+  }
+
+  return str;
+}
+
+// Function to download CSV file
+const downloadCSV = (args) => {
+  let data, filename, link;
+  let csv = convertToCSV(args.data);
+  if (csv == null) return;
+
+  filename = args.filename || 'export.csv';
+
+  if (!csv.match(/^data:text\/csv/i)) {
+    csv = 'data:text/csv;charset=utf-8,' + csv;
+  }
+  data = encodeURI(csv);
+
+  link = document.createElement('a');
+  link.setAttribute('href', data);
+  link.setAttribute('download', filename);
+  link.click();
+}
+
+
   return (
     <>
       <ToastContainer />
@@ -570,6 +613,8 @@ const Dashboard = ({ username }) => {
                   <img src="/assets/upload.svg" width={20} />
                   <p className="font-product-sans text-sm font-normal">Import</p>
                 </label>
+                <button onClick={() => downloadCSV({ filename: "member-data.csv", data: filteredMembers })}>Generate CSV</button>
+                {/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
               </div>
               <div className="relative overflow-x-auto shadow-md mx-auto sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
                 <div className="pb-3 bg-white">
@@ -928,6 +973,7 @@ const Dashboard = ({ username }) => {
             <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
           </div>
         </footer>
+        
       </div>
     </>
   );
