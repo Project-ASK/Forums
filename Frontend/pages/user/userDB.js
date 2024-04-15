@@ -710,6 +710,7 @@ const Dashboard = ({ username, pay }) => {
             Cookies.set('sessionId', sessionId);
             Cookies.set('eventDetails', JSON.stringify({
                 eventName: selectedEvent.eventName,
+                eventDate: selectedEvent.date,
                 forumName: selectedEvent.forumName,
                 questions: selectedEvent.questions,
                 responses
@@ -786,6 +787,28 @@ const Dashboard = ({ username, pay }) => {
                 if (data.success) {
                     Cookies.remove('sessionId');
                     Cookies.remove('eventDetails');
+                    setCalEvents([...calevents, {
+                        event_date: eventDetails.eventDate,
+                        event_title: eventDetails.eventName,
+                        event_theme: event_theme
+                    }]);
+                    // Update joinedEvents state
+                    setJoinedEvents([...joinedEvents, eventDetails.eventName]);
+                    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/addCustomEvent`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username,
+                            event: {
+                                event_date: eventDetails.eventDate,
+                                event_title: eventDetails.eventName,
+                                event_theme: event_theme
+                            }
+                        }),
+                    })
+                        .then(response => response.json())
                 }
             })
             .catch(error => console.error('Error:', error));
