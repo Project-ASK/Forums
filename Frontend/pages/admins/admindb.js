@@ -604,7 +604,7 @@ const downloadCSV = (args) => {
               <h2 className="text-2xl font-product-sans font-medium mb-5 text-center mt-[4rem]">Members of {forum}:</h2>
               <div className="mx-auto flex justify-center">
                 <input type="file" id="fileUpload" onChange={handleFileUpload} style={{ display: 'none' }} />
-                <label htmlFor="fileUpload" className="cssbuttons-io-button flex space-x-5 mr-3">
+                <label htmlFor="fileUpload" className="cursor-pointer cssbuttons-io-button flex space-x-5 mr-3">
                   <img src="/assets/upload.svg" width={20} />
                   <p className="font-product-sans text-sm font-normal">Import</p>
                 </label>
