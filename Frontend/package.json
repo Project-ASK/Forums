@@ -38,6 +38,7 @@
     "react-select": "^5.8.0",
     "react-toastify": "^10.0.5",
     "recharts": "^2.12.2",
+    "sharp": "^0.33.3",
     "socket.io-client": "^4.7.5",
     "stripe": "^14.24.0",
     "swiper": "^11.0.7",
