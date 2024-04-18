@@ -15,18 +15,6 @@
     },
     {
       "_id": {
-        "$oid": "65d8b04badeb19c8aaccb2c3"
-      },
-      "name": "R Ashwin",
-      "username": "ashwinr7603",
-      "about": "oru rasam",
-      "topics": [
-        "Cybersecurity",
-        "Cloud"
-      ]
-    },
-    {
-      "_id": {
         "$oid": "65da148897364afe19d9e83f"
       },
       "name": "Sanjay Mathew",
@@ -35,6 +23,14 @@
       "topics": [
         "Personality"
       ]
+    },
+    {
+      "_id": {
+        "$oid": "661e574911fe1ef9ae53ca8b"
+      },
+      "name": "Ashwin",
+      "username": "ashwinr7603",
+      "topics": []
     }
   ],
   "events": [
