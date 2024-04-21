@@ -7,6 +7,10 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 const Editor = dynamic(
     () => import('jodit-pro-react').then((mod) => mod.default),
@@ -20,6 +24,11 @@ const EventReport = () => {
     const eventId = Cookies.get('eventId');
     const [prompt,setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
+    const [selectedModel, setSelectedModel] = useState('gemini');
+
+    const handleChange = (event) => {
+        setSelectedModel(event.target.value);
+    };
 
     useEffect(() => {
         const fetchEventDetails = async () => {
@@ -48,7 +57,7 @@ const EventReport = () => {
         {
             setLoading(true);
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/genAI/prompt`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/genAI/prompt/${selectedModel}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -117,16 +126,31 @@ const EventReport = () => {
                         />
                     </div>
                     <TextField id="outlined-basic" label="Enter prompt here" variant="outlined" value={prompt} onChange={(e) => setPrompt(e.target.value)} multiline className="w-full h-[4rem] mt-[5rem]" rows={3}/>
-                    <Button onClick={handleRephraseWithAI} variant="outlined" className="mt-[4rem]">
-                        {loading ? (
-                            <>
-                                <CircularProgress size={24} />
-                                <span className="ml-2">Generating ...</span>
-                            </>
-                        ) : (
-                            'Rephrase with AI'
-                        )}
-                    </Button>
+                    <div className="flex items-center">
+                        <Button onClick={handleRephraseWithAI} variant="outlined" className="mt-[4rem]">
+                            {loading ? (
+                                <>
+                                    <CircularProgress size={24} />
+                                    <span className="ml-2">Generating ...</span>
+                                </>
+                            ) : (
+                                'Rephrase with AI'
+                            )}
+                        </Button>
+                        <FormControl sx={{ m: 1, minWidth: 120, marginTop:9, marginLeft:2 }} size="small">
+                            <InputLabel id="demo-simple-select-helper-label">Model</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-helper-label"
+                                id="demo-simple-select-helper"
+                                value={selectedModel}
+                                label="Model"
+                                onChange={handleChange}
+                            >
+                                <MenuItem value="gemini">Google Gemini</MenuItem>
+                                <MenuItem value="groq">Meta Llama3 (Faster)</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
                 </div>
             </div>
             <footer className="text-gray-600 body-font">

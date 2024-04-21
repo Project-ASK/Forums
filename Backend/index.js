@@ -1162,54 +1162,91 @@ const {
     HarmBlockThreshold,
 } = require("@google/generative-ai");
 
+const Groq = require('groq-sdk');
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
 
-router.post('/genAI/prompt', async (req, res) => {
+router.post('/genAI/prompt/:model', async (req, res) => {
     const { content } = req.body; // Get the content from the request body
+    const { model } = req.params;
 
-    const MODEL_NAME = "gemini-1.0-pro";
-    const API_KEY = process.env.GEMINI_API_KEY; // Use your Gemini API key
+    let aiPrompt = '';
 
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    if (model === 'gemini') {
+        const MODEL_NAME = "gemini-1.0-pro";
+        const API_KEY = process.env.GEMINI_API_KEY; // Use your Gemini API key
 
-    const generationConfig = {
-        temperature: 0.9,
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 4096,
-    };
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
-    const safetySettings = [
-        {
-            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-    ];
+        const generationConfig = {
+            temperature: 0.9,
+            topK: 1,
+            topP: 1,
+            maxOutputTokens: 4096,
+        };
 
-    const chat = model.startChat({
-        generationConfig,
-        safetySettings,
-        history: [],
-    });
+        const safetySettings = [
+            {
+                category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+        ];
 
-    const result = await chat.sendMessage(content);
-    const response = result.response;
-    // const aiPrompt = response.text().replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-    const aiPrompt = response.text()
-        .replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>') // Replace **...** with <strong>...</strong>
-        .replace(/\n+/g, '<br>'); // Replace consecutive newline characters with <br>
+        const chat = model.startChat({
+            generationConfig,
+            safetySettings,
+            history: [],
+        });
+
+        const result = await chat.sendMessage(content);
+        const response = result.response;
+        aiPrompt = response.text()
+            .replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>') // Replace **...** with <strong>...</strong>
+            .replace(/\n+/g, '<br>'); // Replace consecutive newline characters with <br>
+
+    } else if (model === 'groq') {
+        const MODEL_NAME = "llama3-70b-8192";
+
+        const chatCompletion = await groq.chat.completions.create({
+            "messages": [
+                {
+                    "role": "user",
+                    "content": content
+                }
+            ],
+            "model": MODEL_NAME,
+            "temperature": 0.9,
+            "max_tokens": 4096,
+            "top_p": 1,
+            "stream": true,
+            "stop": null
+        });
+
+        for await (const chunk of chatCompletion) {
+            aiPrompt += chunk.choices[0]?.delta?.content || '';
+        }
+
+        aiPrompt = aiPrompt
+            .replace(/\*\*((.|[\r\n])+?)\*\*/g, '<strong>$1</strong>') // Replace **...** with <strong>...</strong>
+            .replace(/\n+/g, '<br>'); // Replace consecutive newline characters with <br>
+    } else {
+        res.status(400).json({ error: 'Invalid model' });
+        return;
+    }
 
     res.status(200).json({ text: aiPrompt }); // Send the generated text back as the response
 });
