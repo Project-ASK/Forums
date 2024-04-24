@@ -1168,9 +1168,10 @@ const groq = new Groq({
 });
 
 router.post('/genAI/prompt/:model', async (req, res) => {
-    const { content } = req.body; // Get the content from the request body
+    const { eventName, eventDate, eventTime, eventLocation, eventParticipant } = req.body;
     const { model } = req.params;
 
+    const content = `Generate an event report for an event named ${eventName} which is held on ${eventDate} ,${eventTime} at ${eventLocation}. A total of ${eventParticipant} students attended the event the report should mention today's date, title as \"post event report\" along with the tag [your name] to sign at the end.`;
     let aiPrompt = '';
 
     if (model === 'gemini') {

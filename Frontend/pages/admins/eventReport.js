@@ -18,11 +18,15 @@ const Editor = dynamic(
 );
 
 const EventReport = () => {
-    const [events, setEventDetails] = useState([]);
+    const [events, setEventDetails] = useState(null);
+    const [eventName, setEventName] = useState('');
+    const [eventDate, setEventDate] = useState('');
+    const [eventLocation, setEventLocation] = useState('');
+    const [eventTime, setEventTime] = useState('');
+    const [eventParticipant, setEventParticipant] = useState('');
     const [content, setContent] = useState('');
     const router = useRouter();
     const eventId = Cookies.get('eventId');
-    const [prompt,setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedModel, setSelectedModel] = useState('gemini');
 
@@ -41,6 +45,11 @@ const EventReport = () => {
             });
             const data = await response.json();
             setEventDetails(data.event);
+            setEventName(data.event.eventName);
+            setEventDate(data.event.date);
+            setEventTime(data.event.time);
+            setEventLocation(data.event.location);
+            setEventParticipant(Cookies.get('participants'));
         };
 
         if (eventId) {
@@ -53,8 +62,7 @@ const EventReport = () => {
     }
 
     const handleRephraseWithAI = async () => {
-        if(prompt!='')
-        {
+        if (eventName != '' && eventDate != '' && eventTime != '' && eventLocation != '' && eventParticipant != '') {
             setLoading(true);
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/genAI/prompt/${selectedModel}`, {
@@ -62,7 +70,7 @@ const EventReport = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ content: prompt }),
+                    body: JSON.stringify({ eventName, eventDate, eventTime, eventLocation, eventParticipant })
                 })
                 const data = await response.json();
                 setContent(data.text);
@@ -70,9 +78,8 @@ const EventReport = () => {
                 console.error(error);
             }
             setLoading(false);
-            setPrompt('');
-        }else{
-            toast.error('Prompt text can\'t be empty.', {
+        } else {
+            toast.error('Please ensure that all the event details are filled.', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -86,9 +93,24 @@ const EventReport = () => {
         }
     }
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDate = date.toLocaleDateString('en-US', options);
+        return formattedDate;
+    };
+
+    // Function to convert time to user-readable format
+    const formatTime = (timeString) => {
+        const time = new Date(`01/01/2022 ${timeString}`);
+        const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+        const formattedTime = time.toLocaleTimeString('en-US', options);
+        return formattedTime;
+    };
+
     return (
         <>
-            <ToastContainer/>
+            <ToastContainer />
             <div className="shadow-lg">
                 <div className="flex bg-white w-full justify-between items-center">
                     <img src="/assets/logo.png" width={160} onClick={handleback} className='cursor-pointer' />
@@ -125,19 +147,31 @@ const EventReport = () => {
                             }}
                         />
                     </div>
-                    <TextField id="outlined-basic" label="Enter prompt here" variant="outlined" value={prompt} onChange={(e) => setPrompt(e.target.value)} multiline className="w-full h-[4rem] mt-[5rem]" rows={3}/>
-                    <div className="flex items-center">
-                        <Button onClick={handleRephraseWithAI} variant="outlined" className="mt-[4rem]">
+                    <div className="p-2 border rounded mt-12 bg-gray-200 flex-grow overflow-x-auto">
+                        <h2 className="text-2xl text-center font-bold mb-4">Event Details</h2>
+                        {events && (
+                            <div key={events._id} className="flex flex-col items-center mb-4 gap-y-4">
+                                <TextField id={`event-name`} label="Event Name" variant="outlined" value={eventName} onChange={(e) => setEventName(e.target.value)} sx={{ width: '75%' }} />
+                                <TextField id={`event-date`} label="Date" variant="outlined" value={formatDate(eventDate)} sx={{ width: '75%' }} />
+                                <TextField id={`event-location`} label="Location" variant="outlined" value={eventLocation} onChange={(e) => setEventLocation(e.target.value)} sx={{ width: '75%' }} />
+                                <TextField id={`event-time`} label="Time" variant="outlined" value={formatTime(eventTime)} sx={{ width: '75%' }} />
+                                <TextField id={`event-participants`} label="Number of Participants" variant="outlined" value={eventParticipant} onChange={(e) => setEventParticipant(e.target.value)} sx={{ width: '75%' }} />
+                            </div>
+                        )}
+                    </div>
+                    {/* <TextField id="outlined-basic" label="Enter prompt here" variant="outlined" value={prompt} onChange={(e) => setPrompt(e.target.value)} multiline className="w-full h-[4rem] mt-[5rem]" rows={3}/> */}
+                    <div className="flex items-center justify-center">
+                        <Button onClick={handleRephraseWithAI} variant="outlined">
                             {loading ? (
                                 <>
                                     <CircularProgress size={24} />
                                     <span className="ml-2">Generating ...</span>
                                 </>
                             ) : (
-                                'Rephrase with AI'
+                                'Generate with AI'
                             )}
                         </Button>
-                        <FormControl sx={{ m: 1, minWidth: 120, marginTop:9, marginLeft:2 }} size="small">
+                        <FormControl sx={{ m: 1, minWidth: 120, marginTop: 1, marginLeft: 2 }} size="small">
                             <InputLabel id="demo-simple-select-helper-label">Model</InputLabel>
                             <Select
                                 labelId="demo-simple-select-helper-label"
@@ -164,6 +198,27 @@ const EventReport = () => {
             </footer>
         </>
     )
+}
+
+export async function getServerSideProps(context) {
+    // Get username from cookies
+    const username = context.req.cookies.adminUsername;
+    const eventId = context.req.cookies.eventId;
+
+    // If username is not available, redirect to login
+    if (!username) {
+        return {
+            redirect: {
+                destination: '/adminAuth/login',
+                permanent: false,
+            },
+        }
+    }
+
+    // If username is available, pass it as a prop
+    return {
+        props: {},
+    }
 }
 
 export default EventReport;
