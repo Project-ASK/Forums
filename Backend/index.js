@@ -16,7 +16,25 @@ const cron = require('node-cron');
 
 const SECRET_KEY = 'super-secret-key';
 
-app.use(cors())
+app.use((req, res, next) => {
+    // Set Content Security Policy header
+    res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; script-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';"
+    );
+    res.removeHeader('X-Powered-By');
+    next();
+});
+
+const corsOptions = {
+    origin: ['http://localhost:3000', 'http://karthik1801.myddns.me','http://14.139.189.219'], // Add your trusted domains here
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+};
+
+app.use(cors(corsOptions));
+
+// app.use(cors())
 app.use(bodyParser.json())
 // app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,7 +45,7 @@ dotenv.config();
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const eventName = req.query.eventName || req.body.eventName;           //req.body.eventName
+        const eventName = req.query.eventName || req.body.eventName;
         const forumName = req.query.forumName;
         const dir = `./events/${forumName}/${eventName}`;
 
@@ -51,6 +69,10 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
     console.log('DB Connected');
+});
+
+app.get('/', (req, res) => {
+    res.send('Server is running');
 });
 
 const userSchema = new mongoose.Schema({
