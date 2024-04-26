@@ -11,46 +11,46 @@ import { useTheme } from '@mui/system';
 
 const userTestimonials = [
   {
-    avatar: <Avatar alt="R Ashwin" />,
-    name: 'R Ashwin',
+    avatar: <Avatar alt="John Smith" />,
+    name: "John Smith",
     occupation: 'GDSC Lead',
     testimonial:
-      "I absolutely love how versatile this product is! Whether I'm tackling work projects or indulging in my favorite hobbies, it seamlessly adapts to my changing needs. Its intuitive design has truly enhanced my daily routine, making tasks more efficient and enjoyable.",
+      "Forums CEC has revolutionized event management for our college community. Its adaptability and intuitive design have made organizing and participating in events a breeze. I'm impressed by how it seamlessly caters to the diverse needs of students, community leaders, and administrators.",
   },
   {
-    avatar: <Avatar alt="Ravisankar V" />,
-    name: 'Ravisankar V',
+    avatar: <Avatar alt="Emily Johnson" />,
+    name: 'Emily Johnson',
     occupation: 'IEEE Chair',
     testimonial:
-      "One of the standout features of this product is the exceptional customer support. In my experience, the team behind this product has been quick to respond and incredibly helpful. It's reassuring to know that they stand firmly behind their product.",
+      "I've been thoroughly impressed by the Forums CEC team's commitment to customer support. Their responsiveness and assistance have been invaluable in ensuring the success of our events. It's reassuring to have such reliable support behind us.",
   },
   {
     avatar: <Avatar alt="Cindy Baker" />,
     name: 'Cindy Baker',
     occupation: 'IEDC Lead',
     testimonial:
-      'The level of simplicity and user-friendliness in this product has significantly simplified my life. I appreciate the creators for delivering a solution that not only meets but exceeds user expectations.',
+      'Forums CEC has simplified event management for me in ways I never thought possible. Its user-friendly interface and seamless functionality have made my role as a community leader significantly easier. I highly recommend it to anyone looking to streamline their event planning process.',
   },
   {
-    avatar: <Avatar alt="Aravind HR" />,
-    name: 'Aravind HR',
+    avatar: <Avatar alt="Michael Brown" />,
+    name: 'Michael Brown',
     occupation: 'FOCES Lead',
     testimonial:
-      "I appreciate the attention to detail in the design of this product. The small touches make a big difference, and it's evident that the creators focused on delivering a premium experience.",
+      "The attention to detail in Forums CEC is truly remarkable. Every feature is thoughtfully designed to enhance the event management experience. It's evident that the creators have a deep understanding of the needs of college communities.",
   },
   {
-    avatar: <Avatar alt="Prajeeth Menon" />,
-    name: 'Prajeeth Menon',
+    avatar: <Avatar alt="Jessica Miller" />,
+    name: 'Jessica Miller',
     occupation: 'TinkerHub Lead',
     testimonial:
-      "I've tried other similar products, but this one stands out for its innovative features. It's clear that the makers put a lot of thought into creating a solution that truly addresses user needs.",
+      "As a leader of a college community, I've found Forums CEC to be a game-changer. Its innovative features have enabled us to take our events to the next level. The platform's versatility and reliability make it a standout choice for event management.",
   },
   {
-    avatar: <Avatar alt="Abin T Sunil" />,
-    name: 'Abin T Sunil',
+    avatar: <Avatar alt="David Wilson" />,
+    name: 'David Wilson',
     occupation: 'Mulearn Lead',
     testimonial:
-      "The quality of this product exceeded my expectations. It's durable, well-designed, and built to last. Definitely worth the investment!",
+      "Forums CEC has exceeded my expectations in every way. Its quality and durability are unmatched, making it the perfect solution for our college's event management needs. I'm confident in its ability to support us for years to come.",
   },
 ];
 
@@ -74,7 +74,7 @@ const darkLogos = [
 
 const logoStyle = {
   width: '64px',
-  height:"64px",
+  height: "64px",
   opacity: 0.8,
 };
 
@@ -105,9 +105,8 @@ export default function Testimonials() {
           Testimonials
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          See what our customers love about our products. Discover how we excel in
-          efficiency, durability, and satisfaction. Join us for quality, innovation,
-          and reliable support.
+          Hear what our Forums CEC users have to say. Experience our commitment to efficiency,
+          durability, and satisfaction. Join our community for quality, innovation, and reliable support.
         </Typography>
       </Box>
       <Grid container spacing={2}>
@@ -136,7 +135,7 @@ export default function Testimonials() {
                 }}
               >
                 <CardHeader
-                  avatar={testimonial.avatar}
+                  avatar={<Avatar alt={testimonial.name.split(' ')[0]}>{testimonial.name.split(' ')[0][0]}</Avatar>}
                   title={testimonial.name}
                   subheader={testimonial.occupation}
                 />

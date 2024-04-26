@@ -79,10 +79,10 @@ export default function Hero() {
               />
             </Typography>
           </Typography>
-          <Typography variant="body1" textAlign="center" color="text.secondary">
-            Explore our cutting-edge dashboard, delivering high-quality solutions
-            tailored to your needs. <br />
-            Elevate your experience with top-tier features and services.
+          <Typography variant="body1" textAlign="center" color="text.primary">
+            <q style={{ fontStyle: 'italic', fontSize: "1rem" }}>
+              Empowering college communities through intuitive event management tools and top-tier services at Forums CEC.
+            </q>
           </Typography>
         </Stack>
         {error ? (

@@ -90,7 +90,7 @@ export default function FAQ() {
             </Typography>
           </AccordionDetails>
         </Accordion>
-        {/* <Accordion
+        <Accordion
           expanded={expanded === 'panel3'}
           onChange={handleChange('panel3')}
         >
@@ -100,7 +100,7 @@ export default function FAQ() {
             id="panel3d-header"
           >
             <Typography component="h3" variant="subtitle2">
-              What makes your product stand out from others in the market?
+              How do I create an account on the Forums CEC platform?
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -109,13 +109,11 @@ export default function FAQ() {
               gutterBottom
               sx={{ maxWidth: { sm: '100%', md: '70%' } }}
             >
-              Our product distinguishes itself through its adaptability, durability,
-              and innovative features. We prioritize user satisfaction and
-              continually strive to exceed expectations in every aspect.
+              To create an account, simply click on the 'Sign Up' button located on the homepage. Follow the prompts to enter your information and set up your account. Once completed, you'll have access to all the features and functionalities of the Forums CEC platform.
             </Typography>
           </AccordionDetails>
-        </Accordion> */}
-        {/* <Accordion
+        </Accordion>
+        <Accordion
           expanded={expanded === 'panel4'}
           onChange={handleChange('panel4')}
         >
@@ -125,7 +123,7 @@ export default function FAQ() {
             id="panel4d-header"
           >
             <Typography component="h3" variant="subtitle2">
-              Is there a warranty on the product, and what does it cover?
+              How can I register for events on the Forums CEC platform?
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -134,13 +132,33 @@ export default function FAQ() {
               gutterBottom
               sx={{ maxWidth: { sm: '100%', md: '70%' } }}
             >
-              Yes, our product comes with a [length of warranty] warranty. It covers
-              defects in materials and workmanship. If you encounter any issues
-              covered by the warranty, please contact our customer support for
-              assistance.
+              To register for events, log in to your Forums CEC account and navigate to the 'Events' section. Browse through the available events and click on the event you're interested in attending. Then, follow the prompts to complete the registration process. You'll receive a confirmation email once your registration is successful.
             </Typography>
           </AccordionDetails>
-        </Accordion> */}
+        </Accordion>
+        <Accordion
+          expanded={expanded === 'panel5'}
+          onChange={handleChange('panel5')}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel5d-content"
+            id="panel5d-header"
+          >
+            <Typography component="h3" variant="subtitle2">
+              How can I update my profile information on Forums CEC?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography
+              variant="body2"
+              gutterBottom
+              sx={{ maxWidth: { sm: '100%', md: '70%' } }}
+            >
+              You can update your profile information by logging in to your Forums CEC account and navigating to the 'My Profile' section. From there, you'll be able to edit your personal details, contact information, and preferences. Don't forget to save your changes before exiting the page.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
       </Box>
     </Container>
   );

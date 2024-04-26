@@ -241,8 +241,8 @@ export default function Highlights() {
               Highlights
             </Typography>
             <Typography variant="body1" sx={{ color: 'grey.400' }}>
-              Explore why our product stands out: adaptability, durability,
-              user-friendly design, and innovation. Enjoy reliable customer support and
+              Discover why our product stands out for upcoming events: adaptability, durability,
+              user-friendly design, and innovation. Experience reliable customer support and
               precision in every detail.
             </Typography>
           </Box>
