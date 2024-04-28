@@ -14,10 +14,17 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import path from 'path'
 import Chat from './Chat/chat'
-import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button, TextField } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button, TextField, Paper, Typography } from '@mui/material';
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
+import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import Badge from '@mui/material/Badge';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 
 const Dashboard = ({ username }) => {
   const [forum, setForum] = useState();
@@ -40,10 +47,14 @@ const Dashboard = ({ username }) => {
   const [currentImage, setCurrentImage] = useState('');
   const [open, setOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [calendarModal, setCalendarModal] = useState(false);
+  const [eventList, setEventList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const node = useRef();
 
 
   const nodeNotifications = useRef(); // Create a new useRef for notifications
+  const nodeCalendarNotifications = useRef();
 
   const handleClickOutsideNotifications = e => { // Define handleClickOutsideNotifications function
     if (nodeNotifications.current.contains(e.target)) {
@@ -65,6 +76,27 @@ const Dashboard = ({ username }) => {
       document.removeEventListener("mousedown", handleClickOutsideNotifications);
     };
   }, [isOpen]);
+
+  const handleClickOutsideCalendarNotifications = e => { // Define handleClickOutsideNotifications function
+    if (nodeCalendarNotifications.current.contains(e.target)) {
+      // inside click
+      return;
+    }
+    // outside click 
+    setCalendarModal(false);
+  };
+
+  useEffect(() => { // Add useEffect for notifications
+    if (calendarModal) {
+      document.addEventListener("mousedown", handleClickOutsideCalendarNotifications);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutsideCalendarNotifications);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideCalendarNotifications);
+    };
+  }, [calendarModal]);
 
   useEffect(() => {
     const page = Cookies.get('currentPage'); // Get the currentPage from the cookie
@@ -171,6 +203,16 @@ const Dashboard = ({ username }) => {
     };
     fetchEvents();
   }, [forum]);
+
+  useEffect(() => {
+    const fetchAllEvents = async () => {
+      const responseEvents = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllEvents`);
+      const dataEvents = await responseEvents.json();
+      setEventList(dataEvents.events);
+      setIsLoading(false);
+    };
+    fetchAllEvents();
+  }, [isLoading]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -474,40 +516,103 @@ const Dashboard = ({ username }) => {
     setOpen(false);
   };
 
-// Function to convert JSON to CSV
-const convertToCSV = (objArray) => {
-  let str = '';
+  // Function to convert JSON to CSV
+  const convertToCSV = (objArray) => {
+    let str = '';
 
-  // Header
-  str += 'Name,Email,Phone Number,Year of Join\r\n';
+    // Header
+    str += 'Name,Email,Phone Number,Year of Join\r\n';
 
-  // Data
-  objArray.forEach((member) => {
-    str += `${member.name},${member.email},${member.phoneNumber},${member.yearOfJoin}\r\n`;
-  });
+    // Data
+    objArray.forEach((member) => {
+      str += `${member.name},${member.email},${member.phoneNumber},${member.yearOfJoin}\r\n`;
+    });
 
-  return str;
-}
-
-// Function to download CSV file
-const downloadCSV = (args) => {
-  let data, filename, link;
-  let csv = convertToCSV(args.data);
-  if (csv == null) return;
-
-  filename = args.filename || 'export.csv';
-
-  if (!csv.match(/^data:text\/csv/i)) {
-    csv = 'data:text/csv;charset=utf-8,' + csv;
+    return str;
   }
-  data = encodeURI(csv);
 
-  link = document.createElement('a');
-  link.setAttribute('href', data);
-  link.setAttribute('download', filename);
-  link.click();
-}
+  // Function to download CSV file
+  const downloadCSV = (args) => {
+    let data, filename, link;
+    let csv = convertToCSV(args.data);
+    if (csv == null) return;
 
+    filename = args.filename || 'export.csv';
+
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    data = encodeURI(csv);
+
+    link = document.createElement('a');
+    link.setAttribute('href', data);
+    link.setAttribute('download', filename);
+    link.click();
+  }
+
+  const handleCalendarOpen = () => {
+    setCalendarModal(true);
+  }
+
+  function ServerDay(props) {
+    const { eventList, day, outsideCurrentMonth, ...other } = props;
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+
+    // Check if the current date matches any event date
+    const event = eventList.find(event => event.date === day.format('YYYY-MM-DD'));
+
+    // Render a label if an event exists for the current date
+    const label = event ? event.eventName : null;
+
+    const handleClick = () => {
+      if (label) {
+        setOpenModal(true);
+        setSelectedEvent(event);
+      }
+    };
+
+    const handleCloseModal = () => {
+      setOpenModal(false);
+    };
+
+    const formattedDate = dayjs(day.format('YYYY-MM-DD')).format('MMMM DD, YYYY');
+
+    return (
+      <>
+        <Badge
+          key={day.toString()}
+          overlap="circular"
+          badgeContent={label ? '✅' : undefined}
+        >
+          <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} onClick={handleClick} />
+        </Badge>
+        {selectedEvent && (
+          <Modal
+            open={openModal}
+            onClose={handleCloseModal}
+            aria-labelledby="event-modal-title"
+            aria-describedby="event-modal-description"
+          >
+            <Paper sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: '2rem' }} className="rounded-2xl">
+              <Typography variant="h6" id="event-modal-title" gutterBottom sx={{ marginBottom: 2 }} className="text-center font-bold underline">
+                Event Details
+              </Typography>
+              <Typography variant="body1" id="event-modal-title" gutterBottom>
+                <span className="font-semibold">Event Name:</span> {selectedEvent.eventName}
+              </Typography>
+              <Typography variant="body1" id="event-modal-description" gutterBottom>
+                <span className="font-semibold">Event Forum:</span> {selectedEvent.forumName}
+              </Typography>
+              <Typography variant="body1" id="event-modal-title">
+                <span className="font-semibold">Event Date:</span> {formattedDate}
+              </Typography>
+            </Paper>
+          </Modal>
+        )}
+      </>
+    );
+  }
 
   return (
     <>
@@ -530,7 +635,7 @@ const downloadCSV = (args) => {
               <button onClick={toggleMenu} className="p-4">
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative left-[2rem] xs:left-[0.5rem] cursor-pointer" />
+              <img src="/assets/notification.png" width={20} onClick={() => setIsOpen(!isOpen)} className="relative lg:left-[0.3rem] cursor-pointer" />
               {isOpen && (
                 <div ref={nodeNotifications} className="absolute left-[3rem] top-[4.5rem] bg-white border rounded shadow-xl z-30 w-[20rem] max-h-64 overflow-y-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
                   <style jsx>{`
@@ -552,6 +657,26 @@ const downloadCSV = (args) => {
                         ))}
                     </div>
                   </div>
+                </div>
+              )}
+              <img src="/assets/calendar.png" width={20} onClick={handleCalendarOpen} className="relative lg:left-[1.4rem] xs:left-[1rem] cursor-pointer" />
+              {calendarModal && (
+                <div ref={nodeCalendarNotifications} className="absolute left-[3rem] top-[4.5rem] bg-white border rounded shadow-xl z-30 w-[20rem] overflow-y-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                  <style jsx>{`
+                  .absolute::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                  <h2 className="text-xl font-bold mt-3 sticky text-center top-0 bg-white">Calendar</h2>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                      loading={isLoading}
+                      renderLoading={() => <DayCalendarSkeleton />}
+                      slots={{
+                        day: (props) => <ServerDay {...props} eventList={eventList} />,
+                      }}
+                    />
+                  </LocalizationProvider>
                 </div>
               )}
               <img src="/assets/logo.png" width={200} onClick={handleHomeClick} className='cursor-pointer mx-auto' />
@@ -608,12 +733,12 @@ const downloadCSV = (args) => {
                   <img src="/assets/upload.svg" width={20} />
                   <p className="font-product-sans text-sm font-normal">Import</p>
                 </label>
-                <button 
+                <button
                   onClick={() => downloadCSV({ filename: "member-data.csv", data: filteredMembers })}
                   className="cssbuttons-io-button flex space-x-5 bg-blue-500 hover:bg-blue-600 transition-colors duration-300 ease-in-out text-white px-4 py-2 rounded-md shadow-md">
                   Generate CSV
                 </button>
-{/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
+                {/* <button onClick={() => setShowModal(true)}>Add Member</button> */}
               </div>
               <div className="relative overflow-x-auto shadow-md mx-auto sm:rounded-lg lg:w-[60%] xs:w-full mt-[2rem]">
                 <div className="pb-3 bg-white">
@@ -972,7 +1097,7 @@ const downloadCSV = (args) => {
             <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Forums CEC</p>
           </div>
         </footer>
-        
+
       </div>
     </>
   );
