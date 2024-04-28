@@ -17,7 +17,7 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import Button from '@mui/material/Button'
 
 const LoginPage = () => {
     const [data, setData] = useState(null);
@@ -33,7 +33,7 @@ const LoginPage = () => {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [sendOtp, setSendOtp] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -91,6 +91,7 @@ const LoginPage = () => {
         const data = await response.json();
         setData(data);
         if (data.message === 'Login Successful') {
+            setSendOtp(true);
             const otp = Math.floor(100000 + Math.random() * 900000);
             setRealOtp(otp.toString());
             const email = data.email;
@@ -98,6 +99,7 @@ const LoginPage = () => {
                 .then((response) => {
                     console.log('SUCCESS!', response.status, response.text);
                     setModalIsOpen(true);
+                    setSendOtp(false);
                 }, (err) => {
                     console.log('FAILED...', err);
                 });
@@ -238,9 +240,16 @@ const LoginPage = () => {
                                     </div>
                                 </div>
                                 <div className='flex justify-left'>
-                                    <button type="submit" className="w-[40%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
-                                        Sign In
-                                    </button>
+                                    {sendOtp ? (
+                                        <Button type="submit" variant="outlined" className="w-[10rem] rounded-full bg-blue-200 py-2 px-4">
+                                            <CircularProgress size={24} color="success" />
+                                            <span className="ml-2" style={{ textTransform: 'none' }}>Sending OTP</span>
+                                        </Button>
+                                    ) : (
+                                        <button type="submit" className="w-[40%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
+                                            Sign In
+                                        </button>
+                                    )}
                                     <button type="submit" className="w-[40%] bg-gray-200 text-blue-800 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 ml-[2rem]" onClick={handleSignUp}>
                                         Sign Up
                                     </button>
@@ -308,9 +317,16 @@ const LoginPage = () => {
                                     </div>
                                 </div>
                                 <div className='flex justify-center'>
-                                    <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
-                                        Sign In
-                                    </button>
+                                    {sendOtp ? (
+                                        <Button type="submit" variant="outlined" className="w-[10rem] rounded-full bg-blue-200 py-2 px-4">
+                                            <CircularProgress size={24} color="success" />
+                                            <span style={{ textTransform: 'none' }}>Sending OTP</span>
+                                        </Button>
+                                    ) : (
+                                        <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
+                                            Sign In
+                                        </button>
+                                    )}
                                     <button type="submit" className="w-1/2 bg-gray-200 text-blue-800 font-semibold py-2 px-4 rounded-full hover:bg-gray-300 ml-4" onClick={handleSignUp}>
                                         Sign Up
                                     </button>

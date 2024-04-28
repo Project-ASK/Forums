@@ -1,4 +1,3 @@
-//Page to login into the forum
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import bcrypt from 'bcryptjs';
@@ -13,9 +12,10 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button'
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 const SignUpPage = () => {
     const [username, setUsername] = useState('');
@@ -32,6 +32,7 @@ const SignUpPage = () => {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -140,12 +141,14 @@ const SignUpPage = () => {
             });
             return;
         }
+        setLoading(true);
         const otp = Math.floor(100000 + Math.random() * 900000);
         setRealOtp(otp.toString());
         emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
             .then((response) => {
                 console.log('SUCCESS!', response.status, response.text);
                 setModalIsOpen(true);
+                setLoading(false);
             }, (err) => {
                 console.log('FAILED...', err);
             });
@@ -313,9 +316,18 @@ const SignUpPage = () => {
                                 <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                             </div>
                             <div className='flex justify-left mt-[2rem]'>
-                                <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleSignUp}>
-                                    Sign Up
-                                </button>
+                                {loading ? (
+                                    <>
+                                        <Button type="submit" variant="outlined" className="w-[10rem] rounded-full bg-blue-200 py-2 px-4">
+                                            <CircularProgress size={24} color="success" />
+                                            <span className="ml-2" style={{ textTransform: 'none' }}>Sending OTP</span>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleSignUp}>
+                                        Sign Up
+                                    </button>
+                                )}
                             </div>
                         </form>
                     </div>
@@ -416,9 +428,18 @@ const SignUpPage = () => {
                                         <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                 </div>
                                 <div className='flex justify-center'>
-                                    <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleSignUp}>
-                                        Sign Up
-                                    </button>
+                                    {loading ? (
+                                        <>
+                                            <Button type="submit" variant="outlined" className="w-[10rem] rounded-full bg-blue-200 py-2 px-4">
+                                                <CircularProgress size={24} color="success" />
+                                                <span className="ml-2" style={{ textTransform: 'none' }}>Sending OTP</span>
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleSignUp}>
+                                            Sign Up
+                                        </button>
+                                    )}
                                 </div>
                             </form>
                         </div>

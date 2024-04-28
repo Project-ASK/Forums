@@ -11,6 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button'
 import { ToastContainer, Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,6 +29,7 @@ const OfficeLoginPage = () => {
     const [isMobileView, setIsMobileView] = useState(false);
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -80,6 +83,7 @@ const OfficeLoginPage = () => {
         const data = await response.json();
         setData(data);
         if (data.message === 'Login Successful') {
+            setLoading(true);
             const otp = Math.floor(100000 + Math.random() * 900000);
             setRealOtp(otp.toString());
             const email = data.email;
@@ -87,9 +91,11 @@ const OfficeLoginPage = () => {
                 .then((response) => {
                     console.log('SUCCESS!', response.status, response.text);
                     setModalIsOpen(true);
+                    setLoading(false);
                 }, (err) => {
                     console.log('FAILED...', err);
                 });
+
         } else {
             toast.error(data.message, {
                 position: "top-right",
@@ -191,9 +197,16 @@ const OfficeLoginPage = () => {
                                 <input type="password" id="password" name="password" placeholder="Enter password" className="w-[50%] p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                             </div>
                             <div className='flex justify-left'>
-                                <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600 mt-[2rem]" onClick={handleLogin}>
-                                    Sign In
-                                </button>
+                                {loading ? (
+                                    <Button type="submit" variant="outlined" className="w-[10rem] rounded-full bg-blue-200 py-2 px-4 mt-[2rem]">
+                                        <CircularProgress size={24} color="success" />
+                                        <span className="ml-2" style={{ textTransform: 'none' }}>Sending OTP</span>
+                                    </Button>
+                                ) : (
+                                    <button type="submit" className="w-[20%] bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600 mt-[2rem]" onClick={handleLogin}>
+                                        Sign In
+                                    </button>
+                                )}
                             </div>
                         </form>
                     </div>
@@ -252,9 +265,16 @@ const OfficeLoginPage = () => {
                                     <input type="password" id="password" name="password" placeholder="Enter password" className="w-full p-2 border border-gray-300 rounded-xl" value={password} onChange={(e) => setPassword(e.target.value)} required /> */}
                                 </div>
                                 <div className='flex justify-center'>
-                                    <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
-                                        Sign In
-                                    </button>
+                                    {loading ? (
+                                        <Button type="submit" variant="outlined" className="w-[10rem] rounded-full bg-blue-200 py-2 px-4">
+                                            <CircularProgress size={24} color="success" />
+                                            <span className="ml-2" style={{ textTransform: 'none' }}>Sending OTP</span>
+                                        </Button>
+                                    ) : (
+                                        <button type="submit" className="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600" onClick={handleLogin}>
+                                            Sign In
+                                        </button>
+                                    )}
                                 </div>
                             </form>
                         </div>
