@@ -814,6 +814,57 @@ const Dashboard = ({ username, pay }) => {
             .catch(error => console.error('Error:', error));
     }
 
+    const website = [
+        {
+            forum:"IEEE",
+            site: "https://cecieee.org/"
+        },
+        {
+            forum:"IEDC",
+            site:"https://www.iedcbootcampcec.in/"
+        },
+        {
+            forum:"FOCES",
+            site:"http://foces.org/"
+        },
+        {
+            forum:"MULEARN",
+            site:"https://mulearn.org/"
+        },
+        {
+            forum:"GDSC",
+            site:"https://gdsc.community.dev/college-of-engineering-chengannur-india/"
+        },
+        {
+            forum:"TINKERHUB",
+            site:"https://tinkerhub-cec-website.vercel.app/"
+        },
+        {
+            forum:"PRODDEC",
+            site:"https://cec-proddec.web.app/"
+        },
+    ]
+
+    const redirectToWebsite = (forumName) => {
+        const selectedWebsite = website.find(site => site.forum === forumName);
+        if (selectedWebsite) {
+            window.open(selectedWebsite.site, '_blank');
+        } else {
+            // Handle case where website for the forum is not found
+            toast.error(`Website not found for forum: ${forumName}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    };
+
     return (
         <>
             <ToastContainer />
@@ -1226,7 +1277,7 @@ const Dashboard = ({ username, pay }) => {
                                             </button>
                                         )}
                                     </p>
-                                    <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => { router.push({ pathname: '/user/userForum', query: { data: forum.name } }, '/user/userForum') }}>View Dashboard</button>
+                                    <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => redirectToWebsite(forum.name)}>Go to Website</button>
                                 </div>
                             ))}
                         </Carousel>
@@ -1250,7 +1301,7 @@ const Dashboard = ({ username, pay }) => {
                                                 </button>
                                             )}
                                         </p>
-                                        <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => { router.push({ pathname: '/user/userForum', query: { data: forum.name } }, '/user/userForum') }}>View Dashboard</button>
+                                        <button className="font-product-sans font-bold p-3 text-blue-500 text-[11px] self-end" onClick={() => redirectToWebsite(forum.name)}>Go to Website</button>
                                     </div>
                                 </Grid>
                             ))}
