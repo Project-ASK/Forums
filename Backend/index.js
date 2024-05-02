@@ -13,6 +13,7 @@ const fs = require('fs');
 const os = require('os');
 const exec = require('child_process').exec;
 const cron = require('node-cron');
+const { getOrganizationDescriptions, updateOrganizationDescription } = require('./organizationDescriptions');
 
 const SECRET_KEY = 'super-secret-key';
 
@@ -41,6 +42,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 app.use('/eventjson', express.static(path.join(__dirname, 'eventjson')));
 app.use('/events', express.static(path.join(__dirname, 'events')));
+app.use('/forums', express.static(path.join(__dirname, 'forums')));
 dotenv.config();
 
 const storage = multer.diskStorage({
@@ -191,6 +193,7 @@ router.route('/signup')
 
 async function postSignUp(req, res) {
     const { name, email, username, password } = req.body;
+    const organizationDescriptions = getOrganizationDescriptions();
     const forums = ['IEDC', 'GDSC'].map(forumName => ({
         name: forumName,
         description: organizationDescriptions[forumName]
@@ -251,16 +254,16 @@ router.route('/admin/getForums')
         res.status(200).send({ forum: admin.forum, name: admin.name, email: admin.email, adminId: admin._id });
     });
 
-const organizationDescriptions = {
-    'PRODDEC': 'PRODDEC is a common platform for the Electronics and Computer students. It was formed in 1995 with the vision of integrating technical ideas from both the fields and to develop products of an engineering outlook. Understanding the industry needs, PRODDEC has contributed greatly to the overall development of the students as competent engineers.',
-    'IEEE': 'IEEE Student Branch of College of Engineering Chengannur formed on 16th of September, 1996 with the goal of keeping the students in touch with technological advances. What started as a small initiative for technical advancement of the students, is now one of the most vibrant Student Branches of the Asia Pacific Region (Region 10) and Kerala Section.',
-    'NSS': 'The vision of the NSS Technical Cell, Kerala is to mould its volunteers as ‘Social Engineers’, who know the pulse of the community and would be able to act accordingly. The mission of the NSS Technical Cell is to make the campuses community-related and to reduce the distance between the social and technical communities. ',
-    'NCC': 'College of Engineering Chengannur has initiated its NCC unit under the NAVAL wing of the Armed Forces. The unit is commissioned on 16th October 2014 with a total strength of 50 cadets. There will be 33% seats reserved for lady cadets. Our NAVY NCC unit functions under 3(K) Navy Unit Kollam, of the Kollam group NCC headquarters.',
-    'TINKERHUB': 'A community to Learn and Teach together #growtogethercec',
-    'IEDC': 'The Innovation and Entrepreneurship Development Cell [IEDC] Bootcamp College of Engineering Chengannur was established in June 2015 in association with Kerala Startup Mission [KSUM], with the vision of molding youngsters into technological entrepreneurs and innovative leaders. KSUM serves as a stepping stone for aspiring business owners looking to enter the field of technology-based jobs and supports entrepreneurs in pursuing their goals.',
-    'GDSC': 'Google Developer Student Clubs are university based community groups for students interested in Google developer technologies. Students from all undergraduate or graduate programs with an interest in growing as a developer are welcome. By joining a GDSC, students grow their knowledge in a peer-to-peer learning environment and build solutions for local businesses and their community.',
-    'MULEARN': 'µLearn is a synergic philosophy of education, with a culture of mutual learning through micro peer groups. We are here to assist you in breaking through the echo chambers and free you from the shackles you have grounded yourself in.'
-};
+// const organizationDescriptions = {
+//     'PRODDEC': 'PRODDEC is a common platform for the Electronics and Computer students. It was formed in 1995 with the vision of integrating technical ideas from both the fields and to develop products of an engineering outlook. Understanding the industry needs, PRODDEC has contributed greatly to the overall development of the students as competent engineers.',
+//     'IEEE': 'IEEE Student Branch of College of Engineering Chengannur formed on 16th of September, 1996 with the goal of keeping the students in touch with technological advances. What started as a small initiative for technical advancement of the students, is now one of the most vibrant Student Branches of the Asia Pacific Region (Region 10) and Kerala Section.',
+//     'NSS': 'The vision of the NSS Technical Cell, Kerala is to mould its volunteers as ‘Social Engineers’, who know the pulse of the community and would be able to act accordingly. The mission of the NSS Technical Cell is to make the campuses community-related and to reduce the distance between the social and technical communities. ',
+//     'NCC': 'College of Engineering Chengannur has initiated its NCC unit under the NAVAL wing of the Armed Forces. The unit is commissioned on 16th October 2014 with a total strength of 50 cadets. There will be 33% seats reserved for lady cadets. Our NAVY NCC unit functions under 3(K) Navy Unit Kollam, of the Kollam group NCC headquarters.',
+//     'TINKERHUB': 'A community to Learn and Teach together #growtogethercec',
+//     'IEDC': 'The Innovation and Entrepreneurship Development Cell [IEDC] Bootcamp College of Engineering Chengannur was established in June 2015 in association with Kerala Startup Mission [KSUM], with the vision of molding youngsters into technological entrepreneurs and innovative leaders. KSUM serves as a stepping stone for aspiring business owners looking to enter the field of technology-based jobs and supports entrepreneurs in pursuing their goals.',
+//     'GDSC': 'Google Developer Student Clubs are university based community groups for students interested in Google developer technologies. Students from all undergraduate or graduate programs with an interest in growing as a developer are welcome. By joining a GDSC, students grow their knowledge in a peer-to-peer learning environment and build solutions for local businesses and their community.',
+//     'MULEARN': 'µLearn is a synergic philosophy of education, with a culture of mutual learning through micro peer groups. We are here to assist you in breaking through the echo chambers and free you from the shackles you have grounded yourself in.'
+// };
 
 
 router.route('/admin/getOrganizationMembers')
@@ -281,6 +284,7 @@ router.route('/addForum')
         if (!user) {
             return res.status(400).send({ message: 'User not found' });
         }
+        const organizationDescriptions = getOrganizationDescriptions();
         const description = organizationDescriptions[org];
         const orgData = require(`./memberships/${org}.json`);
         const member = orgData.find(member => member.name === name && member.id === id);
@@ -1425,7 +1429,7 @@ router.get('/getEventReport', async (req, res) => {
 });
 
 router.post('/officeadmin/createNewAdmin', async (req, res) => {
-    const { name, email, username, password, forum } = req.body;
+    const { name, email, username, password, forum, organizationDescription } = req.body;
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -1439,9 +1443,41 @@ router.post('/officeadmin/createNewAdmin', async (req, res) => {
         });
 
         await admin.save();
+        updateOrganizationDescription(forum, organizationDescription);
+
+        // Create a new JSON file in the memberships folder
+        const filePath = path.join(__dirname, 'memberships', `${forum}.json`);
+        fs.writeFileSync(filePath, JSON.stringify([]));
         res.status(200).send({ message: 'Admin created successfully' });
     } catch (error) {
         console.error('Error creating admin:', error);
         res.status(500).send({ message: 'Error creating admin' });
     }
+});
+
+const forumStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = `./forums`; // Directory to save forum images
+        fs.exists(dir, exist => {
+            if (!exist) {
+                return fs.mkdir(dir, { recursive: true }, error => cb(error, dir))
+            }
+            return cb(null, dir);
+        });
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${file.originalname}`)
+    }
+});
+
+const forumUpload = multer({ storage: forumStorage });
+
+router.post('/officeadmin/uploadForumLogo', forumUpload.single('forumImage'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No files were uploaded.');
+    }
+
+    // Handle saving the file path to the database or any other necessary actions
+
+    res.status(200).send('File uploaded successfully.');
 });

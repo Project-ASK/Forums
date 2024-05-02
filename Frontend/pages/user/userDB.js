@@ -72,6 +72,7 @@ const Dashboard = ({ username, pay }) => {
     const [isFeedback, setIsFeedback] = useState(false);
     const [feedback, setFeedback] = useState('');
     const [paymentError, setPaymentError] = useState(null);
+    const [organizations,setOrganizations] = useState([]);
 
     const nodeNotifications = useRef(); // Create a new useRef for notifications
 
@@ -124,6 +125,22 @@ const Dashboard = ({ username, pay }) => {
         // Call the function once immediately
         fetchRecommendedEvents();
     }, [username]);
+
+    useEffect(() => {
+        const fetchForums = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllForums`, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        if (data.forums.length > 0) {
+            setOrganizations(data.forums);
+        }
+        };
+        fetchForums();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -455,7 +472,7 @@ const Dashboard = ({ username, pay }) => {
         }
     }, [name])
 
-    const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
+    // const organizations = ['PRODDEC', 'IEEE', 'NSS', 'NCC', 'TINKERHUB'];
 
     const handleModalOpen = () => {
         setModalIsOpen(true);
@@ -1263,7 +1280,8 @@ const Dashboard = ({ username, pay }) => {
                             {forums.map((forum, index) => (
                                 <div key={index} className="flex-col border items-center border-gray-800 rounded-2xl bg-white w-[80%] mx-auto lg:w-[20%] flex justify-center h-[70%]">
                                     <Image
-                                        src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
+                                        // src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
+                                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/forums/${forum.name}.jpg`}
                                         alt={forum.name}
                                         width={60} // Update these values as needed
                                         height={60}
@@ -1287,7 +1305,8 @@ const Dashboard = ({ username, pay }) => {
                                 <Grid item xs={12} sm={6} md={4} key={index} className=''>
                                     <div key={index} className="mx-auto flex-col border items-center border-gray-800 rounded-2xl bg-white w-[80%] flex justify-center">
                                         <Image
-                                            src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
+                                            // src={`/assets/forums/${forum.name}.jpg`} // Update the file extension if your images are not .jpg
+                                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/forums/${forum.name}.jpg`}
                                             alt={forum.name}
                                             width={60} // Update these values as needed
                                             height={60}

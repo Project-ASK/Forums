@@ -35,6 +35,7 @@ const getForums = () => {
     const [adminCreateModal, setAdminCreateModal] = useState(false);
     const [adminName, setAdminName] = useState("");
     const [adminForum, setAdminForum] = useState("");
+    const [adminDesc, setAdminDesc] = useState("");
     const [adminEmail, setAdminEmail] = useState("");
     const [adminUserName, setAdminUserName] = useState("");
     const [adminPassword, setAdminPassword] = useState("");
@@ -47,6 +48,7 @@ const getForums = () => {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrengthInd, setPasswordStrengthInd] = useState(0);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -128,51 +130,88 @@ const getForums = () => {
         }
     }
 
-    const createNewAdmin = async () => {
+    const createNewAdmin = async (event) => {
+        // Handle image upload 
+        const handleImageUpload = async (event) => {
+            const formData = new FormData();
+            formData.append('forumImage', selectedImage);
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/officeadmin/uploadForumLogo`, {
+                    method: 'POST', body: formData,
+                });
+                if (response.ok) {
+                    // Handle success 
+                    toast.success('Logo uploaded successfully',
+                        {
+
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                            transition: Bounce,
+                        });
+                } else {
+                    // Handle error 
+                    toast.error('Failed to upload image',
+                        {
+
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                            transition: Bounce,
+                        });
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        };
+        await handleImageUpload(event); 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/officeadmin/createNewAdmin`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: adminName,
-                    forum: adminForum,
-                    email: adminEmail,
-                    username: adminUserName,
-                    password: adminPassword
-                }),
-            });
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/officeadmin/createNewAdmin`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', },
+                    body: JSON.stringify({ name: adminName, forum: adminForum, email: adminEmail, username: adminUserName, password: adminPassword, organizationDescription:adminDesc }),
+                });
             const data = await response.json();
             if (data.message == "Admin created successfully") {
-                toast.success('Admin created successfully', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.success('Admin created successfully',
+                    {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
                 handleCloseAdminCreateModal();
             } else {
-                toast.error('Error in creating admin', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Error in creating admin',
+                    {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
             }
-        } catch (error) {
-            console.error('Error fetching event participants:', error);
-        }
+        } catch (error) { console.error('Error fetching event participants:', error); }
     }
 
     const handleForumDetailModal = (forum) => {
@@ -230,6 +269,21 @@ const getForums = () => {
         router.replace('/officeadmins/login');
     }
 
+    const handleAdminImageUpload = (event) => {
+        setSelectedImage(event.target.files[0]);
+    };
+
+    const removeUploadedImage = () => {
+        const fileInput = document.getElementById("adminImage");
+        // Reset the value of the file input field
+        fileInput.value = null;
+        resetSelectedImage();
+    };
+
+    const resetSelectedImage = () => {
+        setSelectedImage(null);
+    };
+
     return (
         <>
             <ToastContainer />
@@ -253,7 +307,8 @@ const getForums = () => {
                         {forums.map((forum, index) => (
                             <div key={index} className="bg-gray-200 rounded-md p-4 flex flex-col items-center justify-center">
                                 <Image
-                                    src={`/assets/forums/${forum}.jpg`}
+                                    // src={`/assets/forums/${forum}.jpg`}
+                                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/forums/${forum}.jpg`}
                                     alt={forum}
                                     width={80}
                                     height={80}
@@ -307,11 +362,20 @@ const getForums = () => {
                                     variant="outlined"
                                 />
                                 <TextField
-                                    label="Name of Forum"
+                                    label="Name of Forum (Enter in Caps)"
                                     fullWidth
                                     required
                                     value={adminForum}
                                     onChange={(e) => setAdminForum(e.target.value)}
+                                    margin="normal"
+                                    variant="outlined"
+                                />
+                                <TextField
+                                    label="Description"
+                                    fullWidth
+                                    required
+                                    value={adminDesc}
+                                    onChange={(e) => setAdminDesc(e.target.value)}
                                     margin="normal"
                                     variant="outlined"
                                 />
@@ -339,6 +403,27 @@ const getForums = () => {
                                     margin="normal"
                                     variant="outlined"
                                 />
+                                <label htmlFor="adminImage" className="font-product-sans text-sm mt-[2.5rem]">Upload Forum Logo</label>
+                                <div className="flex items-center justify-center w-full mt-[0.9rem]">
+                                    <label htmlFor="adminImage" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-200">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                            </svg>
+                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">JPG Image needed (Upload with file name FORUMNAME.jpg)</p>
+                                            <br />
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">(200 * 200 Preferred)</p>
+                                        </div>
+                                        <input id="adminImage" onChange={handleAdminImageUpload} type="file" accept="image/jpeg" className="hidden" />
+                                    </label>
+                                </div>
+                                {selectedImage && (
+                                    <div>
+                                        <img src={URL.createObjectURL(selectedImage)} alt="Uploaded Image" className="mt-2 mb-4 mx-auto rounded-lg" style={{ maxWidth: "200px" }} />
+                                        <Button onClick={removeUploadedImage}>Remove</Button>
+                                    </div>
+                                )}
                                 <FormControl className="w-[100%] mt-4" size="large" variant="outlined" required>
                                     <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                                     <OutlinedInput
