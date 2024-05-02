@@ -4,52 +4,33 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/system';
 
-const whiteLogos = [
-  '/assets/forums/IEEE.jpg',
-  '/assets/forums/IEDC.jpg',
-  '/assets/forums/GDSC.jpg',
-  '/assets/forums/TINKERHUB.jpg',
-  '/assets/forums/MULEARN.jpg',
-  '/assets/forums/FOCES.jpg',
-];
-
-const darkLogos = [
-  '/assets/forums/IEEE.jpg',
-  '/assets/forums/IEDC.jpg',
-  '/assets/forums/GDSC.jpg',
-  '/assets/forums/TINKERHUB.jpg',
-  '/assets/forums/MULEARN.jpg',
-  '/assets/forums/FOCES.jpg',
-];
-
 const logoStyle = {
   width: '100px',
   height: '100px',
   margin: '0 32px',
   opacity: 1,
-  borderRadius:"2rem"
+  borderRadius: "2rem"
 };
 
 export default function LogoCollection() {
   const theme = useTheme();
-  const logos = theme.palette.mode === 'light' ? darkLogos : whiteLogos;
-  const [organizations,setOrganizations] = React.useState([]);
+  const [organizations, setOrganizations] = React.useState([]);
 
   React.useEffect(() => {
-        const fetchForums = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllForums`, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-        });
-        const data = await response.json();
-        if (data.forums.length > 0) {
-            setOrganizations(data.forums);
-        }
-        };
-        fetchForums();
-    }, []);
+    const fetchForums = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllForums`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (data.forums.length > 0) {
+        setOrganizations(data.forums);
+      }
+    };
+    fetchForums();
+  }, []);
 
   return (
     <Box id="logoCollection" sx={{ py: 4 }}>
@@ -61,7 +42,7 @@ export default function LogoCollection() {
       >
         Our Forums
       </Typography>
-      <Grid container justifyContent="center" sx={{ mt: 2.5, opacity: 0.6, gap: {xs: 3, sm: 1 } }}>
+      <Grid container justifyContent="center" sx={{ mt: 2.5, opacity: 0.6, gap: { xs: 3, sm: 1 } }}>
         {organizations.map((forum, index) => (
           <Grid item key={index}>
             <img
