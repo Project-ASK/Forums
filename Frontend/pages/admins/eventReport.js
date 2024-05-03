@@ -24,6 +24,7 @@ const EventReport = () => {
     const [eventLocation, setEventLocation] = useState('');
     const [eventTime, setEventTime] = useState('');
     const [eventParticipant, setEventParticipant] = useState('');
+    const [eventHighlights,setEventHighlights] = useState('');
     const [content, setContent] = useState('');
     const router = useRouter();
     const eventId = Cookies.get('eventId');
@@ -70,7 +71,7 @@ const EventReport = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ eventName, eventDate, eventTime, eventLocation, eventParticipant })
+                    body: JSON.stringify({ eventName, eventDate, eventTime, eventLocation, eventParticipant, eventHighlights })
                 })
                 const data = await response.json();
                 setContent(data.text);
@@ -156,6 +157,7 @@ const EventReport = () => {
                                 <TextField id={`event-location`} label="Location" variant="outlined" value={eventLocation} onChange={(e) => setEventLocation(e.target.value)} sx={{ width: '75%' }} />
                                 <TextField id={`event-time`} label="Time" variant="outlined" value={formatTime(eventTime)} sx={{ width: '75%' }} />
                                 <TextField id={`event-participants`} label="Number of Participants" variant="outlined" value={eventParticipant} onChange={(e) => setEventParticipant(e.target.value)} sx={{ width: '75%' }} />
+                                <TextField id={`event-highlights`} label="Event Highlights" variant="outlined" value={eventHighlights} onChange={(e) => setEventHighlights(e.target.value)} sx={{ width: '75%' }} />
                             </div>
                         )}
                     </div>
