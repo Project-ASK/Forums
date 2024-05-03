@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import Typewriter from 'typewriter-effect'; // Import Typewriter
+import Image from 'next/image';
 
 export default function Hero() {
 
@@ -109,7 +110,13 @@ export default function Hero() {
           <Carousel autoPlay infiniteLoop showThumbs={false} emulateTouch={true} preventMovementUntilSwipeScrollTolerance={true} showStatus={false}>
             {images.map((image, index) => (
               <div key={index}>
-                <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`} alt="image" />
+                <Image 
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`} 
+                  alt="image"
+                  width={120}
+                  height={120}
+                  layout="responsive"
+                />
               </div>
             ))}
           </Carousel>
