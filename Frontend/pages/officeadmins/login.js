@@ -115,9 +115,9 @@ const OfficeLoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
             setModalIsOpen(false);
-            Cookies.set('officeUsername', username);
-            Cookies.set('officeId', data._id);
-            Cookies.set('token', data.token);
+            Cookies.set('officeUsername', username, { expires: 7 });
+            Cookies.set('officeId', data._id, { expires: 7 });
+            Cookies.set('token', data.token, { expires: 7 });
             router.replace('/officeadmins/officeadmin');
         } else {
             toast.error('Incorrect OTP. Please try again.', {

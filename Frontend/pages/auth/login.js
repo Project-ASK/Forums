@@ -122,8 +122,8 @@ const LoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
             setModalIsOpen(false);
-            Cookies.set('username', username);
-            Cookies.set('token', data.token);
+            Cookies.set('username', username, { expires: 7 });
+            Cookies.set('token', data.token, { expires: 7 });
             setIsLoading(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/recommendation`, {

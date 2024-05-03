@@ -124,9 +124,9 @@ const LoginPage = () => {
         if (otp.join('') === realOtp) {
             setIsVerified(true);
             setModalIsOpen(false);
-            Cookies.set('adminUsername', username);
-            Cookies.set('token', data.token);
-            Cookies.set('forum', forum);
+            Cookies.set('adminUsername', username, { expires: 7 });
+            Cookies.set('token', data.token, { expires: 7 });
+            Cookies.set('forum', forum, { expires: 7 });
             router.replace('/admins/admindb');
         } else {
             toast.error('Incorrect OTP. Please try again.', {
