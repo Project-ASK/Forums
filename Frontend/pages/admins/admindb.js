@@ -815,7 +815,7 @@ const Dashboard = ({ username }) => {
                     <div key={index} className="w-full md:w-3/4 lg:w-2/3 p-4 border rounded-lg mb-4 bg-gray-300 flex flex-col md:flex-row items-center" >
                       <div className="md:w-1/6 pr-2">
                         <Image src={path.join(process.env.NEXT_PUBLIC_BACKEND_URL, event.eventImagePath)} alt={event.eventName} width={100} height={100} layout="responsive" className="cursor-pointer" onClick={() => {
-                          Cookies.set('eventId', event._id); // Set the event id as a cookie
+                          Cookies.set('eventId', event._id, { expires: 7 }); // Set the event id as a cookie
                           router.push(`/admins/eventdetails`); // Navigate to the eventdetails page
                         }} />
                       </div>

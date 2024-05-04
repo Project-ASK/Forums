@@ -127,7 +127,7 @@ const OfficeAdmins = ({ username }) => {
 
   const handleChat = () => {
     // Store the selected forum in a cookie
-    Cookies.set('selectedForum', selectedForum);
+    Cookies.set('selectedForum', selectedForum, { expires: 7 });
     // Navigate to the connect page
     router.push('/officeadmins/connect');
   }
