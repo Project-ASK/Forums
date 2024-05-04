@@ -200,9 +200,7 @@ const LoginPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Username"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-[70%]"
                                         value={username}
@@ -273,9 +271,7 @@ const LoginPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Username"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full"
                                         value={username}
@@ -399,5 +395,28 @@ const LoginPage = () => {
         </>
     );
 };
+
+export async function getServerSideProps(context) {
+    const username = context.req.cookies.username;
+    const adminusername = context.req.cookies.adminUsername;
+    if (username && !adminusername) {
+        return {
+            redirect: {
+                destination: '/user/userDB',
+                permanent: true,
+            },
+        }
+    } else if (adminusername && !username) {
+        return {
+            redirect: {
+                destination: '/admins/admindb',
+                permanent: true,
+            },
+        }
+    }
+    return {
+        props: {},
+    };
+}
 
 export default LoginPage;

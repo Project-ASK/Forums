@@ -157,9 +157,7 @@ const OfficeLoginPage = () => {
                             <div className="mb-4">
                                 <TextField
                                     label="Username"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-4"
                                     value={username}
@@ -225,9 +223,7 @@ const OfficeLoginPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Username"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full mb-4"
                                         value={username}
@@ -344,5 +340,20 @@ const OfficeLoginPage = () => {
         </>
     );
 };
+
+export async function getServerSideProps(context) {
+    const username = context.req.cookies.officeUsername;
+    if (username) {
+        return {
+            redirect: {
+                destination: '/officeadmins/officeadmin',
+                permanent: true,
+            },
+        }
+    }
+    return {
+        props: {},
+    };
+}
 
 export default OfficeLoginPage;

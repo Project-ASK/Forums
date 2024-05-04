@@ -88,12 +88,6 @@ const LoginPage = () => {
             const otp = Math.floor(100000 + Math.random() * 900000);
             setRealOtp(otp.toString());
             const email = data.email;
-
-            // For developers: Uncomment the following to get the OTP as the alert box 
-            // setModalIsOpen(true)
-            // alert(otp)
-
-            // For developers: Comment the following 
             emailjs.send(process.env.NEXT_PUBLIC_SERVICE_ID1, process.env.NEXT_PUBLIC_TEMPLATE_ID1, { email, otp }, process.env.NEXT_PUBLIC_PUBLIC_KEY1)
                 .then((response) => {
                     console.log('SUCCESS!', response.status, response.text);
@@ -102,8 +96,6 @@ const LoginPage = () => {
                 }, (err) => {
                     console.log('FAILED...', err);
                 });
-
-            // Till here
 
         } else {
             toast.error(data.message, {
@@ -170,9 +162,7 @@ const LoginPage = () => {
                             <div className="mb-4">
                                 <TextField
                                     label="Username"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-4"
                                     value={username}
@@ -212,9 +202,7 @@ const LoginPage = () => {
                             <div className="mb-4">
                                 <TextField
                                     label="Forum Name"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-4"
                                     value={forum}
@@ -256,9 +244,7 @@ const LoginPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Username"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full"
                                         value={username}
@@ -298,9 +284,7 @@ const LoginPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Forum Name"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full mb-4"
                                         value={forum}
@@ -392,5 +376,28 @@ const LoginPage = () => {
         </>
     );
 };
+
+export async function getServerSideProps(context) {
+    const adminusername = context.req.cookies.adminUsername;
+    const officeusername = context.req.cookies.officeUsername;
+    if (adminusername && !officeusername) {
+        return {
+            redirect: {
+                destination: '/admins/admindb',
+                permanent: true,
+            },
+        }
+    } else if (officeusername && !adminusername) {
+        return {
+            redirect: {
+                destination: '/officeadmins/officeadmin',
+                permanent: true,
+            },
+        }
+    }
+    return {
+        props: {},
+    };
+}
 
 export default LoginPage;

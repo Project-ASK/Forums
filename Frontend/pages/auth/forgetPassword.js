@@ -176,9 +176,7 @@ const ForgotPassword = () => {
                             <div className="mt-8 relative top-[1rem]">
                                 <TextField
                                     label="Email"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-full"
                                     value={email}

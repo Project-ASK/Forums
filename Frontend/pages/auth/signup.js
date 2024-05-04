@@ -235,9 +235,7 @@ const SignUpPage = () => {
                             <div className="mb-4">
                                 <TextField
                                     label="Name"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-1"
                                     value={name}
@@ -249,9 +247,7 @@ const SignUpPage = () => {
                             <div className="mb-4">
                                 <TextField
                                     label="Email"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-1"
                                     value={email}
@@ -263,9 +259,7 @@ const SignUpPage = () => {
                             <div className="mb-4">
                                 <TextField
                                     label="Username"
-                                    id="outlined-size-small"
                                     required
-                                    defaultValue=""
                                     size="small"
                                     className="w-[50%] mb-1"
                                     value={name}
@@ -347,9 +341,7 @@ const SignUpPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Name"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full mb-4 mt-4"
                                         value={username}
@@ -361,9 +353,7 @@ const SignUpPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Email"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full mb-4"
                                         value={email}
@@ -375,9 +365,7 @@ const SignUpPage = () => {
                                 <div className="mb-4">
                                     <TextField
                                         label="Username"
-                                        id="outlined-size-small"
                                         required
-                                        defaultValue=""
                                         size="small"
                                         className="w-full mb-4"
                                         value={username}
