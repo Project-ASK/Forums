@@ -209,10 +209,10 @@ function AppAppBar({ mode, toggleColorMode }) {
                       color="primary"
                       variant="outlined"
                       component="a"
-                      onClick={() => { router.push('/auth/login') }}
+                      onClick={handleSignInClick}
                       sx={{ width: '100%' }}
                     >
-                      Sign in
+                      {signInLoading ? <CircularProgress size={23} color="primary" /> : "Sign In"}
                     </Button>
                   </MenuItem>
                 </Box>
