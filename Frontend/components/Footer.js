@@ -2,6 +2,7 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 
 export default function Footer() {
 
@@ -112,83 +113,83 @@ export default function Footer() {
   );
 
   return (
-    <footer className="bg-white rounded-lg shadow m-4">
-      <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8 text-center">
-        <div className="sm:flex sm:items-center sm:justify-center">
-          <div className="flex items-center justify-center">
-            <img
-              src="/assets/authlogo.png"
-              className="h-7"
-              alt="Forums CEC"
-            />
-            <span className="self-center text-2xl mt-[0.2rem] font-semibold whitespace-nowrap ml-3">
+    <Container>
+      <footer className="bg-white rounded-lg shadow m-4 body-font">
+        <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8 text-center">
+          <div className="sm:flex sm:items-center sm:justify-center">
+            <div className="flex items-center justify-center">
+              <img
+                src="/assets/authlogo.png"
+                className="h-7"
+                alt="Forums CEC"
+              />
+              <Typography variant="body2" color="text.primary" className="self-center text-2xl mt-[0.2rem] font-semibold whitespace-nowrap ml-3 dark:text-black">Forums CEC</Typography>
+            </div>
+          </div>
+          <ul className="flex flex-wrap mt-[1.5rem] items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 justify-center"> {/* Added justify-center */}
+            <li>
+              <a className="hover:underline me-4 md:me-6 cursor-pointer" onClick={handleAboutOpen}>
+                About
+              </a>
+            </li>
+            <li>
+              <a className="hover:underline me-4 md:me-6 cursor-pointer" onClick={handlePrivacyOpen}>
+                Privacy Policy
+              </a>
+            </li>
+            <li>
+              <a className="hover:underline me-4 md:me-6 cursor-pointer" onClick={handleTermsOpen}>
+                Terms and Conditions
+              </a>
+            </li>
+            <li>
+              <a className="hover:underline cursor-pointer" onClick={handleContactOpen}>
+                Contact
+              </a>
+            </li>
+          </ul>
+          <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+          <span className="block text-sm text-gray-500 sm:text-center">
+            © 2024{" "}
+            <span>
               Forums CEC
             </span>
-          </div>
-        </div>
-        <ul className="flex flex-wrap mt-[1.5rem] items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 justify-center"> {/* Added justify-center */}
-          <li>
-            <a className="hover:underline me-4 md:me-6 cursor-pointer" onClick={handleAboutOpen}>
-              About
-            </a>
-          </li>
-          <li>
-            <a className="hover:underline me-4 md:me-6 cursor-pointer" onClick={handlePrivacyOpen}>
-              Privacy Policy
-            </a>
-          </li>
-          <li>
-            <a className="hover:underline me-4 md:me-6 cursor-pointer" onClick={handleTermsOpen}>
-              Terms and Conditions
-            </a>
-          </li>
-          <li>
-            <a className="hover:underline cursor-pointer" onClick={handleContactOpen}>
-              Contact
-            </a>
-          </li>
-        </ul>
-        <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-        <span className="block text-sm text-gray-500 sm:text-center">
-          © 2024{" "}
-          <span>
-            Forums CEC
+            . All Rights Reserved.
           </span>
-          . All Rights Reserved.
-        </span>
-      </div>
-      <Modal
-        open={termsOpen}
-        onClose={handleTermsClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        {termsBody}
-      </Modal>
-      <Modal
-        open={privacyOpen}
-        onClose={handlePrivacyClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        {privacyBody}
-      </Modal>
-      <Modal
-        open={contactOpen}
-        onClose={handleContactClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        {contactBody}
-      </Modal>
-      <Modal
-        open={aboutOpen}
-        onClose={handleAboutClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        {aboutBody}
-      </Modal>
-    </footer>
+        </div>
+        <Modal
+          open={termsOpen}
+          onClose={handleTermsClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          {termsBody}
+        </Modal>
+        <Modal
+          open={privacyOpen}
+          onClose={handlePrivacyClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          {privacyBody}
+        </Modal>
+        <Modal
+          open={contactOpen}
+          onClose={handleContactClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          {contactBody}
+        </Modal>
+        <Modal
+          open={aboutOpen}
+          onClose={handleAboutClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          {aboutBody}
+        </Modal>
+      </footer>
+    </Container>
   );
 }
