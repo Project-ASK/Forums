@@ -24,7 +24,7 @@ const EventReport = () => {
     const [eventLocation, setEventLocation] = useState('');
     const [eventTime, setEventTime] = useState('');
     const [eventParticipant, setEventParticipant] = useState('');
-    const [eventHighlights,setEventHighlights] = useState('');
+    const [eventHighlights, setEventHighlights] = useState('');
     const [content, setContent] = useState('');
     const router = useRouter();
     const eventId = Cookies.get('eventId');

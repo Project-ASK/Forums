@@ -72,7 +72,7 @@ const Dashboard = ({ username, pay }) => {
     const [isFeedback, setIsFeedback] = useState(false);
     const [feedback, setFeedback] = useState('');
     const [paymentError, setPaymentError] = useState(null);
-    const [organizations,setOrganizations] = useState([]);
+    const [organizations, setOrganizations] = useState([]);
 
     const nodeNotifications = useRef(); // Create a new useRef for notifications
 
@@ -128,16 +128,16 @@ const Dashboard = ({ username, pay }) => {
 
     useEffect(() => {
         const fetchForums = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllForums`, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-        });
-        const data = await response.json();
-        if (data.forums.length > 0) {
-            setOrganizations(data.forums);
-        }
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/getAllForums`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (data.forums.length > 0) {
+                setOrganizations(data.forums);
+            }
         };
         fetchForums();
     }, []);
@@ -833,32 +833,32 @@ const Dashboard = ({ username, pay }) => {
 
     const website = [
         {
-            forum:"IEEE",
+            forum: "IEEE",
             site: "https://cecieee.org/"
         },
         {
-            forum:"IEDC",
-            site:"https://www.iedcbootcampcec.in/"
+            forum: "IEDC",
+            site: "https://www.iedcbootcampcec.in/"
         },
         {
-            forum:"FOCES",
-            site:"http://foces.org/"
+            forum: "FOCES",
+            site: "http://foces.org/"
         },
         {
-            forum:"MULEARN",
-            site:"https://mulearn.org/"
+            forum: "MULEARN",
+            site: "https://mulearn.org/"
         },
         {
-            forum:"GDSC",
-            site:"https://gdsc.community.dev/college-of-engineering-chengannur-india/"
+            forum: "GDSC",
+            site: "https://gdsc.community.dev/college-of-engineering-chengannur-india/"
         },
         {
-            forum:"TINKERHUB",
-            site:"https://tinkerhub-cec-website.vercel.app/"
+            forum: "TINKERHUB",
+            site: "https://tinkerhub-cec-website.vercel.app/"
         },
         {
-            forum:"PRODDEC",
-            site:"https://cec-proddec.web.app/"
+            forum: "PRODDEC",
+            site: "https://cec-proddec.web.app/"
         },
     ]
 

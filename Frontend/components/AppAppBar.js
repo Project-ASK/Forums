@@ -12,10 +12,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from './ToggleColorMode';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function AppAppBar({ mode, toggleColorMode }) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [signInLoading, setSignInLoading] = React.useState(false);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -33,6 +35,13 @@ function AppAppBar({ mode, toggleColorMode }) {
       });
       setOpen(false);
     }
+  };
+
+  const handleSignInClick = () => {
+    setSignInLoading(true); // Set loading state to true on sign-in button click
+    router.push('/auth/login').then(() => {
+      setSignInLoading(false); // Set loading state to false when router push operation is completed
+    });
   };
 
   return (
@@ -131,9 +140,9 @@ function AppAppBar({ mode, toggleColorMode }) {
                 size="small"
                 className="rounded-full p-4"
                 component="a"
-                onClick={() => { router.push('/auth/login') }}
+                onClick={handleSignInClick}
               >
-                Sign In
+                {signInLoading ? <CircularProgress size={23} color="primary" /> : "Sign In"}
               </Button>
               <Button
                 className="bg-blue-400 text-white rounded-full p-4 hover:text-blue-600"

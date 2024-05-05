@@ -174,13 +174,13 @@ const getForums = () => {
                 console.error('Error uploading image:', error);
             }
         };
-        await handleImageUpload(event); 
+        await handleImageUpload(event);
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/officeadmin/createNewAdmin`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', },
-                    body: JSON.stringify({ name: adminName, forum: adminForum, email: adminEmail, username: adminUserName, password: adminPassword, organizationDescription:adminDesc }),
+                    body: JSON.stringify({ name: adminName, forum: adminForum, email: adminEmail, username: adminUserName, password: adminPassword, organizationDescription: adminDesc }),
                 });
             const data = await response.json();
             if (data.message == "Admin created successfully") {

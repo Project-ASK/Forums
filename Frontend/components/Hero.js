@@ -110,8 +110,8 @@ export default function Hero() {
           <Carousel autoPlay infiniteLoop showThumbs={false} emulateTouch={true} preventMovementUntilSwipeScrollTolerance={true} showStatus={false}>
             {images.map((image, index) => (
               <div key={index}>
-                <Image 
-                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`} 
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/guest/${image}`}
                   alt="image"
                   width={120}
                   height={120}
