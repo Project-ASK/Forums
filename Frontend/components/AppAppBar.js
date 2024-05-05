@@ -18,6 +18,7 @@ function AppAppBar({ mode, toggleColorMode }) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [signInLoading, setSignInLoading] = React.useState(false);
+  const [signUpLoading, setSignUpLoading] = React.useState(false);
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -41,6 +42,13 @@ function AppAppBar({ mode, toggleColorMode }) {
     setSignInLoading(true); // Set loading state to true on sign-in button click
     router.push('/auth/login').then(() => {
       setSignInLoading(false); // Set loading state to false when router push operation is completed
+    });
+  };
+
+  const handleSignUpClick = () => {
+    setSignUpLoading(true); // Set loading state to true on sign-in button click
+    router.push('/auth/signup').then(() => {
+      setSignUpLoading(false); // Set loading state to false when router push operation is completed
     });
   };
 
@@ -148,9 +156,9 @@ function AppAppBar({ mode, toggleColorMode }) {
                 className="bg-blue-400 text-white rounded-full p-4 hover:text-blue-600"
                 size="small"
                 component="a"
-                onClick={() => { router.push('/auth/signup') }}
+                onClick={handleSignUpClick}
               >
-                Sign Up
+                {signUpLoading ? <CircularProgress size={23} color="primary" /> : "Sign Up"}
               </Button>
             </Box>
             <Box sx={{ display: { sm: '', md: 'none' } }}>
@@ -198,10 +206,10 @@ function AppAppBar({ mode, toggleColorMode }) {
                       color="primary"
                       variant="contained"
                       component="a"
-                      onClick={() => { router.push('/auth/signup') }}
+                      onClick={handleSignUpClick}
                       sx={{ width: '100%' }}
                     >
-                      Sign up
+                      {signUpLoading ? <CircularProgress size={23} color="warning" /> : "Sign Up"}
                     </Button>
                   </MenuItem>
                   <MenuItem>

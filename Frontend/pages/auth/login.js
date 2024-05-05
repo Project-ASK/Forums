@@ -125,7 +125,6 @@ const LoginPage = () => {
             Cookies.set('username', username, { expires: 7 });
             Cookies.set('token', data.token, { expires: 7 });
             setIsLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 3000));
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/recommendation`, {
                 method: 'POST',
                 headers: {
@@ -134,10 +133,22 @@ const LoginPage = () => {
                 body: JSON.stringify({ username }),
             });
             const res = await response.json();
-            if (res.message === 'Successfully written to file and Python script executed') {
-                setIsLoading(false); // Stop loading
+            if (!res.ok) {
+                toast.warning('Recommendation failed for some reason', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
             }
-            router.replace('/user/userDB');
+            router.replace('/user/userDB').then(() => {
+                setIsLoading(false);
+            });
         } else {
             toast.error('Incorrect OTP. Please try again.', {
                 position: "top-right",
