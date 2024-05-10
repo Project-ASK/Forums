@@ -406,6 +406,35 @@ const Dashboard = ({ username }) => {
     member.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied successfully.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } catch (err) {
+      toast.error('Failed to copy.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+
   return (
     <>
       <ToastContainer />
@@ -564,8 +593,30 @@ const Dashboard = ({ username }) => {
                 <tr key={index} className="bg-white border-b  dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     {member.name}
+                    {member.name &&
+                      <span className="ml-[0.7rem] mt-[0.2rem]" onClick={() => handleCopy(member.name)}>
+                        <svg class="w-3.5 h-3.5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="gray" viewBox="0 0 18 20">
+                          <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                        </svg>
+                      </span>
+                    }
+                    {!member.name &&
+                      <p>None</p>
+                    }
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{member.phoneNumber}</td>
+                  <td className="px-6 py-4 text-gray-700">
+                    {member.phoneNumber}
+                    {member.phoneNumber &&
+                      <span className="ml-[0.7rem] mt-[0.2rem]" onClick={() => handleCopy(member.phoneNumber)}>
+                        <svg class="w-3.5 h-3.5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="gray" viewBox="0 0 18 20">
+                          <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                        </svg>
+                      </span>
+                    }
+                    {!member.phoneNumber &&
+                      <p>None</p>
+                    }
+                  </td>
                   <td className="px-6 py-4">
                     <label htmlFor={`attendance-${index}`} className="mr-[1rem] text-gray-700">Check In</label>
                     <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleAttendanceChange(index, e.target.checked)} />
@@ -579,8 +630,30 @@ const Dashboard = ({ username }) => {
                 <tr key={index} className="bg-white border-b  dark:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-300">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     {member.name} (Guest)
+                    {member.name &&
+                      <span className="ml-[0.7rem] mt-[0.2rem]" onClick={() => handleCopy(member.name)}>
+                        <svg class="w-3.5 h-3.5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="gray" viewBox="0 0 18 20">
+                          <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                        </svg>
+                      </span>
+                    }
+                    {!member.name &&
+                      <p>None</p>
+                    }
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{member.phoneNumber}</td>
+                  <td className="px-6 py-4 text-gray-700">
+                    {member.phoneNumber}
+                    {member.phoneNumber &&
+                      <span className="ml-[0.7rem] mt-[0.2rem]" onClick={() => handleCopy(member.phoneNumber)}>
+                        <svg class="w-3.5 h-3.5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="gray" viewBox="0 0 18 20">
+                          <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                        </svg>
+                      </span>
+                    }
+                    {!member.phoneNumber &&
+                      <p>None</p>
+                    }
+                  </td>
                   <td className="px-6 py-4">
                     <label htmlFor={`attendance-${index}`} className="mr-[1rem] text-gray-700">Check In</label>
                     <input type="checkbox" id={`attendance-${index}`} name={`attendance-${index}`} checked={member.isAttended} onChange={(e) => handleGuestAttendanceChange(index, e.target.checked)} />
