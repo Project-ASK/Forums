@@ -302,7 +302,11 @@ const events = ({ username }) => {
                                             color="primary"
                                             onClick={(e) => {
                                                 e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-                                                handleUploadOpen(event._id, event.forumName, event.eventName);
+                                                if (event.principalApprovalImagePath) {
+                                                    handleOpen(event.principalApprovalImagePath);
+                                                } else {
+                                                    handleUploadOpen(event._id, event.forumName, event.eventName);
+                                                }
                                             }}
                                             style={{ width: '50%' }}
                                         />
